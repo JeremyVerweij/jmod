@@ -38,7 +38,7 @@ public class DimensionBasedMetaIdHolder {
         Int2IntMap map = getPosToIdMapOrCreateIfNotExist(blockPosToChunkLong(x, z));
         int key = getPosInChunk(x, y, z);
 
-        if (!map.containsKey(key)) return -1;
+        if (!map.containsKey(key)) return 0;
 
         return map.get(key);
     }

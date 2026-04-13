@@ -1,20 +1,19 @@
 {
-  "parent": "block/block",
+  "parent": "block/cube_all",
   "textures": {
-    "particle": "gregtech:blocks/wood/treated/planks_treated",
-    "texture": "gregtech:blocks/wood/treated/planks_treated"
+    "all": "blocks/iron_block"
   },
   "elements": [
     {
       "from": [ 0, 0, 0 ],
       "to": [ 16, 16, 16 ],
       "faces": {
-        "north": { "uv": [ 0, 0, 16, 16 ], "rotation": 90, "texture": "#texture", "cullface": "north" },
-        "east": { "uv": [ 0, 0, 16, 16 ], "rotation": 90, "texture": "#texture", "cullface": "east" },
-        "south": { "uv": [ 0, 0, 16, 16 ], "rotation": 90, "texture": "#texture", "cullface": "south" },
-        "west": { "uv": [ 0, 0, 16, 16 ], "rotation": 90, "texture": "#texture", "cullface": "west" },
-        "up": { "uv": [ 0, 0, 16, 16 ], "texture": "#texture", "cullface": "up" },
-        "down": { "uv": [ 0, 0, 16, 16 ], "texture": "#texture", "cullface": "down" }
+        "down":  { "texture": "#all", "cullface": "down", "tintindex": 0 },
+        "up":    { "texture": "#all", "cullface": "up", "tintindex": 0 },
+        "north": { "texture": "#all", "cullface": "north", "tintindex": 0 },
+        "south": { "texture": "#all", "cullface": "south", "tintindex": 0 },
+        "west":  { "texture": "#all", "cullface": "west", "tintindex": 0 },
+        "east":  { "texture": "#all", "cullface": "east", "tintindex": 0 }
       }
     }
   ]
