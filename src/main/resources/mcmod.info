@@ -1,16 +1,19 @@
 [
 	{
-		"modid": "samplemod112",
-		"name": "Sample Mod 1.12",
-		"description": "Sample mod for 1.12.2, using ForgeGradle 5.1.",
+		"modid": "jmod",
+		"name": "J's Mod",
+		"description": "J's Mod suite. Includes everything from tech to magic, from farming to combat and much more!",
 		"version": "${version}",
 		"mcversion": "1.12.2",
-		"url": "",
-		"updateUrl": "",
-		"authorList": ["You!"],
-		"credits": "",
-		"logoFile": "",
-		"screenshots": [],
-		"dependencies": []
+		"authorList": ["J"]
+	},
+	{
+		"modid": "jfarming",
+		"name": "J's Farming Mod",
+		"description": "J's Mod Module",
+		"version": "${version}",
+		"mcversion": "1.12.2",
+		"authorList": ["J"],
+		"parent": "jmod"
 	}
 ]

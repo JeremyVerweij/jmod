@@ -1,0 +1,22 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "jmod:test",
+    "textures": {
+      "all": "blocks/iron_block"
+    }
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "not_normal": [
+      {
+        "model": "minecraft:dirt"
+      }
+    ],
+    "inventory": [
+      {}
+    ]
+  }
+}
