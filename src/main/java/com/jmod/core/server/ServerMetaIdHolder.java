@@ -1,6 +1,7 @@
 package com.jmod.core.server;
 
 import com.jmod.core.common.utils.DimensionBasedMetaIdHolder;
+import com.jmod.core.common.utils.fs.PathUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -12,7 +13,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.jmod.core.common.utils.RegionFileManager.*;
+import static com.jmod.core.common.utils.fs.RegionFileManager.*;
 
 public class ServerMetaIdHolder {
     private final Int2ObjectMap<DimensionBasedMetaIdHolder> map;
@@ -66,7 +67,7 @@ public class ServerMetaIdHolder {
         }
 
         if (needCompacting){
-            this.regionsNeedCompacting.add(getRegionFile(chunkX, chunkZ, dimension).toString());
+            this.regionsNeedCompacting.add(PathUtils.getRegionFile(chunkX, chunkZ, dimension).toString());
         }
     }
 
