@@ -1,4 +1,4 @@
-package com.jmod.core.common.utils;
+package com.jmod.core.common.utils.unlisterProperty;
 
 import net.minecraftforge.common.property.IUnlistedProperty;
 

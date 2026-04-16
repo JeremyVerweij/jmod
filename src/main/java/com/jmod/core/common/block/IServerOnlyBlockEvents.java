@@ -18,4 +18,6 @@ public interface IServerOnlyBlockEvents {
 
     ItemStack getPickBlockServerOnly(@Nonnull IBlockState state, @Nonnull RayTraceResult target, @Nonnull World world,
                            @Nonnull BlockPos pos, @Nonnull EntityPlayer player);
+
+    void serverOnlyOnPlayerHarvested(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityPlayer player);
 }

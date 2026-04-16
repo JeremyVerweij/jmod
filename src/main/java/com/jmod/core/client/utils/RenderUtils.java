@@ -1,4 +1,4 @@
-package com.jmod.core.common.utils;
+package com.jmod.core.client.utils;
 
 import net.minecraft.client.Minecraft;
 

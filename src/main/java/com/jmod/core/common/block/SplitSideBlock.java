@@ -58,6 +58,15 @@ public class SplitSideBlock extends Block implements IClientOnlyBlockEvents, ISe
     }
 
     @Override
+    public void onBlockHarvested(@Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityPlayer player) {
+        if (worldIn.isRemote){
+
+        }else{
+            this.serverOnlyOnPlayerHarvested(worldIn, pos, state, player);
+        }
+    }
+
+    @Override
     public void clientOnlyBlockPlace(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityLivingBase placer, @Nonnull ItemStack stack) {
 
     }
@@ -85,5 +94,10 @@ public class SplitSideBlock extends Block implements IClientOnlyBlockEvents, ISe
     @Override
     public ItemStack getPickBlockServerOnly(@Nonnull IBlockState state, @Nonnull RayTraceResult target, @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
         return super.getPickBlock(state, target, world, pos, player);
+    }
+
+    @Override
+    public void serverOnlyOnPlayerHarvested(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityPlayer player) {
+
     }
 }

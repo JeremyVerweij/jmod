@@ -1,4 +1,4 @@
-package com.jmod.core.common.utils;
+package com.jmod.core.common.utils.random;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;

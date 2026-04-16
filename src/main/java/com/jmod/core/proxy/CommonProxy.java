@@ -3,6 +3,8 @@ package com.jmod.core.proxy;
 import com.jmod.JMod;
 import com.jmod.core.client.ClientMetaIdHolder;
 import com.jmod.core.common.block.MetaBlock;
+import com.jmod.core.common.block.PipeTestBlock;
+import com.jmod.core.common.item.WrenchItem;
 import com.jmod.core.common.net.MetaIdsChunkPacket;
 import com.jmod.core.common.net.MetaIdsDeltaAddPacket;
 import com.jmod.core.common.net.MetaIdsDeltaDeletePacket;
@@ -28,7 +30,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class CommonProxy {
     private ServerMetaIdHolder serverMetaIdHolder;
     protected MetaBlock testBlock;
-    protected Item testBlockItem;
+    protected PipeTestBlock pipeBlock;
 
     public void preInit(FMLPreInitializationEvent event) {
         NetworkHandler.register(ClientMetaIdHolder.MetaIdDeltaAddHandler.class, MetaIdsDeltaAddPacket.class, Side.CLIENT);
@@ -36,6 +38,7 @@ public class CommonProxy {
         NetworkHandler.register(ClientMetaIdHolder.MetaIdChunkHandler.class, MetaIdsChunkPacket.class, Side.CLIENT);
 
         this.testBlock = new MetaBlock(JMod.MODID, "test", Material.ANVIL, CreativeTabs.MISC, (short) 10);
+        this.pipeBlock = new PipeTestBlock();
         this.serverMetaIdHolder = new ServerMetaIdHolder();
     }
 
@@ -54,19 +57,19 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        System.out.println("REGISTER BLOCK");
         event.getRegistry().register(testBlock);
+        event.getRegistry().register(pipeBlock);
     }
 
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
-        System.out.println("REGISTER ITEM");
         this.registerItemBlocks(event);
+        event.getRegistry().register(new WrenchItem());
     }
 
     public void registerItemBlocks(RegistryEvent.Register<Item> event){
         event.getRegistry().register(testBlock.getItemBlock());
-        this.testBlockItem = testBlock.getItemBlock();
+        event.getRegistry().register(pipeBlock.getItemBlock());
     }
 
     @SubscribeEvent

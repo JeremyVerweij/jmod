@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.util.math.ChunkPos;
 
-import static com.jmod.core.common.utils.CordPackingUtils.*;
+import static com.jmod.core.common.utils.random.CordPackingUtils.*;
 
 public class DimensionBasedMetaIdHolder {
     private final Long2ObjectMap<Int2IntMap> chunkToPosToIdMap;

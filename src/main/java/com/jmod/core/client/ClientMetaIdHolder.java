@@ -9,11 +9,12 @@ import com.jmod.core.proxy.ClientProxy;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-import static com.jmod.core.common.utils.RenderUtils.redrawChunk;
+import static com.jmod.core.client.utils.RenderUtils.redrawChunk;
 
 public class ClientMetaIdHolder{
     private final Int2ObjectMap<DimensionBasedMetaIdHolder> map;
@@ -32,6 +33,11 @@ public class ClientMetaIdHolder{
     public int getId(int x, int y, int z, int dimension){
         return getDimensionMetaHolder(dimension).getIdFromPlace(x, y, z);
     }
+
+    public int getId(BlockPos pos, int dimension){
+        return this.getId(pos.getX(), pos.getY(), pos.getZ(), dimension);
+    }
+
 
     public void putId(int x, int y, int z, int dimension, int id){
         getDimensionMetaHolder(dimension).putIdInPlace(x, y, z, id);

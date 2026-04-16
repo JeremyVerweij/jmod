@@ -5,21 +5,21 @@ import com.jmod.core.common.net.MetaIdsDeltaAddPacket;
 import com.jmod.core.common.net.MetaIdsDeltaDeletePacket;
 import com.jmod.core.common.net.NetworkHandler;
 import com.jmod.core.proxy.ClientProxy;
-import com.jmod.core.common.utils.UnlistedPropertyShort;
+import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyShort;
 import mcp.MethodsReturnNonnullByDefault;
-import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -34,6 +34,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import javax.annotation.Nonnull;
 
 public class MetaBlock extends SplitSideBlock{
+    public final static byte BLOCK_SIZE = 16;
+    public final static byte BLOCK_CENTER = BLOCK_SIZE / 2;
     public static final IUnlistedProperty<Short> ID = new UnlistedPropertyShort("id", (short) 0, Short.MAX_VALUE);
     private final short maxId;
     private final Item itemBlock;
@@ -61,10 +63,35 @@ public class MetaBlock extends SplitSideBlock{
         return this.itemBlock;
     }
 
+    public int getServerMetaData(int x, int y, int z, int dimension){
+        return JMod.proxy.getServerMetaIdHolder().getId(x, y, z, dimension);
+    }
+
+    public int getServerMetaData(BlockPos pos, int dimension){
+        return this.getServerMetaData(pos.getX(), pos.getY(), pos.getZ(), dimension);
+    }
+
+    public void setServerMetaData(int x, int y, int z, int dimension, int meta){
+        NetworkHandler.sendToClientsTracking(new MetaIdsDeltaAddPacket(x, y, z, meta),
+                new NetworkRegistry.TargetPoint(dimension, x, y, z, 0));
+
+        JMod.proxy.getServerMetaIdHolder().putId(x, y, z, dimension, meta);
+    }
+
+    public void setServerMetaData(BlockPos pos, int dimension, int meta){
+        this.setServerMetaData(pos.getX(), pos.getY(), pos.getZ(), dimension, meta);
+    }
+
     @Override
     @MethodsReturnNonnullByDefault
     protected BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this, new IProperty[] {}, new IUnlistedProperty[] { ID });
+    }
+
+    @Override
+    @MethodsReturnNonnullByDefault
+    public BlockRenderLayer getRenderLayer() {
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
@@ -92,13 +119,18 @@ public class MetaBlock extends SplitSideBlock{
     }
 
     @Override
-    public void serverOnlyBlockBreak(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, boolean isSameBlock) {
+    public void serverOnlyOnPlayerHarvested(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, @Nonnull EntityPlayer player) {
+        if (player.isCreative()) return;
+
         short id = (short) (JMod.proxy.getServerMetaIdHolder().getId(pos.getX(), pos.getY(), pos.getZ(), world.provider.getDimension()) & Short.MAX_VALUE);
 
         ItemStack drop = new ItemStack(this.itemBlock, 1, id);
 
         spawnAsEntity(world, pos, drop);
+    }
 
+    @Override
+    public void serverOnlyBlockBreak(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull IBlockState state, boolean isSameBlock) {
         NetworkHandler.sendToClientsTracking(new MetaIdsDeltaDeletePacket(pos.getX(), pos.getY(), pos.getZ()),
                 new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0));
 
