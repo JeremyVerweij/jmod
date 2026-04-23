@@ -1,6 +1,7 @@
 package com.jmod.core.common.block;
 
-import mcp.MethodsReturnNonnullByDefault;
+import com.jmod.core.common.block.interfaces.IClientOnlyBlockEvents;
+import com.jmod.core.common.block.interfaces.IServerOnlyBlockEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
@@ -47,7 +48,6 @@ public class SplitSideBlock extends Block implements IClientOnlyBlockEvents, ISe
     }
 
     @Override
-    @MethodsReturnNonnullByDefault
     public ItemStack getPickBlock(@Nonnull IBlockState state, @Nonnull RayTraceResult target, @Nonnull World world,
                                   @Nonnull BlockPos pos, @Nonnull EntityPlayer player) {
         if (world.isRemote){

@@ -1,4 +1,4 @@
-package com.jmod.core.common.block;
+package com.jmod.core.common.block.interfaces;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;

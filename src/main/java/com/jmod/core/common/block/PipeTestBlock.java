@@ -1,9 +1,9 @@
 package com.jmod.core.common.block;
 
 import com.jmod.JMod;
+import com.jmod.core.common.block.interfaces.IWrenchable;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyByte;
 import com.jmod.core.proxy.ClientProxy;
-import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
@@ -13,9 +13,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
+import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
@@ -28,8 +26,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
-public class PipeTestBlock extends MetaBlock implements IWrenchable{
+public class PipeTestBlock extends MetaBlock implements IWrenchable {
     public static final IUnlistedProperty<Byte> CONNECTIONS = new UnlistedPropertyByte("connections", (byte) 0, Byte.MAX_VALUE);
+    public static final IUnlistedProperty<Byte> RESTRICTIONS = new UnlistedPropertyByte("restrictions", (byte) 0, Byte.MAX_VALUE);
     private final static AxisAlignedBB PIPE_BOX = new AxisAlignedBB(4/16D, 4/16D, 4/16D, 12/16D, 12/16D, 12/16D);
 
     public PipeTestBlock() {
@@ -37,20 +36,20 @@ public class PipeTestBlock extends MetaBlock implements IWrenchable{
     }
 
     @Override
-    @MethodsReturnNonnullByDefault
     protected BlockStateContainer createBlockState() {
-        return new ExtendedBlockState(this, new IProperty[] {}, new IUnlistedProperty[] { ID, CONNECTIONS });
+        return new ExtendedBlockState(this, new IProperty[] {}, new IUnlistedProperty[] { ID, CONNECTIONS, RESTRICTIONS });
     }
 
     @Override
-    @MethodsReturnNonnullByDefault
     public IBlockState getExtendedState(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
         if (state instanceof IExtendedBlockState) {
             IExtendedBlockState extendedState = (IExtendedBlockState) state;
             return extendedState.withProperty(ID, (short) (((ClientProxy) JMod.proxy).clientMetaIdHolder
                     .getId(pos.getX(), pos.getY(), pos.getZ(), Minecraft.getMinecraft().world.provider.getDimension()) & 0b111_1111_1111_1111))
                     .withProperty(CONNECTIONS, (byte) ((((ClientProxy) JMod.proxy).clientMetaIdHolder
-                            .getId(pos.getX(), pos.getY(), pos.getZ(), Minecraft.getMinecraft().world.provider.getDimension()) >> 16) & 0b111111));
+                            .getId(pos.getX(), pos.getY(), pos.getZ(), Minecraft.getMinecraft().world.provider.getDimension()) >> 16) & 0b111111))
+                    .withProperty(RESTRICTIONS, (byte) ((((ClientProxy) JMod.proxy).clientMetaIdHolder
+                            .getId(pos.getX(), pos.getY(), pos.getZ(), Minecraft.getMinecraft().world.provider.getDimension()) >> 22) & 0b111111));
         }
         return state;
     }
@@ -73,7 +72,15 @@ public class PipeTestBlock extends MetaBlock implements IWrenchable{
     @Override
     public EnumActionResult onWrenchUse(IBlockState state, World world, EntityPlayer player, EnumHand hand, int x, int y, int z, EnumFacing side) {
         if (!world.isRemote){
-            int meta = this.getServerMetaData(x, y, z, world.provider.getDimension()) ^ (1 << (side.getIndex() + 16));
+            int meta = this.getServerMetaData(x, y, z, world.provider.getDimension());
+
+            if (player.isSneaking()){
+                meta ^= (1 << (side.getIndex() + 22));
+                meta |= (1 << (side.getIndex() + 16));
+            }else{
+                meta ^= (1 << (side.getIndex() + 16));
+                meta &= ~(1 << (side.getIndex() + 22));
+            }
 
             this.setServerMetaData(x, y, z, world.provider.getDimension(), meta);
         }
@@ -117,7 +124,6 @@ public class PipeTestBlock extends MetaBlock implements IWrenchable{
     }
 
     @Override
-    @MethodsReturnNonnullByDefault
     public AxisAlignedBB getBoundingBox(@Nonnull IBlockState state, @Nonnull IBlockAccess source, @Nonnull BlockPos pos) {
         return FULL_BLOCK_AABB;
     }

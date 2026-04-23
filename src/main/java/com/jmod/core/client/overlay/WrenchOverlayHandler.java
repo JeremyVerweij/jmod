@@ -1,7 +1,7 @@
 package com.jmod.core.client.overlay;
 
 import com.jmod.JMod;
-import com.jmod.core.common.block.IWrenchable;
+import com.jmod.core.common.block.interfaces.IWrenchable;
 import com.jmod.core.common.item.WrenchItem;
 import com.jmod.core.common.utils.random.RotationUtils;
 import net.minecraft.block.state.IBlockState;

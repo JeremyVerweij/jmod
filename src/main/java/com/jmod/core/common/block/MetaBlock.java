@@ -6,7 +6,6 @@ import com.jmod.core.common.net.MetaIdsDeltaDeletePacket;
 import com.jmod.core.common.net.NetworkHandler;
 import com.jmod.core.proxy.ClientProxy;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyShort;
-import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
@@ -33,7 +32,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nonnull;
 
-public class MetaBlock extends SplitSideBlock{
+public class MetaBlock extends SplitSideBlock {
     public final static byte BLOCK_SIZE = 16;
     public final static byte BLOCK_CENTER = BLOCK_SIZE / 2;
     public static final IUnlistedProperty<Short> ID = new UnlistedPropertyShort("id", (short) 0, Short.MAX_VALUE);
@@ -83,19 +82,16 @@ public class MetaBlock extends SplitSideBlock{
     }
 
     @Override
-    @MethodsReturnNonnullByDefault
     protected BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this, new IProperty[] {}, new IUnlistedProperty[] { ID });
     }
 
     @Override
-    @MethodsReturnNonnullByDefault
     public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
     @Override
-    @MethodsReturnNonnullByDefault
     public IBlockState getExtendedState(@Nonnull IBlockState state, @Nonnull IBlockAccess world, @Nonnull BlockPos pos) {
         if (state instanceof IExtendedBlockState) {
             IExtendedBlockState extendedState = (IExtendedBlockState) state;
@@ -183,7 +179,6 @@ public class MetaBlock extends SplitSideBlock{
         }
 
         @Override
-        @MethodsReturnNonnullByDefault
         public String getTranslationKey(@Nonnull ItemStack stack) {
             return super.getTranslationKey(stack) + stack.getMetadata();
         }

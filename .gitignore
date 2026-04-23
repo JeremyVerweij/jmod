@@ -1,21 +1,27 @@
-# gradle
-.gradle/
-build/
-out/
-classes/
-# eclipse and vscode
-*.launch
-.settings/
-.vscode/
-bin/
-.classpath
-.project
-# intellij
-.idea/
-*.iml
-*.ipr
-*.iws
-# apple: think different:tm:
-*.DS_Store
-# run configurations
+.gradle
+**/build/
+!src/**/build/
 run/
+out/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Avoid ignore Gradle wrappper properties
+!gradle-wrapper.properties
+
+# Cache of project
+.gradletasknamecache
+
+# Eclipse Gradle plugin generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# IDEA config
+.idea
+

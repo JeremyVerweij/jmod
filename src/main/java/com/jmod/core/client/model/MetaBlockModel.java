@@ -1,6 +1,5 @@
 package com.jmod.core.client.model;
 
-import mcp.MethodsReturnNonnullByDefault;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -9,12 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import org.apache.commons.lang3.tuple.Pair;
-import org.lwjgl.util.vector.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.vecmath.Matrix4f;
 import java.util.Collections;
 import java.util.List;
 
@@ -51,25 +47,27 @@ public abstract class MetaBlockModel implements IBakedModel {
         }
     }
 
+    protected List<BakedQuad> getQuadsFromExtendedState(@Nonnull IExtendedBlockState state, @Nullable EnumFacing side, long rand){
+        int variant = getVariantFromState(state);
+
+        if (side == null){
+            return this.quads[0][variant];
+        }
+
+        return this.quads[side.getIndex() + 1][variant];
+    }
+
     @Override
-    @MethodsReturnNonnullByDefault
     public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
         if (state instanceof IExtendedBlockState) {
             IExtendedBlockState extendedState = (IExtendedBlockState) state;
-
-            int variant = getVariantFromState(extendedState);
-
-            if (side == null){
-                return this.quads[0][variant];
-            }
-
-            return this.quads[side.getIndex() + 1][variant];
+            return getQuadsFromExtendedState(extendedState, side, rand);
         }
 
         return baseModel.getQuads(state, side, rand);
     }
 
-    @Override @MethodsReturnNonnullByDefault public ItemOverrideList getOverrides() {
+    @Override public ItemOverrideList getOverrides() {
         return new ItemOverrideList(Collections.emptyList()){
             @Override
             public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity) {
@@ -82,11 +80,19 @@ public abstract class MetaBlockModel implements IBakedModel {
         };
     }
 
+    protected List<BakedQuad> getItemQuads(@Nullable EnumFacing side, long rand, int variant){
+        if (side == null){
+            return MetaBlockModel.this.quads[0][variant];
+        }
+
+        return MetaBlockModel.this.quads[side.getIndex() + 1][variant];
+    }
+
     @Override public boolean isAmbientOcclusion() { return baseModel.isAmbientOcclusion(); }
     @Override public boolean isGui3d() { return baseModel.isGui3d(); }
     @Override public boolean isBuiltInRenderer() { return false; }
-    @Override @MethodsReturnNonnullByDefault public TextureAtlasSprite getParticleTexture() { return baseModel.getParticleTexture(); }
-    @Override @MethodsReturnNonnullByDefault public ItemCameraTransforms getItemCameraTransforms() {
+    @Override public TextureAtlasSprite getParticleTexture() { return baseModel.getParticleTexture(); }
+    @Override public ItemCameraTransforms getItemCameraTransforms() {
         return baseModel.getItemCameraTransforms();
     }
 
@@ -98,13 +104,8 @@ public abstract class MetaBlockModel implements IBakedModel {
         }
 
         @Override
-        @MethodsReturnNonnullByDefault
         public List<BakedQuad> getQuads(@Nullable IBlockState state, @Nullable EnumFacing side, long rand) {
-            if (side == null){
-                return MetaBlockModel.this.quads[0][variant];
-            }
-
-            return MetaBlockModel.this.quads[side.getIndex() + 1][variant];
+            return MetaBlockModel.this.getItemQuads(side, rand, this.variant);
         }
 
         @Override
@@ -123,13 +124,11 @@ public abstract class MetaBlockModel implements IBakedModel {
         }
 
         @Override
-        @MethodsReturnNonnullByDefault
         public TextureAtlasSprite getParticleTexture() {
             return MetaBlockModel.this.getParticleTexture();
         }
 
         @Override
-        @MethodsReturnNonnullByDefault
         public ItemOverrideList getOverrides() {
             return MetaBlockModel.this.getOverrides();
         }

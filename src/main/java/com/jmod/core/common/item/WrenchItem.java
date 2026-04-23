@@ -1,14 +1,11 @@
 package com.jmod.core.common.item;
 
 import com.jmod.JMod;
-import com.jmod.core.common.block.IWrenchable;
-import mcp.MethodsReturnNonnullByDefault;
+import com.jmod.core.common.block.interfaces.IWrenchable;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -27,7 +24,6 @@ public class WrenchItem extends Item {
     }
 
     @Override
-    @MethodsReturnNonnullByDefault
     public EnumActionResult onItemUse(@Nonnull EntityPlayer player, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
         IBlockState state = worldIn.getBlockState(pos);
         Block block = state.getBlock();

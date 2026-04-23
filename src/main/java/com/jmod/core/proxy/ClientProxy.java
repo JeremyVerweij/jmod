@@ -1,5 +1,6 @@
 package com.jmod.core.proxy;
 
+import com.jmod.JMod;
 import com.jmod.core.client.ClientMetaIdHolder;
 import com.jmod.core.client.model.MetaBlockModel;
 import com.jmod.core.client.model.MetaPipeTestModel;
@@ -9,8 +10,10 @@ import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.color.BlockColors;
 import net.minecraft.client.renderer.color.ItemColors;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -58,6 +61,12 @@ public class ClientProxy extends CommonProxy{
         this.pipeBlock.registerItemModels();
     }
 
+    @SubscribeEvent
+    public void registerTextures(TextureStitchEvent.Pre event){
+        ResourceLocation loc = new ResourceLocation(JMod.MODID, "custom/pipe_overlay");
+        event.getMap().registerSprite(loc);
+    }
+
     @Override
     @SubscribeEvent
     public void onChunkUnload(ChunkEvent.Unload event) {
@@ -75,7 +84,7 @@ public class ClientProxy extends CommonProxy{
         BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
 
         blockColors.registerBlockColorHandler((state, world, pos, tintIndex) -> {
-            if (world != null && pos != null && state instanceof IExtendedBlockState && tintIndex == 0) {
+            if (world != null && pos != null && state instanceof IExtendedBlockState && tintIndex == 10) {
                 IExtendedBlockState extendedState = (IExtendedBlockState) state;
 
                 Short id = extendedState.getValue(MetaBlock.ID);
@@ -85,6 +94,7 @@ public class ClientProxy extends CommonProxy{
                         case 1: return 0xFF0000;
                         case 2: return 0x00FF00;
                         case 3: return 0x0000FF;
+                        default: return 0xFFFFFF;
                     }
                 }
             }
@@ -97,11 +107,12 @@ public class ClientProxy extends CommonProxy{
         ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 
         itemColors.registerItemColorHandler(((stack, tintIndex) -> {
-            if (tintIndex == 0){
+            if (tintIndex == 10){
                 switch (stack.getMetadata()){
                     case 1: return 0xFF0000;
                     case 2: return 0x00FF00;
                     case 3: return 0x0000FF;
+                    default: return 0xFFFFFF;
                 }
             }
 
