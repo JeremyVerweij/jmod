@@ -67,7 +67,7 @@ unimined.minecraft {
 
     cleanroom {
         if (propertyBool('use_access_transformer')) {
-            accessTransformer "${rootProject.projectDir}/src/main/resources/${propertyString('access_transformer_locations')}"
+            accessTransformer "${getProjectDir()}/src/main/resources/${propertyString('access_transformer_locations')}"
         }
         loader "0.5.6-alpha"
         runs.auth.username = minecraft_username
@@ -140,35 +140,6 @@ sourceSets {
                 property('mod_url', propertyString('mod_url'))
                 property('mod_update_json', propertyString('mod_update_json'))
                 property('mod_logo_path', propertyString('mod_logo_path'))
-            }
-        }
-    }
-}
-
-idea {
-    module {
-        inheritOutputDirs = true
-    }
-    project {
-        settings {
-            runConfigurations {
-                '1. Build'(Gradle) {
-                    taskNames = ["build"]
-                }
-                '2. Run Client'(Gradle) {
-                    taskNames = [":runClient"]
-                }
-                '3. Run Server'(Gradle) {
-                    taskNames = [":runServer"]
-                }
-            }
-            compiler.javac {
-                afterEvaluate {
-                    javacAdditionalOptions = '-encoding utf8'
-                    moduleJavacAdditionalOptions = [
-                            (project.name + '.main'): tasks.compileJava.options.compilerArgs.collect { '"' + it + '"' }.join(' ')
-                    ]
-                }
             }
         }
     }

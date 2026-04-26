@@ -6,6 +6,7 @@ import com.jmod.core.common.net.MetaIdsDeltaDeletePacket;
 import com.jmod.core.common.net.NetworkHandler;
 import com.jmod.core.proxy.ClientProxy;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyShort;
+import com.jrender.common.ICustomDebug;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
@@ -31,8 +32,9 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nonnull;
+import java.util.List;
 
-public class MetaBlock extends SplitSideBlock {
+public class MetaBlock extends SplitSideBlock implements ICustomDebug {
     public final static byte BLOCK_SIZE = 16;
     public final static byte BLOCK_CENTER = BLOCK_SIZE / 2;
     public static final IUnlistedProperty<Short> ID = new UnlistedPropertyShort("id", (short) 0, Short.MAX_VALUE);
@@ -160,6 +162,15 @@ public class MetaBlock extends SplitSideBlock {
 
     protected void registerItemModel(int id){
         ModelLoader.setCustomModelResourceLocation(this.itemBlock, id, new ModelResourceLocation(this.itemBlock.getRegistryName(), "inventory"));
+    }
+
+    @Override
+    public void addToDebug(List<String> lines, IExtendedBlockState extendedState) {
+        Short id = extendedState.getValue(ID);
+
+        if (id != null){
+            lines.add("jmod:meta: " + id);
+        }
     }
 
     public static class ItemMetaBlock extends ItemBlock{

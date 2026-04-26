@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
@@ -24,6 +25,7 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class PipeTestBlock extends MetaBlock implements IWrenchable {
@@ -132,5 +134,24 @@ public class PipeTestBlock extends MetaBlock implements IWrenchable {
     @Override
     public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockState blockState, @Nonnull IBlockAccess worldIn, @Nonnull BlockPos pos) {
         return PIPE_BOX;
+    }
+
+    @Override
+    public void addToDebug(List<String> lines, IExtendedBlockState extendedState) {
+        super.addToDebug(lines, extendedState);
+
+        Byte connections = extendedState.getValue(CONNECTIONS);
+        Byte restrictions = extendedState.getValue(RESTRICTIONS);
+
+        if (connections != null && restrictions != null){
+            for (int i = 0; i < EnumFacing.values().length; i++) {
+                boolean isConnected = (connections & (1 << i)) > 0;
+                boolean isRestricted = (restrictions & (1 << i)) > 0;
+
+                lines.add(TextFormatting.RESET + EnumFacing.byIndex(i).toString() + ": {con: " +
+                        (isConnected ? TextFormatting.GREEN + " " : TextFormatting.RED) + isConnected + TextFormatting.RESET +
+                        ", res: " + (isRestricted ? TextFormatting.GREEN + " " : TextFormatting.RED) + isRestricted + "}" + TextFormatting.RESET);
+            }
+        }
     }
 }

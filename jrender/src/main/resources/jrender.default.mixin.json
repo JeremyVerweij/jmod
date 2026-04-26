@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "package": "com.jrender.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "target": "@env(DEFAULT)",
+  "mixins": [],
+  "setSourceFile": true,
+  "minVersion": "0.8.7"
+}
