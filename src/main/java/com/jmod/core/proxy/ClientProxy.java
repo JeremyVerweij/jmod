@@ -5,6 +5,7 @@ import com.jmod.core.client.ClientMetaIdHolder;
 import com.jmod.core.client.model.MetaBlockModel;
 import com.jmod.core.client.model.MetaPipeTestModel;
 import com.jmod.core.common.block.MetaBlock;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -40,30 +41,40 @@ public class ClientProxy extends CommonProxy{
 
     @SubscribeEvent
     public void onModelBake(ModelBakeEvent event) {
-        ModelResourceLocation cube_all = new ModelResourceLocation("minecraft:stone",
-                "normal");
-
-        ModelResourceLocation normal = new ModelResourceLocation(this.pipeBlock.getRegistryName().toString(),
-                "normal");
-
-        ModelResourceLocation inventory = new ModelResourceLocation(this.pipeBlock.getRegistryName().toString(),
-                "inventory");
-
+        ModelResourceLocation cube_all = new ModelResourceLocation("minecraft:stone", "normal");
         IBakedModel normalObject = event.getModelRegistry().getObject(cube_all);
-        MetaBlockModel customModel = new MetaPipeTestModel(normalObject, 6);
-        event.getModelRegistry().putObject(normal, customModel);
-        event.getModelRegistry().putObject(inventory, customModel);
+
+        registerModel(event, this.pipeBlock4, new MetaPipeTestModel(normalObject, 4));
+        registerModel(event, this.pipeBlock6, new MetaPipeTestModel(normalObject, 6));
+        registerModel(event, this.pipeBlock8, new MetaPipeTestModel(normalObject, 8));
+        registerModel(event, this.pipeBlock10, new MetaPipeTestModel(normalObject, 10));
+        registerModel(event, this.pipeBlock12, new MetaPipeTestModel(normalObject, 12));
+    }
+
+    public void registerModel(ModelBakeEvent event, Block block, IBakedModel model){
+        ModelResourceLocation normal = new ModelResourceLocation(block.getRegistryName().toString(), "normal");
+        ModelResourceLocation inventory = new ModelResourceLocation(block.getRegistryName().toString(), "inventory");
+
+        event.getModelRegistry().putObject(normal, model);
+        event.getModelRegistry().putObject(inventory, model);
     }
 
     @SubscribeEvent
     public void registerModels(ModelRegistryEvent event){
         this.testBlock.registerItemModels();
-        this.pipeBlock.registerItemModels();
+        this.pipeBlock4.registerItemModels();
+        this.pipeBlock6.registerItemModels();
+        this.pipeBlock8.registerItemModels();
+        this.pipeBlock10.registerItemModels();
+        this.pipeBlock12.registerItemModels();
     }
 
     @SubscribeEvent
     public void registerTextures(TextureStitchEvent.Pre event){
-        ResourceLocation loc = new ResourceLocation(JMod.MODID, "custom/pipe_overlay");
+        registerTexture(event, new ResourceLocation(JMod.MODID, "block/pipe"));
+    }
+
+    public void registerTexture(TextureStitchEvent.Pre event, ResourceLocation loc){
         event.getMap().registerSprite(loc);
     }
 
@@ -100,7 +111,7 @@ public class ClientProxy extends CommonProxy{
             }
 
             return 0xFFFFFF;
-        }, this.testBlock, this.pipeBlock);
+        }, this.testBlock, this.pipeBlock4, this.pipeBlock6, this.pipeBlock8, this.pipeBlock10, this.pipeBlock12);
     }
 
     private void registerItemColors(){
@@ -117,6 +128,6 @@ public class ClientProxy extends CommonProxy{
             }
 
             return 0xFFFFFF;
-        }), this.testBlock, this.pipeBlock);
+        }), this.testBlock, this.pipeBlock4, this.pipeBlock6, this.pipeBlock8, this.pipeBlock10, this.pipeBlock12);
     }
 }

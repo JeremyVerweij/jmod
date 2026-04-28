@@ -30,7 +30,11 @@ import net.minecraftforge.fml.relauncher.Side;
 public class CommonProxy {
     private ServerMetaIdHolder serverMetaIdHolder;
     protected MetaBlock testBlock;
-    protected PipeTestBlock pipeBlock;
+    protected PipeTestBlock pipeBlock4;
+    protected PipeTestBlock pipeBlock6;
+    protected PipeTestBlock pipeBlock8;
+    protected PipeTestBlock pipeBlock10;
+    protected PipeTestBlock pipeBlock12;
 
     public void preInit(FMLPreInitializationEvent event) {
         NetworkHandler.register(ClientMetaIdHolder.MetaIdDeltaAddHandler.class, MetaIdsDeltaAddPacket.class, Side.CLIENT);
@@ -38,7 +42,11 @@ public class CommonProxy {
         NetworkHandler.register(ClientMetaIdHolder.MetaIdChunkHandler.class, MetaIdsChunkPacket.class, Side.CLIENT);
 
         this.testBlock = new MetaBlock(JMod.MODID, "test", Material.ANVIL, CreativeTabs.MISC, (short) 10);
-        this.pipeBlock = new PipeTestBlock();
+        this.pipeBlock4 = new PipeTestBlock(4);
+        this.pipeBlock6 = new PipeTestBlock(6);
+        this.pipeBlock8 = new PipeTestBlock(8);
+        this.pipeBlock10 = new PipeTestBlock(10);
+        this.pipeBlock12 = new PipeTestBlock(12);
         this.serverMetaIdHolder = new ServerMetaIdHolder();
     }
 
@@ -58,7 +66,11 @@ public class CommonProxy {
     @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         event.getRegistry().register(testBlock);
-        event.getRegistry().register(pipeBlock);
+        event.getRegistry().register(pipeBlock4);
+        event.getRegistry().register(pipeBlock6);
+        event.getRegistry().register(pipeBlock8);
+        event.getRegistry().register(pipeBlock10);
+        event.getRegistry().register(pipeBlock12);
     }
 
     @SubscribeEvent
@@ -69,7 +81,11 @@ public class CommonProxy {
 
     public void registerItemBlocks(RegistryEvent.Register<Item> event){
         event.getRegistry().register(testBlock.getItemBlock());
-        event.getRegistry().register(pipeBlock.getItemBlock());
+        event.getRegistry().register(pipeBlock4.getItemBlock());
+        event.getRegistry().register(pipeBlock6.getItemBlock());
+        event.getRegistry().register(pipeBlock8.getItemBlock());
+        event.getRegistry().register(pipeBlock10.getItemBlock());
+        event.getRegistry().register(pipeBlock12.getItemBlock());
     }
 
     @SubscribeEvent

@@ -31,8 +31,8 @@ public class PipeTestBlock extends MetaBlock implements IWrenchable {
     public static final IUnlistedProperty<Byte> RESTRICTIONS = new UnlistedPropertyByte("restrictions", (byte) 0, Byte.MAX_VALUE);
     private final static AxisAlignedBB PIPE_BOX = new AxisAlignedBB(4/16D, 4/16D, 4/16D, 12/16D, 12/16D, 12/16D);
 
-    public PipeTestBlock() {
-        super(JMod.MODID, "pipe", Material.IRON, CreativeTabs.BUILDING_BLOCKS, (short) 4);
+    public PipeTestBlock(int size) {
+        super(JMod.MODID, "pipe_" + size, Material.IRON, CreativeTabs.BUILDING_BLOCKS, (short) 4);
     }
 
     @Override
