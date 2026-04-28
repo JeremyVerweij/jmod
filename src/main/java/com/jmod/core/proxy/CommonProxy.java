@@ -1,10 +1,13 @@
 package com.jmod.core.proxy;
 
-import com.jmod.JMod;
 import com.jmod.core.client.ClientMetaIdHolder;
 import com.jmod.core.common.block.MetaBlock;
 import com.jmod.core.common.block.PipeTestBlock;
+import com.jmod.core.common.event.MetaBlockRegisterEvent;
+import com.jmod.core.common.event.material.MaterialRegistryEvent;
 import com.jmod.core.common.item.WrenchItem;
+import com.jmod.core.common.material.Material;
+import com.jmod.core.common.material.MaterialRegistry;
 import com.jmod.core.common.net.MetaIdsChunkPacket;
 import com.jmod.core.common.net.MetaIdsDeltaAddPacket;
 import com.jmod.core.common.net.MetaIdsDeltaDeletePacket;
@@ -12,41 +15,35 @@ import com.jmod.core.common.net.NetworkHandler;
 import com.jmod.core.server.ServerMetaIdHolder;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.world.ChunkDataEvent;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 public class CommonProxy {
+    private MaterialRegistry materialRegistry;
     private ServerMetaIdHolder serverMetaIdHolder;
-    protected MetaBlock testBlock;
-    protected PipeTestBlock pipeBlock4;
-    protected PipeTestBlock pipeBlock6;
-    protected PipeTestBlock pipeBlock8;
-    protected PipeTestBlock pipeBlock10;
-    protected PipeTestBlock pipeBlock12;
+    protected MetaBlockRegisterEvent metaBlockRegisterEvent;
 
     public void preInit(FMLPreInitializationEvent event) {
         NetworkHandler.register(ClientMetaIdHolder.MetaIdDeltaAddHandler.class, MetaIdsDeltaAddPacket.class, Side.CLIENT);
         NetworkHandler.register(ClientMetaIdHolder.MetaIdDeltaDeleteHandler.class, MetaIdsDeltaDeletePacket.class, Side.CLIENT);
         NetworkHandler.register(ClientMetaIdHolder.MetaIdChunkHandler.class, MetaIdsChunkPacket.class, Side.CLIENT);
 
-        this.testBlock = new MetaBlock(JMod.MODID, "test", Material.ANVIL, CreativeTabs.MISC, (short) 10);
-        this.pipeBlock4 = new PipeTestBlock(4);
-        this.pipeBlock6 = new PipeTestBlock(6);
-        this.pipeBlock8 = new PipeTestBlock(8);
-        this.pipeBlock10 = new PipeTestBlock(10);
-        this.pipeBlock12 = new PipeTestBlock(12);
+        this.materialRegistry = new MaterialRegistry();
+        MinecraftForge.EVENT_BUS.post(new MaterialRegistryEvent(this.materialRegistry));
+
+        this.metaBlockRegisterEvent = new MetaBlockRegisterEvent();
+        MinecraftForge.EVENT_BUS.post(metaBlockRegisterEvent);
+
         this.serverMetaIdHolder = new ServerMetaIdHolder();
     }
 
@@ -64,13 +61,27 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
+    public void onMaterialRegister(MaterialRegistryEvent event){
+        event.REGISTRY.register(new Material(0xFF00FF));
+        event.REGISTRY.register(new Material(0x0000FF));
+        event.REGISTRY.register(new Material(0xFF0000));
+        event.REGISTRY.register(new Material(0x00FF00));
+    }
+
+    @SubscribeEvent
+    public void onMetaBlockRegister(MetaBlockRegisterEvent event){
+        event.register(new PipeTestBlock(4));
+        event.register(new PipeTestBlock(6));
+        event.register(new PipeTestBlock(8));
+        event.register(new PipeTestBlock(10));
+        event.register(new PipeTestBlock(12));
+    }
+
+    @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
-        event.getRegistry().register(testBlock);
-        event.getRegistry().register(pipeBlock4);
-        event.getRegistry().register(pipeBlock6);
-        event.getRegistry().register(pipeBlock8);
-        event.getRegistry().register(pipeBlock10);
-        event.getRegistry().register(pipeBlock12);
+        for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
+            event.getRegistry().register(metaBlock);
+        }
     }
 
     @SubscribeEvent
@@ -80,12 +91,9 @@ public class CommonProxy {
     }
 
     public void registerItemBlocks(RegistryEvent.Register<Item> event){
-        event.getRegistry().register(testBlock.getItemBlock());
-        event.getRegistry().register(pipeBlock4.getItemBlock());
-        event.getRegistry().register(pipeBlock6.getItemBlock());
-        event.getRegistry().register(pipeBlock8.getItemBlock());
-        event.getRegistry().register(pipeBlock10.getItemBlock());
-        event.getRegistry().register(pipeBlock12.getItemBlock());
+        for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
+            event.getRegistry().registerAll(metaBlock.getItemBlock());
+        }
     }
 
     @SubscribeEvent
@@ -124,5 +132,9 @@ public class CommonProxy {
 
     public ServerMetaIdHolder getServerMetaIdHolder() {
         return serverMetaIdHolder;
+    }
+
+    public MaterialRegistry getMaterialRegistry() {
+        return materialRegistry;
     }
 }

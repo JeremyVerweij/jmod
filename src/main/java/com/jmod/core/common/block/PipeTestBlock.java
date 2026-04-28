@@ -1,6 +1,9 @@
 package com.jmod.core.common.block;
 
 import com.jmod.JMod;
+import com.jmod.core.client.model.MetaPipeTestModel;
+import com.jmod.core.common.block.interfaces.IHasColor;
+import com.jmod.core.common.block.interfaces.IMaterialColor;
 import com.jmod.core.common.block.interfaces.IWrenchable;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyByte;
 import com.jmod.core.proxy.ClientProxy;
@@ -9,6 +12,7 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,13 +30,22 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
-public class PipeTestBlock extends MetaBlock implements IWrenchable {
+public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable {
     public static final IUnlistedProperty<Byte> CONNECTIONS = new UnlistedPropertyByte("connections", (byte) 0, Byte.MAX_VALUE);
     public static final IUnlistedProperty<Byte> RESTRICTIONS = new UnlistedPropertyByte("restrictions", (byte) 0, Byte.MAX_VALUE);
     private final static AxisAlignedBB PIPE_BOX = new AxisAlignedBB(4/16D, 4/16D, 4/16D, 12/16D, 12/16D, 12/16D);
 
+    private final int size;
+
     public PipeTestBlock(int size) {
-        super(JMod.MODID, "pipe_" + size, Material.IRON, CreativeTabs.BUILDING_BLOCKS, (short) 4);
+        super(JMod.MODID, "pipe_" + size, Material.IRON, CreativeTabs.BUILDING_BLOCKS);
+
+        this.size = size;
+    }
+
+    @Override
+    public IBakedModel getModel(IBakedModel normalModel) {
+        return new MetaPipeTestModel(normalModel, size);
     }
 
     @Override

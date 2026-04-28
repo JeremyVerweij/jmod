@@ -32,7 +32,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nonnull;
 
-public class MetaBlock extends SplitSideBlock {
+public abstract class MetaBlock extends SplitSideBlock {
     public final static byte BLOCK_SIZE = 16;
     public final static byte BLOCK_CENTER = BLOCK_SIZE / 2;
     public static final IUnlistedProperty<Short> ID = new UnlistedPropertyShort("id", (short) 0, Short.MAX_VALUE);
@@ -53,6 +53,8 @@ public class MetaBlock extends SplitSideBlock {
         this(modId, registryName, blockMaterialIn, maxId);
         this.setCreativeTab(creativeTab);
     }
+
+    public abstract IBakedModel getModel(IBakedModel normalModel);
 
     public short getMaxId() {
         return maxId;
@@ -153,7 +155,7 @@ public class MetaBlock extends SplitSideBlock {
     }
 
     public void registerItemModels(){
-        for (int i = 0; i < this.maxId; i++) {
+        for (int i = 0; i < this.getMaxId(); i++) {
             this.registerItemModel(i);
         }
     }
@@ -186,7 +188,7 @@ public class MetaBlock extends SplitSideBlock {
         @Override
         public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
             if (this.isInCreativeTab(tab)){
-                for (int i = 0; i < ((MetaBlock) this.block).maxId; i++) {
+                for (int i = 0; i < ((MetaBlock) this.block).getMaxId(); i++) {
                     items.add(new ItemStack(this, 1, i));
                 }
             }
