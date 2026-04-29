@@ -2,17 +2,19 @@ package com.jmod.core.proxy;
 
 import com.jmod.core.client.ClientMetaIdHolder;
 import com.jmod.core.common.block.MetaBlock;
-import com.jmod.core.common.block.PipeTestBlock;
+import com.jmod.core.common.block.material.PipeTestBlock;
 import com.jmod.core.common.event.MetaBlockRegisterEvent;
+import com.jmod.core.common.event.MetaItemRegisterEvent;
 import com.jmod.core.common.event.material.MaterialRegistryEvent;
+import com.jmod.core.common.item.MetaItem;
 import com.jmod.core.common.item.WrenchItem;
-import com.jmod.core.common.material.Material;
 import com.jmod.core.common.material.MaterialBuilder;
 import com.jmod.core.common.material.MaterialRegistry;
 import com.jmod.core.common.net.MetaIdsChunkPacket;
 import com.jmod.core.common.net.MetaIdsDeltaAddPacket;
 import com.jmod.core.common.net.MetaIdsDeltaDeletePacket;
 import com.jmod.core.common.net.NetworkHandler;
+import com.jmod.core.common.utils.MiningTier;
 import com.jmod.core.server.ServerMetaIdHolder;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import net.minecraft.block.Block;
@@ -33,6 +35,7 @@ public class CommonProxy {
     private MaterialRegistry materialRegistry;
     private ServerMetaIdHolder serverMetaIdHolder;
     protected MetaBlockRegisterEvent metaBlockRegisterEvent;
+    protected MetaItemRegisterEvent metaItemRegisterEvent;
 
     public void preInit(FMLPreInitializationEvent event) {
         NetworkHandler.register(ClientMetaIdHolder.MetaIdDeltaAddHandler.class, MetaIdsDeltaAddPacket.class, Side.CLIENT);
@@ -44,6 +47,9 @@ public class CommonProxy {
 
         this.metaBlockRegisterEvent = new MetaBlockRegisterEvent();
         MinecraftForge.EVENT_BUS.post(metaBlockRegisterEvent);
+
+        this.metaItemRegisterEvent = new MetaItemRegisterEvent();
+        MinecraftForge.EVENT_BUS.post(metaItemRegisterEvent);
 
         this.serverMetaIdHolder = new ServerMetaIdHolder();
     }
@@ -63,16 +69,17 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onMaterialRegister(MaterialRegistryEvent event){
-        event.REGISTRY.register(new MaterialBuilder(0xFF00FF, "")
+        event.REGISTRY.register(0, new MaterialBuilder(0xFF00FF, "")
+                .enableFluidPipe(1)
+                .enableTools(true, true, true, 5f, 100, MiningTier.STEEL)
+                .build());
+        event.REGISTRY.register(1, new MaterialBuilder(0x0000FF, "")
                 .enableFluidPipe(1)
                 .build());
-        event.REGISTRY.register(new MaterialBuilder(0x0000FF, "")
+        event.REGISTRY.register(2, new MaterialBuilder(0xFF0000, "")
                 .enableFluidPipe(1)
                 .build());
-        event.REGISTRY.register(new MaterialBuilder(0xFF0000, "")
-                .enableFluidPipe(1)
-                .build());
-        event.REGISTRY.register(new MaterialBuilder(0x00FF00, "")
+        event.REGISTRY.register(3, new MaterialBuilder(0x00FF00, "")
                 .enableFluidPipe(1)
                 .build());
     }
@@ -87,6 +94,11 @@ public class CommonProxy {
     }
 
     @SubscribeEvent
+    public void onMetaItemRegister(MetaItemRegisterEvent event){
+        event.register(new WrenchItem());
+    }
+
+    @SubscribeEvent
     public void registerBlocks(RegistryEvent.Register<Block> event) {
         for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
             event.getRegistry().register(metaBlock);
@@ -96,7 +108,10 @@ public class CommonProxy {
     @SubscribeEvent
     public void registerItems(RegistryEvent.Register<Item> event) {
         this.registerItemBlocks(event);
-        event.getRegistry().register(new WrenchItem());
+
+        for (MetaItem metaItem : this.metaItemRegisterEvent.getRegistry()) {
+            event.getRegistry().register(metaItem);
+        }
     }
 
     public void registerItemBlocks(RegistryEvent.Register<Item> event){

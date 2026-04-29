@@ -3,7 +3,9 @@ package com.jmod.core.proxy;
 import com.jmod.JMod;
 import com.jmod.core.client.ClientMetaIdHolder;
 import com.jmod.core.common.block.MetaBlock;
-import com.jmod.core.common.block.interfaces.IHasColor;
+import com.jmod.core.common.block.interfaces.IHasBlockColor;
+import com.jmod.core.common.item.MetaItem;
+import com.jmod.core.common.item.interfaces.IHasItemColor;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -60,6 +62,10 @@ public class ClientProxy extends CommonProxy{
         for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
             metaBlock.registerItemModels();
         }
+
+        for (MetaItem metaItem : this.metaItemRegisterEvent.getRegistry()) {
+            metaItem.registerItemModels();
+        }
     }
 
     @SubscribeEvent
@@ -87,7 +93,7 @@ public class ClientProxy extends CommonProxy{
     private void registerBlockColors(){
         BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
         for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
-            if (metaBlock instanceof IHasColor color){
+            if (metaBlock instanceof IHasBlockColor color){
                 blockColors.registerBlockColorHandler(color::getColorBlock, metaBlock);
             }
         }
@@ -97,8 +103,14 @@ public class ClientProxy extends CommonProxy{
         ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 
         for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
-            if (metaBlock instanceof IHasColor color){
+            if (metaBlock instanceof IHasBlockColor color){
                 itemColors.registerItemColorHandler(color::getColorItem, metaBlock);
+            }
+        }
+
+        for (MetaItem metaItem : this.metaItemRegisterEvent.getRegistry()) {
+            if (metaItem instanceof IHasItemColor color){
+                itemColors.registerItemColorHandler(color::getColorItem, metaItem);
             }
         }
     }

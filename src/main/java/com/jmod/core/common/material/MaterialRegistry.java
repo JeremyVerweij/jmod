@@ -10,8 +10,8 @@ public class MaterialRegistry {
         this.materials = new ArrayList<>();
     }
 
-    public void register(Material material){
-        this.materials.add(material);
+    public void register(int id, Material material){
+        this.materials.add(id, material);
     }
 
     public List<Material> toList(){

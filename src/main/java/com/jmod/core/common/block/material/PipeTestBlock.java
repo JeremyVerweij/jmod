@@ -1,11 +1,12 @@
-package com.jmod.core.common.block;
+package com.jmod.core.common.block.material;
 
 import com.jmod.JMod;
 import com.jmod.core.client.model.MetaPipeTestModel;
-import com.jmod.core.common.block.interfaces.IHasColor;
-import com.jmod.core.common.block.interfaces.IMaterialColor;
+import com.jmod.core.common.block.interfaces.IRequireTool;
 import com.jmod.core.common.block.interfaces.IWrenchable;
+import com.jmod.core.common.item.ToolType;
 import com.jmod.core.common.material.MaterialProperties;
+import com.jmod.core.common.utils.MiningTier;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyByte;
 import com.jmod.core.proxy.ClientProxy;
 import net.minecraft.block.material.Material;
@@ -31,7 +32,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("deprecation")
-public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable {
+public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable, IRequireTool {
     public static final IUnlistedProperty<Byte> CONNECTIONS = new UnlistedPropertyByte("connections", (byte) 0, Byte.MAX_VALUE);
     public static final IUnlistedProperty<Byte> RESTRICTIONS = new UnlistedPropertyByte("restrictions", (byte) 0, Byte.MAX_VALUE);
     private final static AxisAlignedBB PIPE_BOX = new AxisAlignedBB(4/16D, 4/16D, 4/16D, 12/16D, 12/16D, 12/16D);
@@ -39,7 +40,9 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable {
     private final int size;
 
     public PipeTestBlock(int size) {
-        super(JMod.MODID, "pipe_" + size, Material.IRON, CreativeTabs.BUILDING_BLOCKS);
+        super(JMod.MODID, "pipe_" + size, Material.ROCK, CreativeTabs.BUILDING_BLOCKS);
+
+        setHardness(5.0f);
 
         this.size = size;
     }
@@ -151,5 +154,15 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable {
     @Override
     public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockState blockState, @Nonnull IBlockAccess worldIn, @Nonnull BlockPos pos) {
         return PIPE_BOX;
+    }
+
+    @Override
+    public MiningTier toolLevel() {
+        return MiningTier.IRON;
+    }
+
+    @Override
+    public ToolType toolType() {
+        return ToolType.PICKAXE;
     }
 }

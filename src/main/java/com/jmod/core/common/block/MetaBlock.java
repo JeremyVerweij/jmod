@@ -32,6 +32,7 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nonnull;
+import java.util.Random;
 
 public abstract class MetaBlock extends SplitSideBlock {
     public final static byte BLOCK_SIZE = 16;
@@ -161,6 +162,21 @@ public abstract class MetaBlock extends SplitSideBlock {
         return new ItemStack(this.itemBlock, 1, id);
     }
 
+    @Override
+    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+
+    }
+
+    @Override
+    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+        return null;
+    }
+
+    @Override
+    protected ItemStack getSilkTouchDrop(IBlockState state) {
+        return null;
+    }
+
     public void registerItemModels(){
         for (int i = 0; i < this.getMaxId(); i++) {
             this.registerItemModel(i);
@@ -175,7 +191,7 @@ public abstract class MetaBlock extends SplitSideBlock {
         return new ItemMetaBlock(this).setRegistryName(this.getRegistryName());
     }
 
-    protected class ItemMetaBlock extends ItemBlock{
+    protected static class ItemMetaBlock extends ItemBlock{
         public ItemMetaBlock(MetaBlock block) {
             super(block);
             this.setHasSubtypes(true);
@@ -193,7 +209,7 @@ public abstract class MetaBlock extends SplitSideBlock {
 
         @Override
         public String getTranslationKey(@Nonnull ItemStack stack) {
-            return super.getTranslationKey(stack) + stack.getMetadata();
+            return super.getTranslationKey(stack) + "." + stack.getMetadata();
         }
 
         @Override
@@ -206,7 +222,7 @@ public abstract class MetaBlock extends SplitSideBlock {
         }
 
         protected boolean isItemInCreativeTab(int subId, CreativeTabs tab){
-            return MetaBlock.this.metaBasedCreativeTab == tab || tab == CreativeTabs.SEARCH;
+            return ((MetaBlock) this.block).metaBasedCreativeTab == tab || tab == CreativeTabs.SEARCH;
         }
     }
 }
