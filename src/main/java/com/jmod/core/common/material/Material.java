@@ -14,7 +14,8 @@ public class Material {
     private MiningTier miningTier;
     private MiningTier toolTier;
     private short maxAmps;
-    private short energyLoss;
+    private short energyLossWire;
+    private short energyLossCable;
     private int fluidThroughput;
     private int itemThroughput;
     private int meltingPoint;
@@ -22,6 +23,7 @@ public class Material {
     private int plasmaPoint;
     private int toolDurability;
     private float toolMiningSpeed;
+    private float armor;
     private float hardness;
 
     public Material(int color, String materialTranslationKey){
@@ -34,7 +36,8 @@ public class Material {
         this.miningTier = null;
         this.toolTier = null;
         this.maxAmps = 0;
-        this.energyLoss = 0;
+        this.energyLossWire = 0;
+        this.energyLossCable = 0;
         this.fluidThroughput = 0;
         this.itemThroughput = 0;
         this.meltingPoint = 0;
@@ -43,6 +46,7 @@ public class Material {
         this.toolDurability = 0;
         this.toolMiningSpeed = 0;
         this.hardness = 0;
+        this.armor = 0;
     }
 
     public int getColor() {
@@ -93,12 +97,20 @@ public class Material {
         this.maxAmps = maxAmps;
     }
 
-    public short getEnergyLoss() {
-        return energyLoss;
+    public short getEnergyLossWire() {
+        return energyLossWire;
     }
 
-    public void setEnergyLoss(short energyLoss) {
-        this.energyLoss = energyLoss;
+    public void setEnergyLossWire(short energyLossWire) {
+        this.energyLossWire = energyLossWire;
+    }
+
+    public short getEnergyLossCable() {
+        return energyLossCable;
+    }
+
+    public void setEnergyLossCable(short energyLossCable) {
+        this.energyLossCable = energyLossCable;
     }
 
     public int getFluidThroughput() {
@@ -179,5 +191,13 @@ public class Material {
 
     public void setPlasmaPoint(int plasmaPoint) {
         this.plasmaPoint = plasmaPoint;
+    }
+
+    public float getArmor() {
+        return armor;
+    }
+
+    public void setArmor(float armor) {
+        this.armor = armor;
     }
 }

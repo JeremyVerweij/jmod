@@ -6,6 +6,7 @@ import com.jmod.core.common.net.MetaIdsDeltaDeletePacket;
 import com.jmod.core.common.net.NetworkHandler;
 import com.jmod.core.proxy.ClientProxy;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyShort;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
@@ -38,6 +39,7 @@ public abstract class MetaBlock extends SplitSideBlock {
     public static final IUnlistedProperty<Short> ID = new UnlistedPropertyShort("id", (short) 0, Short.MAX_VALUE);
     private final short maxId;
     private final Item itemBlock;
+    private CreativeTabs metaBasedCreativeTab = null;
 
     public MetaBlock(String modId, String registryName, Material blockMaterialIn, short maxId) {
         super(blockMaterialIn);
@@ -45,8 +47,7 @@ public abstract class MetaBlock extends SplitSideBlock {
         this.setTranslationKey(modId + "." + registryName);
         this.maxId = maxId;
 
-        this.itemBlock = new ItemMetaBlock(this)
-                .setRegistryName(this.getRegistryName());
+        this.itemBlock = this.createItemBlock();
     }
 
     public MetaBlock(String modId, String registryName, Material blockMaterialIn, CreativeTabs creativeTab, short maxId){
@@ -81,6 +82,12 @@ public abstract class MetaBlock extends SplitSideBlock {
 
     public void setServerMetaData(BlockPos pos, int dimension, int meta){
         this.setServerMetaData(pos.getX(), pos.getY(), pos.getZ(), dimension, meta);
+    }
+
+    @Override
+    public Block setCreativeTab(CreativeTabs tab) {
+        this.metaBasedCreativeTab = tab;
+        return this;
     }
 
     @Override
@@ -164,7 +171,11 @@ public abstract class MetaBlock extends SplitSideBlock {
         ModelLoader.setCustomModelResourceLocation(this.itemBlock, id, new ModelResourceLocation(this.itemBlock.getRegistryName(), "inventory"));
     }
 
-    public static class ItemMetaBlock extends ItemBlock{
+    protected Item createItemBlock(){
+        return new ItemMetaBlock(this).setRegistryName(this.getRegistryName());
+    }
+
+    protected class ItemMetaBlock extends ItemBlock{
         public ItemMetaBlock(MetaBlock block) {
             super(block);
             this.setHasSubtypes(true);
@@ -187,11 +198,15 @@ public abstract class MetaBlock extends SplitSideBlock {
 
         @Override
         public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-            if (this.isInCreativeTab(tab)){
-                for (int i = 0; i < ((MetaBlock) this.block).getMaxId(); i++) {
+            for (int i = 0; i < ((MetaBlock) this.block).getMaxId(); i++) {
+                if(this.isItemInCreativeTab(i, tab)){
                     items.add(new ItemStack(this, 1, i));
                 }
             }
+        }
+
+        protected boolean isItemInCreativeTab(int subId, CreativeTabs tab){
+            return MetaBlock.this.metaBasedCreativeTab == tab || tab == CreativeTabs.SEARCH;
         }
     }
 }

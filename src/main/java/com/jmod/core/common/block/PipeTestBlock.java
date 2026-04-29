@@ -5,6 +5,7 @@ import com.jmod.core.client.model.MetaPipeTestModel;
 import com.jmod.core.common.block.interfaces.IHasColor;
 import com.jmod.core.common.block.interfaces.IMaterialColor;
 import com.jmod.core.common.block.interfaces.IWrenchable;
+import com.jmod.core.common.material.MaterialProperties;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyByte;
 import com.jmod.core.proxy.ClientProxy;
 import net.minecraft.block.material.Material;
@@ -41,6 +42,11 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable {
         super(JMod.MODID, "pipe_" + size, Material.IRON, CreativeTabs.BUILDING_BLOCKS);
 
         this.size = size;
+    }
+
+    @Override
+    protected boolean isEnabled(com.jmod.core.common.material.Material material) {
+        return material.getProperty(MaterialProperties.HAS_FLUID_PIPE);
     }
 
     @Override

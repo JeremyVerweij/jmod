@@ -7,6 +7,7 @@ import com.jmod.core.common.event.MetaBlockRegisterEvent;
 import com.jmod.core.common.event.material.MaterialRegistryEvent;
 import com.jmod.core.common.item.WrenchItem;
 import com.jmod.core.common.material.Material;
+import com.jmod.core.common.material.MaterialBuilder;
 import com.jmod.core.common.material.MaterialRegistry;
 import com.jmod.core.common.net.MetaIdsChunkPacket;
 import com.jmod.core.common.net.MetaIdsDeltaAddPacket;
@@ -62,10 +63,18 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onMaterialRegister(MaterialRegistryEvent event){
-        event.REGISTRY.register(new Material(0xFF00FF));
-        event.REGISTRY.register(new Material(0x0000FF));
-        event.REGISTRY.register(new Material(0xFF0000));
-        event.REGISTRY.register(new Material(0x00FF00));
+        event.REGISTRY.register(new MaterialBuilder(0xFF00FF, "")
+                .enableFluidPipe(1)
+                .build());
+        event.REGISTRY.register(new MaterialBuilder(0x0000FF, "")
+                .enableFluidPipe(1)
+                .build());
+        event.REGISTRY.register(new MaterialBuilder(0xFF0000, "")
+                .enableFluidPipe(1)
+                .build());
+        event.REGISTRY.register(new MaterialBuilder(0x00FF00, "")
+                .enableFluidPipe(1)
+                .build());
     }
 
     @SubscribeEvent
