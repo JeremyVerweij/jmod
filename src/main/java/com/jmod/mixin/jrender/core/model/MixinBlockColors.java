@@ -2,6 +2,7 @@ package com.jmod.mixin.jrender.core.model;
 
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceMap;
 import it.unimi.dsi.fastutil.objects.Reference2ReferenceOpenHashMap;
+import com.jmod.jrender.client.world.biome.BlockColorsExtended;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.color.BlockColors;

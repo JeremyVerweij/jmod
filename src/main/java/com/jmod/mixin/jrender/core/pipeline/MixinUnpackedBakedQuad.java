@@ -1,5 +1,6 @@
 package com.jmod.mixin.jrender.core.pipeline;
 
+import com.jmod.jrender.client.model.quad.properties.ModelQuadFlags;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import org.spongepowered.asm.mixin.Mixin;

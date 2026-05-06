@@ -1,5 +1,12 @@
 package com.jmod.mixin.jrender.core.pipeline;
 
+import com.jmod.jrender.JRender;
+import com.jmod.jrender.client.gl.attribute.BufferVertexFormat;
+import com.jmod.jrender.client.model.vertex.VertexDrain;
+import com.jmod.jrender.client.model.vertex.VertexSink;
+import com.jmod.jrender.client.model.vertex.buffer.VertexBufferView;
+import com.jmod.jrender.client.model.vertex.type.BlittableVertexType;
+import com.jmod.jrender.client.model.vertex.type.VertexType;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.vertex.VertexFormat;
@@ -41,10 +48,10 @@ public abstract class MixinBufferBuilder implements VertexBufferView, VertexDrai
             return j == 0 ? amount : amount + i - j;
         }
     }
-
+    
     @Override
     public boolean ensureBufferCapacity(int bytes) {
-        if(vertexFormat != null) {
+    	if(vertexFormat != null) {
             // Ensure that there is always space for 1 more vertex; see BufferBuilder.next()
             bytes += vertexFormat.getSize();
         }
@@ -98,7 +105,7 @@ public abstract class MixinBufferBuilder implements VertexBufferView, VertexDrai
         BlittableVertexType<T> blittable = factory.asBlittable();
 
         if (blittable != null && blittable.getBufferVertexFormat() == this.getVertexFormat())  {
-            return blittable.createBufferWriter(this, SodiumClientMod.isDirectMemoryAccessEnabled());
+            return blittable.createBufferWriter(this, JRender.isDirectMemoryAccessEnabled());
         }
 
         return factory.createFallbackWriter((BufferBuilder) (Object) this);

@@ -1,5 +1,6 @@
 package com.jmod.mixin.jrender.core.frustum;
 
+import com.jmod.jrender.client.util.math.FrustumExtended;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -9,8 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Frustum.class)
 public abstract class MixinFrustum implements FrustumExtended {
-    @Shadow
-    public abstract boolean isBoxInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
+    @Shadow public abstract boolean isBoxInFrustum(double minX, double minY, double minZ, double maxX, double maxY, double maxZ);
 
     @Override
     public boolean fastAabbTest(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {

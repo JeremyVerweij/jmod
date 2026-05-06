@@ -5,5 +5,8 @@
   "target": "@env(DEFAULT)",
   "mixins": [],
   "setSourceFile": true,
-  "minVersion": "0.8.7"
+  "minVersion": "0.8.7",
+  "client": [
+
+  ]
 }
