@@ -8,6 +8,7 @@ import com.jmod.core.common.block.interfaces.IWrenchable;
 import com.jmod.core.common.material.MaterialProperties;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyByte;
 import com.jmod.core.proxy.ClientProxy;
+import com.jmod.jmod.Reference;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
@@ -41,7 +42,7 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable {
     private final int size;
 
     public PipeTestBlock(int size) {
-        super(JMod.MODID, "pipe_" + size, Material.IRON, CreativeTabs.BUILDING_BLOCKS);
+        super(Reference.MOD_ID, "pipe_" + size, Material.IRON, CreativeTabs.BUILDING_BLOCKS);
 
         this.size = size;
     }

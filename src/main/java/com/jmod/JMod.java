@@ -1,6 +1,7 @@
 package com.jmod;
 
 import com.jmod.core.proxy.CommonProxy;
+import com.jmod.jmod.Reference;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -9,16 +10,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(
-	modid = JMod.MODID,
-	name = JMod.NAME,
-	version = JMod.VERSION
+	modid = Reference.MOD_ID,
+	name = Reference.MOD_NAME,
+	version = Reference.VERSION
 )
 public class JMod {
-	public static final String MODID = "jmod";
-	public static final String NAME = "J's Mod";
-	public static final String VERSION = "1.0";
-	
-	public static final Logger LOGGER = LogManager.getLogger(MODID);
+	public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
 
 	@Mod.Instance("jmod")
 	public static JMod instance;

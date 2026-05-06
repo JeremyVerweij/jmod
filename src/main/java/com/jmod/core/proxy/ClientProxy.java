@@ -4,6 +4,7 @@ import com.jmod.JMod;
 import com.jmod.core.client.ClientMetaIdHolder;
 import com.jmod.core.common.block.MetaBlock;
 import com.jmod.core.common.block.interfaces.IHasColor;
+import com.jmod.jmod.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -64,7 +65,7 @@ public class ClientProxy extends CommonProxy{
 
     @SubscribeEvent
     public void registerTextures(TextureStitchEvent.Pre event){
-        registerTexture(event, new ResourceLocation(JMod.MODID, "block/pipe"));
+        registerTexture(event, new ResourceLocation(Reference.MOD_ID, "block/pipe"));
     }
 
     public void registerTexture(TextureStitchEvent.Pre event, ResourceLocation loc){

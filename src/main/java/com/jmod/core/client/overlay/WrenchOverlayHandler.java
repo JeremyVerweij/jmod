@@ -1,9 +1,9 @@
 package com.jmod.core.client.overlay;
 
-import com.jmod.JMod;
 import com.jmod.core.common.block.interfaces.IWrenchable;
 import com.jmod.core.common.item.WrenchItem;
 import com.jmod.core.common.utils.random.RotationUtils;
+import com.jmod.jmod.Reference;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 
 import static com.jmod.core.common.utils.random.RotationUtils.rotateSide;
 
-@Mod.EventBusSubscriber(value = Side.CLIENT, modid = JMod.MODID)
+@Mod.EventBusSubscriber(value = Side.CLIENT, modid = Reference.MOD_ID)
 public class WrenchOverlayHandler {
 
     @SubscribeEvent

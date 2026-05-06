@@ -2,6 +2,7 @@ package com.jmod.core.common.item;
 
 import com.jmod.JMod;
 import com.jmod.core.common.block.interfaces.IWrenchable;
+import com.jmod.jmod.Reference;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,8 +20,8 @@ import static com.jmod.core.common.utils.random.RotationUtils.*;
 
 public class WrenchItem extends Item {
     public WrenchItem() {
-        this.setRegistryName(JMod.MODID, "wrench");
-        this.setTranslationKey(JMod.MODID + ".wrench");
+        this.setRegistryName(Reference.MOD_ID, "wrench");
+        this.setTranslationKey(Reference.MOD_ID + ".wrench");
     }
 
     @Override

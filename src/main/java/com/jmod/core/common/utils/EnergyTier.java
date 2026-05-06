@@ -1,20 +1,21 @@
 package com.jmod.core.common.utils;
 
 import com.jmod.JMod;
+import com.jmod.jmod.Reference;
 
 public enum EnergyTier {
-    ULV(JMod.MODID + ".energy.tier_ulv", 8),
-    LV(JMod.MODID + ".energy.tier_lv", 32),
-    MV(JMod.MODID + ".energy.tier_mv", 128),
-    HV(JMod.MODID + ".energy.tier_hv", 512),
-    EV(JMod.MODID + ".energy.tier_ev", 2_048),
-    IV(JMod.MODID + ".energy.tier_iv", 8_192),
-    LUV(JMod.MODID + ".energy.tier_luv", 32_768),
-    ZPM(JMod.MODID + ".energy.tier_zpm", 131_072),
-    UV(JMod.MODID + ".energy.tier_uv", 524_288),
-    UHV(JMod.MODID + ".energy.tier_uhv", 2_097_152),
-    UEV(JMod.MODID + ".energy.tier_uev", 8_388_608),
-    UIV(JMod.MODID + ".energy.tier_uiv", 33_554_432),
+    ULV(Reference.MOD_ID+ ".energy.tier_ulv", 8),
+    LV(Reference.MOD_ID + ".energy.tier_lv", 32),
+    MV(Reference.MOD_ID + ".energy.tier_mv", 128),
+    HV(Reference.MOD_ID + ".energy.tier_hv", 512),
+    EV(Reference.MOD_ID + ".energy.tier_ev", 2_048),
+    IV(Reference.MOD_ID + ".energy.tier_iv", 8_192),
+    LUV(Reference.MOD_ID + ".energy.tier_luv", 32_768),
+    ZPM(Reference.MOD_ID + ".energy.tier_zpm", 131_072),
+    UV(Reference.MOD_ID + ".energy.tier_uv", 524_288),
+    UHV(Reference.MOD_ID + ".energy.tier_uhv", 2_097_152),
+    UEV(Reference.MOD_ID + ".energy.tier_uev", 8_388_608),
+    UIV(Reference.MOD_ID + ".energy.tier_uiv", 33_554_432),
     ;
 
     private final String translationKeyShort;
