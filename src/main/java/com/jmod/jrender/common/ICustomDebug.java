@@ -1,4 +1,4 @@
-package com.jrender.common;
+package com.jmod.jrender.common;
 
 import net.minecraftforge.common.property.IExtendedBlockState;
 

@@ -1,9 +1,14 @@
 {
   "required": true,
-  "package": "com.jmod.core.mixin",
+  "package": "com.jmod.mixin",
   "compatibilityLevel": "JAVA_8",
   "target": "@env(DEFAULT)",
   "mixins": [],
   "setSourceFile": true,
-  "minVersion": "0.8.7"
+  "minVersion": "0.8.7",
+  "client": [
+    "jrender.block.BlockModelRendererMixin",
+    "jrender.block.RenderChunkMixin",
+    "jrender.gui.MixinGuiDebug"
+  ]
 }

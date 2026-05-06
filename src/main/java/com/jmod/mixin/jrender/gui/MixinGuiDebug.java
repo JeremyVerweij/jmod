@@ -1,6 +1,6 @@
-package com.jrender.mixin;
+package com.jmod.mixin.jrender.gui;
 
-import com.jrender.common.ICustomDebug;
+import com.jmod.jrender.common.ICustomDebug;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOverlayDebug;

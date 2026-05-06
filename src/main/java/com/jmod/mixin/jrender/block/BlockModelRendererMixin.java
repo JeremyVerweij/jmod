@@ -1,4 +1,4 @@
-package com.jrender.mixin;
+package com.jmod.mixin.jrender.block;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BlockModelRenderer;
@@ -99,7 +99,7 @@ public abstract class BlockModelRendererMixin {
                 int r = (k >> 16 & 255);
                 int g = (k >> 8 & 255);
                 int b = (k & 255);
-                int a = 255;
+                int a = 255 - (k >> 24 & 255);
                 if (bakedquad.shouldApplyDiffuseLighting()) {
                     float diffuse = LightUtil.diffuseLight(bakedquad.getFace());
                     r = (int) (r * diffuse);

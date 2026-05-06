@@ -1,7 +1,7 @@
 package com.jmod;
 
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
-import zone.rong.mixinbooter.ILateMixinLoader;
+import zone.rong.mixinbooter.IEarlyMixinLoader;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion("1.12.2")
 @IFMLLoadingPlugin.Name("JMod Core")
-public class JModLateLoader implements IFMLLoadingPlugin, ILateMixinLoader {
+public class JModEarlyLoader implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
     public List<String> getMixinConfigs() {
         // This MUST match the name of your json file in resources

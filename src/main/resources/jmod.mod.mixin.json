@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.jmod.core.mixin",
+  "package": "com.jmod.mixin",
   "compatibilityLevel": "JAVA_8",
   "target": "@env(DEFAULT)",
   "mixins": [],
