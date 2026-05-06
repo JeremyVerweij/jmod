@@ -7,6 +7,7 @@ import com.jmod.core.common.net.NetworkHandler;
 import com.jmod.core.proxy.ClientProxy;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyShort;
 import com.jmod.jrender.common.ICustomDebug;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.state.BlockStateContainer;
@@ -34,12 +35,13 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class MetaBlock extends SplitSideBlock implements ICustomDebug {
+public abstract class MetaBlock extends SplitSideBlock implements ICustomDebug {
     public final static byte BLOCK_SIZE = 16;
     public final static byte BLOCK_CENTER = BLOCK_SIZE / 2;
     public static final IUnlistedProperty<Short> ID = new UnlistedPropertyShort("id", (short) 0, Short.MAX_VALUE);
     private final short maxId;
     private final Item itemBlock;
+    private CreativeTabs metaBasedCreativeTab = null;
 
     public MetaBlock(String modId, String registryName, Material blockMaterialIn, short maxId) {
         super(blockMaterialIn);
@@ -47,14 +49,15 @@ public class MetaBlock extends SplitSideBlock implements ICustomDebug {
         this.setTranslationKey(modId + "." + registryName);
         this.maxId = maxId;
 
-        this.itemBlock = new ItemMetaBlock(this)
-                .setRegistryName(this.getRegistryName());
+        this.itemBlock = this.createItemBlock();
     }
 
     public MetaBlock(String modId, String registryName, Material blockMaterialIn, CreativeTabs creativeTab, short maxId){
         this(modId, registryName, blockMaterialIn, maxId);
         this.setCreativeTab(creativeTab);
     }
+
+    public abstract IBakedModel getModel(IBakedModel normalModel);
 
     public short getMaxId() {
         return maxId;
@@ -81,6 +84,12 @@ public class MetaBlock extends SplitSideBlock implements ICustomDebug {
 
     public void setServerMetaData(BlockPos pos, int dimension, int meta){
         this.setServerMetaData(pos.getX(), pos.getY(), pos.getZ(), dimension, meta);
+    }
+
+    @Override
+    public Block setCreativeTab(CreativeTabs tab) {
+        this.metaBasedCreativeTab = tab;
+        return this;
     }
 
     @Override
@@ -155,7 +164,7 @@ public class MetaBlock extends SplitSideBlock implements ICustomDebug {
     }
 
     public void registerItemModels(){
-        for (int i = 0; i < this.maxId; i++) {
+        for (int i = 0; i < this.getMaxId(); i++) {
             this.registerItemModel(i);
         }
     }
@@ -173,7 +182,7 @@ public class MetaBlock extends SplitSideBlock implements ICustomDebug {
         }
     }
 
-    public static class ItemMetaBlock extends ItemBlock{
+    protected class ItemMetaBlock extends ItemBlock{
         public ItemMetaBlock(MetaBlock block) {
             super(block);
             this.setHasSubtypes(true);
@@ -196,11 +205,15 @@ public class MetaBlock extends SplitSideBlock implements ICustomDebug {
 
         @Override
         public void getSubItems(@Nonnull CreativeTabs tab, @Nonnull NonNullList<ItemStack> items) {
-            if (this.isInCreativeTab(tab)){
-                for (int i = 0; i < ((MetaBlock) this.block).maxId; i++) {
+            for (int i = 0; i < ((MetaBlock) this.block).getMaxId(); i++) {
+                if(this.isItemInCreativeTab(i, tab)){
                     items.add(new ItemStack(this, 1, i));
                 }
             }
+        }
+
+        protected boolean isItemInCreativeTab(int subId, CreativeTabs tab){
+            return MetaBlock.this.metaBasedCreativeTab == tab || tab == CreativeTabs.SEARCH;
         }
     }
 }

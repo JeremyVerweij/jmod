@@ -46,12 +46,11 @@ public class RotationUtils {
     public static Vec2f getUV(EnumFacing side, float hitX, float hitY, float hitZ) {
         float u = 0, v = 0;
         switch (side) {
-            case NORTH: u = 1 - hitX; v = hitY; break;
-            case SOUTH: u = hitX;     v = hitY; break;
-            case WEST:  u = hitZ;     v = hitY; break;
-            case EAST:  u = 1 - hitZ; v = hitY; break;
-            case UP:    u = hitX;     v = hitZ; break;
-            case DOWN:  u = hitX;     v = 1 - hitZ; break;
+            case NORTH:     u = 1 - hitX; v = hitY; break;
+            case SOUTH:     u = hitX;     v = hitY; break;
+            case WEST:      u = hitZ;     v = hitY; break;
+            case EAST:      u = 1 - hitZ; v = hitY; break;
+            case UP, DOWN:  u = hitX;     v = hitZ; break;
         }
         return new Vec2f(u, v);
     }

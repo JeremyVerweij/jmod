@@ -2,9 +2,9 @@ package com.jmod.core.proxy;
 
 import com.jmod.JMod;
 import com.jmod.core.client.ClientMetaIdHolder;
-import com.jmod.core.client.model.MetaBlockModel;
-import com.jmod.core.client.model.MetaPipeTestModel;
 import com.jmod.core.common.block.MetaBlock;
+import com.jmod.core.common.block.interfaces.IHasColor;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
@@ -14,7 +14,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -40,30 +39,35 @@ public class ClientProxy extends CommonProxy{
 
     @SubscribeEvent
     public void onModelBake(ModelBakeEvent event) {
-        ModelResourceLocation cube_all = new ModelResourceLocation("minecraft:stone",
-                "normal");
-
-        ModelResourceLocation normal = new ModelResourceLocation(this.pipeBlock.getRegistryName().toString(),
-                "normal");
-
-        ModelResourceLocation inventory = new ModelResourceLocation(this.pipeBlock.getRegistryName().toString(),
-                "inventory");
-
+        ModelResourceLocation cube_all = new ModelResourceLocation("minecraft:stone", "normal");
         IBakedModel normalObject = event.getModelRegistry().getObject(cube_all);
-        MetaBlockModel customModel = new MetaPipeTestModel(normalObject, 6);
-        event.getModelRegistry().putObject(normal, customModel);
-        event.getModelRegistry().putObject(inventory, customModel);
+
+        for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
+            registerModel(event, metaBlock, metaBlock.getModel(normalObject));
+        }
+    }
+
+    public void registerModel(ModelBakeEvent event, Block block, IBakedModel model){
+        ModelResourceLocation normal = new ModelResourceLocation(block.getRegistryName().toString(), "normal");
+        ModelResourceLocation inventory = new ModelResourceLocation(block.getRegistryName().toString(), "inventory");
+
+        event.getModelRegistry().putObject(normal, model);
+        event.getModelRegistry().putObject(inventory, model);
     }
 
     @SubscribeEvent
     public void registerModels(ModelRegistryEvent event){
-        this.testBlock.registerItemModels();
-        this.pipeBlock.registerItemModels();
+        for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
+            metaBlock.registerItemModels();
+        }
     }
 
     @SubscribeEvent
     public void registerTextures(TextureStitchEvent.Pre event){
-        ResourceLocation loc = new ResourceLocation(JMod.MODID, "custom/pipe_overlay");
+        registerTexture(event, new ResourceLocation(JMod.MODID, "block/pipe"));
+    }
+
+    public void registerTexture(TextureStitchEvent.Pre event, ResourceLocation loc){
         event.getMap().registerSprite(loc);
     }
 
@@ -82,41 +86,20 @@ public class ClientProxy extends CommonProxy{
 
     private void registerBlockColors(){
         BlockColors blockColors = Minecraft.getMinecraft().getBlockColors();
-
-        blockColors.registerBlockColorHandler((state, world, pos, tintIndex) -> {
-            if (world != null && pos != null && state instanceof IExtendedBlockState && tintIndex == 10) {
-                IExtendedBlockState extendedState = (IExtendedBlockState) state;
-
-                Short id = extendedState.getValue(MetaBlock.ID);
-
-                if (id != null){
-                    switch (id){
-                        case 1: return 0xFF0000;
-                        case 2: return 0x00FF00;
-                        case 3: return 0x0000FF;
-                        default: return 0xFFFFFF;
-                    }
-                }
+        for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
+            if (metaBlock instanceof IHasColor color){
+                blockColors.registerBlockColorHandler(color::getColorBlock, metaBlock);
             }
-
-            return 0xFFFFFF;
-        }, this.testBlock, this.pipeBlock);
+        }
     }
 
     private void registerItemColors(){
         ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 
-        itemColors.registerItemColorHandler(((stack, tintIndex) -> {
-            if (tintIndex == 10){
-                switch (stack.getMetadata()){
-                    case 1: return 0xFF0000;
-                    case 2: return 0x00FF00;
-                    case 3: return 0x0000FF;
-                    default: return 0xFFFFFF;
-                }
+        for (MetaBlock metaBlock : this.metaBlockRegisterEvent.getRegistry()) {
+            if (metaBlock instanceof IHasColor color){
+                itemColors.registerItemColorHandler(color::getColorItem, metaBlock);
             }
-
-            return 0xFFFFFF;
-        }), this.testBlock, this.pipeBlock);
+        }
     }
 }

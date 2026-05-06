@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
+import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import org.jspecify.annotations.NonNull;
 import org.lwjgl.util.vector.Vector3f;
@@ -16,14 +17,29 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jmod.core.client.utils.ModelUtils.resizeUVForLargerTexture;
 import static com.jmod.core.common.block.MetaBlock.BLOCK_SIZE;
 import static com.jmod.core.common.block.MetaBlock.BLOCK_CENTER;
 
 public class MetaPipeTestModel extends MetaBlockModel{
     private static final int ITEM_VARIANT = (1 << EnumFacing.EAST.getIndex()) | (1 << EnumFacing.WEST.getIndex());
+    private static final float ATLAS_SIZE = 32f;
+    private static final float[] ARROW_UV = new float[]{0, 0, 12, 12};
+    private static final float[] CENTER_UV = new float[]{20, 0, 32, 12};
+    private static final float[] ARM_END_12_UV = new float[]{20, 12, 32, 24};
+    private static final float[] ARM_END_10_UV = new float[]{10, 22, 20, 32};
+    private static final float[] ARM_END_8_UV = new float[]{20, 24, 28, 32};
+    private static final float[] ARM_END_6_UV = new float[]{14, 16, 20, 22};
+    private static final float[] ARM_END_4_UV = new float[]{16, 12, 20, 16};
+    private static final float[] ARM_12_UV = new float[]{0, 18, 12, 20};
+    private static final float[] ARM_10_UV = new float[]{0, 20, 10, 23};
+    private static final float[] ARM_8_UV = new float[]{0, 23, 8, 27};
+    private static final float[] ARM_6_UV = new float[]{0, 27, 6, 32};
+    private static final float[] ARM_4_UV = new float[]{0, 12, 4, 18};
 
     private final byte pipeStart;
     private final byte pipeEnd;
+    private final byte pipeSize;
 
     private final Vector3f[] from;
     private final Vector3f[] to;
@@ -33,12 +49,40 @@ public class MetaPipeTestModel extends MetaBlockModel{
     private final BakedQuad[] sideOnlyPartialQuads;
     private final List<BakedQuad>[] overlayQuads;
 
+    private static float[] getArmUVFromPipeSize(int pipeSize){
+        return switch (pipeSize){
+            case 12 -> ARM_12_UV;
+            case 10 -> ARM_10_UV;
+            case 8 -> ARM_8_UV;
+            case 6 -> ARM_6_UV;
+            default -> ARM_4_UV;
+        };
+    }
+
+    private static float[] getEndArmUVFromPipeSize(int pipeSize){
+        return switch (pipeSize){
+            case 12 -> ARM_END_12_UV;
+            case 10 -> ARM_END_10_UV;
+            case 8 -> ARM_END_8_UV;
+            case 6 -> ARM_END_6_UV;
+            default -> ARM_END_4_UV;
+        };
+    }
+
+    private static float[] getCenterUVFromPipeSize(int pipeSize){
+        int halfSize = pipeSize >> 1;
+        int offset = 7 - halfSize;
+
+        return new float[]{CENTER_UV[0] + offset, CENTER_UV[1] + offset, CENTER_UV[2] - offset, CENTER_UV[3] - offset};
+    }
+
     //NORTH: -Z, SOUTH: +Z, WEST: -X, EAST: +X
     @SuppressWarnings("unchecked")
     public MetaPipeTestModel(IBakedModel baseModel, int pipeSize) {
         super(baseModel, 64);
 
         byte pipeSizeOffset = (byte) (pipeSize / 2);
+        this.pipeSize = (byte) pipeSize;
         this.pipeStart = (byte) (BLOCK_CENTER - pipeSizeOffset);
         this.pipeEnd = (byte) (BLOCK_CENTER + pipeSizeOffset);
 
@@ -64,7 +108,7 @@ public class MetaPipeTestModel extends MetaBlockModel{
     }
 
     @Override
-    protected List<BakedQuad> getQuadsFromExtendedState(@NonNull IExtendedBlockState state, @org.jspecify.annotations.Nullable EnumFacing side, long rand) {
+    protected List<BakedQuad> getQuadsFromExtendedState(@NonNull IExtendedBlockState state, @Nullable EnumFacing side, long rand) {
         List<BakedQuad> bakedQuads = new ArrayList<>(super.getQuadsFromExtendedState(state, side, rand));
 
         int restrictions = getRestrictionsFromState(state);
@@ -171,15 +215,107 @@ public class MetaPipeTestModel extends MetaBlockModel{
     }
 
     private BakedQuad createOverlayQuad(@Nonnull EnumFacing side, @Nonnull EnumFacing positionSide, Vector3f from, Vector3f to){
-        return ModelUtils.createQuad(positionSide, Minecraft.getMinecraft().getTextureMapBlocks()
-                .getAtlasSprite("jmod:custom/pipe_overlay"), side.getIndex(), from, to);
+        float offset = 0.01f;
+        Vector3f fromOverlay = new Vector3f(from.x - offset, from.y - offset, from.z - offset);
+        Vector3f toOverlay = new Vector3f(to.x + offset, to.y + offset, to.z + offset);
+
+        resizeOverlay(fromOverlay, toOverlay, side, positionSide);
+
+        BakedQuad quad = ModelUtils.createQuad(positionSide, Minecraft.getMinecraft().getTextureMapBlocks()
+                        .getAtlasSprite("jmod:block/pipe"), side.getIndex(), fromOverlay, toOverlay,
+                resizeUVForLargerTexture(ATLAS_SIZE, ARROW_UV));
+
+        return rotateQuadUV(quad, side, positionSide);
+    }
+
+    private void resizeOverlay(Vector3f from, Vector3f to, EnumFacing side, EnumFacing positionSide){
+        float sizeOffset = 1f;
+        float fromX = from.x, fromY = from.y, fromZ = from.z;
+        float toX = to.x, toY = to.y, toZ = to.z;
+
+        if (positionSide == EnumFacing.NORTH || positionSide == EnumFacing.SOUTH){
+            if (side == EnumFacing.UP || side == EnumFacing.DOWN){
+                from.x = (float) Math.floor((fromX + toX) / 2f) - sizeOffset;
+                to.x = (float) Math.floor((fromX + toX) / 2f) + sizeOffset;
+            }else{
+                from.y = (float) Math.floor((fromY + toY) / 2f) - sizeOffset;
+                to.y = (float) Math.floor((fromY + toY) / 2f) + sizeOffset;
+            }
+        } else if (positionSide == EnumFacing.EAST || positionSide == EnumFacing.WEST){
+            if (side == EnumFacing.UP || side == EnumFacing.DOWN){
+                from.z = (float) Math.floor((fromZ + toZ) / 2f) - sizeOffset;
+                to.z = (float) Math.floor((fromZ + toZ) / 2f) + sizeOffset;
+            }else{
+                from.y = (float) Math.floor((fromY + toY) / 2f) - sizeOffset;
+                to.y = (float) Math.floor((fromY + toY) / 2f) + sizeOffset;
+            }
+        } else{
+            if (side == EnumFacing.NORTH || side == EnumFacing.SOUTH){
+                from.x = (float) Math.floor((fromX + toX) / 2f) - sizeOffset;
+                to.x = (float) Math.floor((fromX + toX) / 2f) + sizeOffset;
+            }else{
+                from.z = (float) Math.floor((fromZ + toZ) / 2f) - sizeOffset;
+                to.z = (float) Math.floor((fromZ + toZ) / 2f) + sizeOffset;
+            }
+        }
+
+        switch (side) {
+            case DOWN -> {
+                to.y = sizeOffset * 2;
+            }
+            case UP -> {
+                from.y = toY - (sizeOffset * 2);
+            }
+            case NORTH -> {
+                to.z = sizeOffset * 2;
+            }
+            case SOUTH -> {
+                from.z = toZ - (sizeOffset * 2);
+            }
+            case WEST -> {
+                to.x = sizeOffset * 2;
+            }
+            case EAST -> {
+                from.x = toX - (sizeOffset * 2);
+            }
+        }
+    }
+
+    private BakedQuad rotateQuadUV(BakedQuad quad, EnumFacing side, EnumFacing positionSide){
+        UnpackedBakedQuad.Builder builder = new UnpackedBakedQuad.Builder(quad.getFormat());
+        UVTransformer transformer = new UVTransformer(builder, getRotation(side, positionSide));
+
+        quad.pipe(transformer);
+        transformer.apply();
+
+        return builder.build();
+    }
+
+    private UVTransformer.UVMapper getRotation(EnumFacing side, EnumFacing positionSide) {
+        if (side == EnumFacing.DOWN ||
+                (positionSide == EnumFacing.DOWN && side == EnumFacing.NORTH) ||
+                (positionSide == EnumFacing.UP && side == EnumFacing.SOUTH)) {
+            return UVTransformer.UVMapper.create180DegreeRotation();
+        } else if ((side == EnumFacing.EAST && positionSide != EnumFacing.NORTH) ||
+                (side == EnumFacing.WEST && positionSide == EnumFacing.NORTH) ||
+                (side == EnumFacing.NORTH && positionSide == EnumFacing.EAST) ||
+                (side == EnumFacing.SOUTH && positionSide == EnumFacing.WEST)) {
+            return UVTransformer.UVMapper.create90DegreeRotation();
+        } else if ((side == EnumFacing.WEST || side == EnumFacing.EAST||
+                (side == EnumFacing.NORTH && positionSide == EnumFacing.WEST) ||
+                (side == EnumFacing.SOUTH && positionSide == EnumFacing.EAST))) {
+            return UVTransformer.UVMapper.create270DegreeRotation();
+        }
+
+
+        return UVTransformer.UVMapper.create0DegreeRotation();
     }
 
     private @Nonnull BakedQuad[] createCenterPartialQuads(){
         BakedQuad[] quads = new BakedQuad[6];
 
         for (int i = 0; i < 6; i++) {
-            quads[i] = createQuad(new Vector3f(pipeStart, pipeStart, pipeStart),  new Vector3f(pipeEnd, pipeEnd, pipeEnd), EnumFacing.byIndex(i), 10);
+            quads[i] = createCenterPipeQuad(new Vector3f(pipeStart, pipeStart, pipeStart),  new Vector3f(pipeEnd, pipeEnd, pipeEnd), EnumFacing.byIndex(i));
         }
 
         return quads;
@@ -194,17 +330,32 @@ public class MetaPipeTestModel extends MetaBlockModel{
 
         for (int i = 0; i < 6; i++) {
             if (EnumFacing.byIndex(i) == side){
-                this.sideOnlyPartialQuads[side.getIndex()] = createQuad(from, to, EnumFacing.byIndex(i), 10);
+                this.sideOnlyPartialQuads[side.getIndex()] = createSidedPipeQuad(from, to, EnumFacing.byIndex(i));
             } else if (EnumFacing.byIndex(i) != side.getOpposite()) {
-                quads.add(createQuad(from, to, EnumFacing.byIndex(i), 10));
+                quads.add(createArmPipeQuad(from, to, side, EnumFacing.byIndex(i)));
             }
         }
 
         this.partialQuads[side.getIndex()] = quads;
     }
 
-    private @Nonnull BakedQuad createQuad(@Nonnull Vector3f from, @Nonnull Vector3f to, @Nonnull EnumFacing side, int tintIndex){
+    private @Nonnull BakedQuad createCenterPipeQuad(@Nonnull Vector3f from, @Nonnull Vector3f to, @Nonnull EnumFacing side){
         return ModelUtils.createQuad(side, Minecraft.getMinecraft().getTextureMapBlocks()
-                .getAtlasSprite("minecraft:blocks/iron_block"), tintIndex, from, to);
+                        .getAtlasSprite("jmod:block/pipe"), 10, from, to,
+                resizeUVForLargerTexture(ATLAS_SIZE, getCenterUVFromPipeSize(this.pipeSize)));
+    }
+
+    private @Nonnull BakedQuad createSidedPipeQuad(@Nonnull Vector3f from, @Nonnull Vector3f to, @Nonnull EnumFacing side){
+        return ModelUtils.createQuad(side, Minecraft.getMinecraft().getTextureMapBlocks()
+                .getAtlasSprite("jmod:block/pipe"), 10, from, to,
+                resizeUVForLargerTexture(ATLAS_SIZE, getEndArmUVFromPipeSize(this.pipeSize)));
+    }
+
+    private @Nonnull BakedQuad createArmPipeQuad(@Nonnull Vector3f from, @Nonnull Vector3f to, @Nonnull EnumFacing side, EnumFacing positionSide){
+        BakedQuad quad = ModelUtils.createQuad(positionSide, Minecraft.getMinecraft().getTextureMapBlocks()
+                        .getAtlasSprite("jmod:block/pipe"), 10, from, to,
+                resizeUVForLargerTexture(ATLAS_SIZE, getArmUVFromPipeSize(this.pipeSize)));
+
+        return rotateQuadUV(quad, side, positionSide);
     }
 }
