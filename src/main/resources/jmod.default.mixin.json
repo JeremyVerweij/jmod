@@ -13,7 +13,15 @@
   "setSourceFile": true,
   "minVersion": "0.8.7",
   "mixins": [
-    "jrender.core.MixinBlockLiquid"
+    "jrender.core.MixinBlockLiquid",
+    "jrender.common.MixinAnvilChunkLoader",
+    "jrender.common.MixinChunk",
+    "jrender.common.MixinChunk$Sponge",
+    "jrender.common.MixinChunk$Vanilla",
+    "jrender.common.MixinChunkProviderServer",
+    "jrender.common.MixinExtendedBlockStorage",
+    "jrender.common.MixinSPacketChunkData",
+    "jrender.common.MixinWorld"
   ],
   "client": [
     "jrender.core.MixinCrashReportSection",
@@ -53,6 +61,7 @@
     "jrender.features.sky.MixinWorldRenderer",
     "jrender.features.world_ticking.MixinClientWorld",
     "jrender.core.model.MixinItemColors",
-    "jrender.features.block.MixinBlockModelRenderer"
+    "jrender.features.block.MixinBlockModelRenderer",
+    "jrender.client.MixinMinecraft"
   ]
 }
