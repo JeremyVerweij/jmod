@@ -7,6 +7,9 @@
   "setSourceFile": true,
   "minVersion": "0.8.7",
   "client": [
+
+  ],
+  "disabled": [
     "jrender.block.BlockModelRendererMixin",
     "jrender.block.RenderChunkMixin",
     "jrender.gui.MixinGuiDebug"
