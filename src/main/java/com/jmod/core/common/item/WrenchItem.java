@@ -32,17 +32,17 @@ public class WrenchItem extends Item {
             Vec2f UV = getUV(facing, hitX, hitY, hitZ);
 
             if (isInBoundingBox2D(UV, 0.2, 0.2, 0.8, 0.8)){
-                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos.getX(), pos.getY(), pos.getZ(), facing);
+                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos, facing);
             } else if (isInBoundingBox2D(UV, 0.2, 0.8, 0.8, 1.0)){
-                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos.getX(), pos.getY(), pos.getZ(), rotateSideNoCorrection(facing, EnumSide2D.UP));
+                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.UP));
             } else if (isInBoundingBox2D(UV, 0.2, 0.0, 0.8, 0.2)){
-                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos.getX(), pos.getY(), pos.getZ(), rotateSideNoCorrection(facing, EnumSide2D.BOTTOM));
+                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.BOTTOM));
             } else if (isInBoundingBox2D(UV, 0.0, 0.2, 0.2, 0.8)){
-                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos.getX(), pos.getY(), pos.getZ(), rotateSideNoCorrection(facing, EnumSide2D.LEFT));
+                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.LEFT));
             } else if (isInBoundingBox2D(UV, 0.8, 0.2, 1.0, 0.8)){
-                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos.getX(), pos.getY(), pos.getZ(), rotateSideNoCorrection(facing, EnumSide2D.RIGHT));
+                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.RIGHT));
             } else{
-                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos.getX(), pos.getY(), pos.getZ(), facing.getOpposite());
+                return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos, facing.getOpposite());
             }
         }
 

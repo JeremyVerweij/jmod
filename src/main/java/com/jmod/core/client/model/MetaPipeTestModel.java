@@ -47,7 +47,7 @@ public class MetaPipeTestModel extends MetaBlockModel{
     private final List<BakedQuad>[] partialQuads;
     private final BakedQuad[] centerPartialQuads;
     private final BakedQuad[] sideOnlyPartialQuads;
-    private final List<BakedQuad>[] overlayQuads;
+    private final List<BakedQuad> overlayQuads;
 
     private static float[] getArmUVFromPipeSize(int pipeSize){
         return switch (pipeSize){
@@ -108,24 +108,8 @@ public class MetaPipeTestModel extends MetaBlockModel{
     }
 
     @Override
-    protected List<BakedQuad> getQuadsFromExtendedState(@NonNull IExtendedBlockState state, @Nullable EnumFacing side, long rand) {
-        List<BakedQuad> bakedQuads = new ArrayList<>(super.getQuadsFromExtendedState(state, side, rand));
-
-        int restrictions = getRestrictionsFromState(state);
-
-        for (int i = 0; i < EnumFacing.values().length; i++) {
-            int index = 1 << i;
-            if ((restrictions & index) > 0){
-                bakedQuads.addAll(this.overlayQuads[i]);
-            }
-        }
-
-        return bakedQuads;
-    }
-
-    @Override
     public List<BakedQuad> getQuadsForVariant(int variant, @Nullable EnumFacing side) {
-        List<BakedQuad> list = new ArrayList<>();
+        List<BakedQuad> list = new ArrayList<>(this.overlayQuads);
 
         if (side == null){
             for (int i = 0; i < 6; i++) {
@@ -160,15 +144,6 @@ public class MetaPipeTestModel extends MetaBlockModel{
         return ITEM_VARIANT;
     }
 
-    private int getRestrictionsFromState(@Nonnull IExtendedBlockState state) {
-        Byte id = state.getValue(PipeTestBlock.RESTRICTIONS);
-
-        if (id != null)
-            return id &0b111111;
-
-        return 0;
-    }
-
     private void generateFromAndTo(){
         int index = 0;
 
@@ -191,9 +166,8 @@ public class MetaPipeTestModel extends MetaBlockModel{
         this.to[index++] = new Vector3f(BLOCK_SIZE, pipeEnd, pipeEnd);
     }
 
-    private List<BakedQuad>[] createOverlayQuads() {
-        //noinspection unchecked
-        List<BakedQuad>[] bakedQuads = (List<BakedQuad>[]) new ArrayList[EnumFacing.values().length];
+    private List<BakedQuad> createOverlayQuads() {
+        List<BakedQuad> bakedQuads = new ArrayList<>();
 
         for (int i = 0; i < EnumFacing.values().length; i++) {
             List<BakedQuad> quads = new ArrayList<>();
@@ -208,7 +182,7 @@ public class MetaPipeTestModel extends MetaBlockModel{
                 quads.add(createOverlayQuad(side, EnumFacing.byIndex(j), from, to));
             }
 
-            bakedQuads[i] = quads;
+            bakedQuads.addAll(quads);
         }
 
         return bakedQuads;

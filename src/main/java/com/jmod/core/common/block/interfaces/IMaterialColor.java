@@ -16,7 +16,7 @@ public interface IMaterialColor extends IHasColor{
 
         if (id != null && tintIndex == 10) return getColor(id);
 
-        return 0xFFFFFFFF;
+        return getColorBlockFallback(extendedState, world, pos, tintIndex);
     }
 
     default int getColorItem(ItemStack stack, int tintIndex){
@@ -29,5 +29,9 @@ public interface IMaterialColor extends IHasColor{
         if (id >= JMod.proxy.getMaterialRegistry().size()) return 0xFFFFFFFF;
 
         return JMod.proxy.getMaterialRegistry().toList().get(id).getColor();
+    }
+
+    default int getColorBlockFallback(IExtendedBlockState state, IBlockAccess world, BlockPos pos, int tintIndex){
+        return 0xFFFFFF;
     }
 }

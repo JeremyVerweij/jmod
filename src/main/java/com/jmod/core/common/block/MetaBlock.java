@@ -182,6 +182,10 @@ public abstract class MetaBlock extends SplitSideBlock implements ICustomDebug {
         }
     }
 
+    protected Item createItemBlock(){
+        return new ItemMetaBlock(this).setRegistryName(this.getRegistryName());
+    }
+
     protected class ItemMetaBlock extends ItemBlock{
         public ItemMetaBlock(MetaBlock block) {
             super(block);

@@ -91,19 +91,27 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable {
     }
 
     @Override
-    public EnumActionResult onWrenchUse(IBlockState state, World world, EntityPlayer player, EnumHand hand, int x, int y, int z, EnumFacing side) {
+    public EnumActionResult onWrenchUse(IBlockState state, World world, EntityPlayer player, EnumHand hand, BlockPos pos, EnumFacing side) {
         if (!world.isRemote){
-            int meta = this.getServerMetaData(x, y, z, world.provider.getDimension());
+            int meta = this.getServerMetaData(pos, world.provider.getDimension());
 
             if (player.isSneaking()){
-                meta ^= (1 << (side.getIndex() + 22));
-                meta |= (1 << (side.getIndex() + 16));
+                meta ^= (1 << (side.getIndex() + 22)); // add/remove restriction
+                meta |= (1 << (side.getIndex() + 16)); // add connection
             }else{
-                meta ^= (1 << (side.getIndex() + 16));
-                meta &= ~(1 << (side.getIndex() + 22));
+                meta ^= (1 << (side.getIndex() + 16)); // add/remove connection
+                meta &= ~(1 << (side.getIndex() + 22)); // remove restriction
             }
 
-            this.setServerMetaData(x, y, z, world.provider.getDimension(), meta);
+            BlockPos neighbourPos = pos.offset(side);
+            IBlockState neighbour = world.getBlockState(neighbourPos);
+            if (neighbour.getBlock() instanceof PipeTestBlock && (meta & (1 << (side.getIndex() + 16))) > 0){
+                int neighbourMeta = this.getServerMetaData(neighbourPos, world.provider.getDimension());
+                neighbourMeta |= (1 << (side.getOpposite().getIndex() + 16));
+                this.setServerMetaData(neighbourPos, world.provider.getDimension(), neighbourMeta);
+            }
+
+            this.setServerMetaData(pos, world.provider.getDimension(), meta);
         }
 
         return EnumActionResult.SUCCESS;
@@ -153,6 +161,26 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable {
     @Override
     public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockState blockState, @Nonnull IBlockAccess worldIn, @Nonnull BlockPos pos) {
         return PIPE_BOX;
+    }
+
+    @Override
+    public int getColorBlockFallback(IExtendedBlockState state, IBlockAccess world, BlockPos pos, int tintIndex) {
+        if (tintIndex < EnumFacing.VALUES.length){
+            int restrictions = getRestrictionsFromState(state);
+
+            return (restrictions & (1 << tintIndex)) > 0 ? 0x00FFFFFF : 0xFFFFFFFF;
+        }
+
+        return super.getColorBlockFallback(state, world, pos, tintIndex);
+    }
+
+    private int getRestrictionsFromState(@Nonnull IExtendedBlockState state) {
+        Byte id = state.getValue(PipeTestBlock.RESTRICTIONS);
+
+        if (id != null)
+            return id &0b111111;
+
+        return 0;
     }
 
     @Override

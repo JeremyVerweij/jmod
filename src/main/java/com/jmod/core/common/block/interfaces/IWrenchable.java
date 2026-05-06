@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface IWrenchable {
-    EnumActionResult onWrenchUse(IBlockState state, World world, EntityPlayer player, EnumHand hand, int x, int y, int z, EnumFacing side);
+    EnumActionResult onWrenchUse(IBlockState state, World world, EntityPlayer player, EnumHand hand, BlockPos pos, EnumFacing side);
 
     byte getSidesConnectForOverlay(World world, BlockPos pos);
 }
