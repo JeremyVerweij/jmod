@@ -7,6 +7,7 @@ import com.jmod.core.common.utils.MiningTier;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -16,6 +17,7 @@ import org.jspecify.annotations.Nullable;
 import java.util.List;
 
 public abstract class MetaMaterialToolItem extends MetaMaterialItem{
+    public static final String DAMAGE_NBT_TAG = "damage";
     private final ToolType toolType;
     
     public MetaMaterialToolItem(String modId, String registryName, ToolType toolType) {
@@ -25,39 +27,20 @@ public abstract class MetaMaterialToolItem extends MetaMaterialItem{
 
     @Override
     public void addInformation(ItemStack stack, @Nullable World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-        tooltip.add((getMaxDamage(stack) - getDamageFromItemStack(stack)) + "/" + getMaxDamage(stack));
+        tooltip.add((getMaxDamageFromItemStack(stack) - getDamageFromItemStack(stack)) + "/"
+                + getMaxDamageFromItemStack(stack));
 
         super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
-    public int getDamage(ItemStack stack) {
-        return this.getDamageFromItemStack(stack);
-    }
-
-    @Override
-    public boolean isDamageable() {
-        return true;
-    }
-
-    @Override
-    public boolean isDamaged(ItemStack stack) {
-        return this.getDamageFromItemStack(stack) > 0;
-    }
-
-    @Override
-    public int getMaxDamage(ItemStack stack) {
-        return this.getMaxDamageFromItemStack(stack);
-    }
-
-    @Override
-    public void setDamage(ItemStack stack, int damage) {
-        this.setDamageToItemStack(stack, damage);
-    }
-
-    @Override
     public boolean showDurabilityBar(ItemStack stack) {
         return true;
+    }
+
+    @Override
+    public double getDurabilityForDisplay(ItemStack stack) {
+        return (double)getDamageFromItemStack(stack) / (double)getMaxDamageFromItemStack(stack);
     }
 
     @Override
@@ -71,8 +54,9 @@ public abstract class MetaMaterialToolItem extends MetaMaterialItem{
 
     @Override
     public boolean onBlockDestroyed(ItemStack stack, World worldIn, IBlockState state, BlockPos pos, EntityLivingBase entityLiving) {
-        if (!worldIn.isRemote && (double)state.getBlockHardness(worldIn, pos) != (double)0.0F) {
-            stack.damageItem(1, entityLiving);
+        if ((entityLiving instanceof EntityPlayer player) && !player.isCreative() &&
+                !worldIn.isRemote && (double)state.getBlockHardness(worldIn, pos) != (double)0.0F) {
+            damageItemStack(stack, 1);
         }
 
         return true;
@@ -91,27 +75,38 @@ public abstract class MetaMaterialToolItem extends MetaMaterialItem{
 
     @Override
     public boolean hitEntity(ItemStack stack, EntityLivingBase target, EntityLivingBase attacker) {
-        stack.damageItem(2, attacker);
+        if ((attacker instanceof EntityPlayer player) && !player.isCreative()) {
+            damageItemStack(stack, 2);
+        }
+
         return true;
     }
 
     private void createTag(ItemStack stack){
         stack.setTagCompound(new NBTTagCompound());
-        stack.getTagCompound().setInteger("damage", 0);
+        stack.getTagCompound().setInteger(DAMAGE_NBT_TAG, 0);
     }
 
     public int getDamageFromItemStack(ItemStack stack){
         if (!stack.hasTagCompound())
             createTag(stack);
 
-        return stack.getTagCompound().getInteger("damage");
+        return stack.getTagCompound().getInteger(DAMAGE_NBT_TAG);
     }
 
     public void setDamageToItemStack(ItemStack stack, int damage){
         if (!stack.hasTagCompound())
             createTag(stack);
 
-        stack.getTagCompound().setInteger("damage", damage);
+        stack.getTagCompound().setInteger(DAMAGE_NBT_TAG, damage);
+    }
+
+    public void damageItemStack(ItemStack stack, int damage){
+        setDamageToItemStack(stack, getDamageFromItemStack(stack) + damage);
+
+        if (getDamageFromItemStack(stack) > getMaxDamageFromItemStack(stack)){
+            stack.shrink(1);
+        }
     }
 
     public int getMaxDamageFromItemStack(ItemStack stack){

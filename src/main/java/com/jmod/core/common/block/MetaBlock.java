@@ -207,7 +207,7 @@ public abstract class MetaBlock extends SplitSideBlock implements ICustomDebug {
         return new ItemMetaBlock(this).setRegistryName(this.getRegistryName());
     }
 
-    protected class ItemMetaBlock extends ItemBlock{
+    protected static class ItemMetaBlock extends ItemBlock{
         public ItemMetaBlock(MetaBlock block) {
             super(block);
             this.setHasSubtypes(true);

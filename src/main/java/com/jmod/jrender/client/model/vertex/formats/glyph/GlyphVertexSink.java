@@ -1,11 +1,11 @@
 package com.jmod.jrender.client.model.vertex.formats.glyph;
 
 import com.jmod.jrender.client.model.vertex.VertexSink;
-import com.jmod.jrender.client.util.math.Matrix4fExtended;
-import com.jmod.jrender.client.util.math.MatrixUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
 import org.joml.Matrix4f;
+
+import static com.jmod.jrender.client.util.math.MatrixUtil.*;
 
 public interface GlyphVertexSink extends VertexSink {
     VertexFormat VERTEX_FORMAT = DefaultVertexFormats.POSITION_TEX_LMAP_COLOR;
@@ -17,11 +17,9 @@ public interface GlyphVertexSink extends VertexSink {
      * @see GlyphVertexSink#writeGlyph(float, float, float, int, float, float, int)
      */
     default void writeGlyph(Matrix4f matrix, float x, float y, float z, int color, float u, float v, int light) {
-        Matrix4fExtended matrixExt = MatrixUtil.getExtendedMatrix(matrix);
-
-        float x2 = matrixExt.transformVecX(x, y, z);
-        float y2 = matrixExt.transformVecY(x, y, z);
-        float z2 = matrixExt.transformVecZ(x, y, z);
+        float x2 = transformVecX(matrix, x, y, z);
+        float y2 = transformVecY(matrix, x, y, z);
+        float z2 = transformVecZ(matrix, x, y, z);
 
         this.writeGlyph(x2, y2, z2, color, u, v, light);
     }

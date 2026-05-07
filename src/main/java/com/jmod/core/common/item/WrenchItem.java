@@ -1,16 +1,17 @@
 package com.jmod.core.common.item;
 
-import com.jmod.JMod;
 import com.jmod.core.common.block.interfaces.IWrenchable;
 import com.jmod.jmod.Reference;
-import com.jmod.core.common.item.material.MetaMaterialItem;
 import com.jmod.core.common.item.material.MetaMaterialToolItem;
 import com.jmod.core.common.material.Material;
 import com.jmod.core.common.material.MaterialProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.item.EnumAction;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -24,19 +25,18 @@ import static com.jmod.core.common.utils.random.RotationUtils.*;
 
 public class WrenchItem extends MetaMaterialToolItem {
     public WrenchItem() {
-        super(Reference.MODID, "wrench", ToolType.PICKAXE);
+        super(Reference.MOD_ID, "wrench", ToolType.PICKAXE);
     }
 
     @Override
     public EnumActionResult onItemUse(@Nonnull EntityPlayer player, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
         IBlockState state = worldIn.getBlockState(pos);
         Block block = state.getBlock();
-
         if (block instanceof IWrenchable){
             Vec2f UV = getUV(facing, hitX, hitY, hitZ);
 
-            if (!worldIn.isRemote){
-                player.getHeldItem(hand).damageItem(1, player);
+            if (!worldIn.isRemote && !player.isCreative()){
+                damageItemStack(player.getHeldItem(hand), 1);
             }
 
             if (isInBoundingBox2D(UV, 0.2, 0.2, 0.8, 0.8)){
@@ -54,7 +54,7 @@ public class WrenchItem extends MetaMaterialToolItem {
             }
         }
 
-        return EnumActionResult.FAIL;
+        return EnumActionResult.PASS;
     }
 
     @Override

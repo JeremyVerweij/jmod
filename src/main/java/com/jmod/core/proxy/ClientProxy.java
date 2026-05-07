@@ -1,9 +1,7 @@
 package com.jmod.core.proxy;
 
-import com.jmod.JMod;
 import com.jmod.core.client.ClientMetaIdHolder;
 import com.jmod.core.common.block.MetaBlock;
-import com.jmod.core.common.block.interfaces.IHasColor;
 import com.jmod.jmod.Reference;
 import com.jmod.core.common.block.interfaces.IHasBlockColor;
 import com.jmod.core.common.item.MetaItem;

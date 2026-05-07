@@ -1,11 +1,13 @@
 package com.jmod.jrender.client.model.vertex.formats.quad;
 
 import com.jmod.jrender.client.model.vertex.VertexSink;
-import com.jmod.jrender.client.util.math.Matrix4fExtended;
 import com.jmod.jrender.client.util.math.MatrixStack;
 import com.jmod.jrender.client.util.math.MatrixUtil;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.renderer.vertex.VertexFormat;
+import org.joml.Matrix4f;
+
+import static com.jmod.jrender.client.util.math.MatrixUtil.*;
 
 public interface QuadVertexSink extends VertexSink {
 
@@ -32,11 +34,11 @@ public interface QuadVertexSink extends VertexSink {
      * @param matrices The matrices to transform the vertex's position and normal vectors by
      */
     default void writeQuad(MatrixStack.Entry matrices, float x, float y, float z, int color, float u, float v, int light, int overlay, int normal) {
-        Matrix4fExtended modelMatrix = MatrixUtil.getExtendedMatrix(matrices.getModel());
+        Matrix4f matrix = matrices.getModel();
 
-        float x2 = modelMatrix.transformVecX(x, y, z);
-        float y2 = modelMatrix.transformVecY(x, y, z);
-        float z2 = modelMatrix.transformVecZ(x, y, z);
+        float x2 = transformVecX(matrix, x, y, z);
+        float y2 = transformVecY(matrix, x, y, z);
+        float z2 = transformVecZ(matrix, x, y, z);
 
         int norm = MatrixUtil.transformPackedNormal(normal, matrices.getNormal());
 
