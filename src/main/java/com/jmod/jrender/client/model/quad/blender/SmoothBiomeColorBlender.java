@@ -29,6 +29,8 @@ public class SmoothBiomeColorBlender implements BiomeColorBlender {
             } else {
                 colors[i] = this.getInterpolatedVertexColor(colorizer, world, state, origin, quad, i);
             }
+
+            colors[i] |= 0xFF000000;
         }
 
         return colors;

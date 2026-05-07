@@ -63,16 +63,16 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onMaterialRegister(MaterialRegistryEvent event){
-        event.REGISTRY.register(new MaterialBuilder(0xFF00FF, "")
+        event.REGISTRY.register(new MaterialBuilder(0xFFFF00FF, "")
                 .enableFluidPipe(1)
                 .build());
-        event.REGISTRY.register(new MaterialBuilder(0x0000FF, "")
+        event.REGISTRY.register(new MaterialBuilder(0xFF0000FF, "")
                 .enableFluidPipe(1)
                 .build());
-        event.REGISTRY.register(new MaterialBuilder(0xFF0000, "")
+        event.REGISTRY.register(new MaterialBuilder(0xFFFF0000, "")
                 .enableFluidPipe(1)
                 .build());
-        event.REGISTRY.register(new MaterialBuilder(0x00FF00, "")
+        event.REGISTRY.register(new MaterialBuilder(0xFF00FF00, "")
                 .enableFluidPipe(1)
                 .build());
     }

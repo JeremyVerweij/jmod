@@ -169,7 +169,7 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable {
         if (tintIndex < EnumFacing.VALUES.length){
             int restrictions = getRestrictionsFromState(state);
 
-            return (restrictions & (1 << tintIndex)) > 0 ? 0x00FFFFFF : 0xFFFFFFFF;
+            return (restrictions & (1 << tintIndex)) > 0 ? 0xFFFFFFFF : 0;
         }
 
         return super.getColorBlockFallback(state, world, pos, tintIndex);

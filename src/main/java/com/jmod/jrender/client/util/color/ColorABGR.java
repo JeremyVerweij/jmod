@@ -38,8 +38,9 @@ public class ColorABGR implements ColorU8 {
         float r = unpackRed(color) * rw;
         float g = unpackGreen(color) * gw;
         float b = unpackBlue(color) * bw;
+        int a = unpackAlpha(color);
 
-        return pack((int) r, (int) g, (int) b, 0xFF);
+        return pack((int) r, (int) g, (int) b, a);
     }
 
     public static int mul(int color, float w) {
