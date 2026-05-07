@@ -24,6 +24,7 @@ import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
@@ -34,6 +35,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class MetaBlock extends SplitSideBlock implements ICustomDebug {
     public final static byte BLOCK_SIZE = 16;
@@ -178,8 +180,11 @@ public abstract class MetaBlock extends SplitSideBlock implements ICustomDebug {
         Short id = extendedState.getValue(ID);
 
         if (id != null){
-            lines.add("jmod:meta: " + id);
+            lines.add("id: " + id);
+        }else{
+            lines.add(TextFormatting.RED + "META IS NULL" + TextFormatting.RESET);
         }
+
     }
 
     protected Item createItemBlock(){

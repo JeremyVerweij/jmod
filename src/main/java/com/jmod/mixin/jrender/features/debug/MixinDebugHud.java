@@ -5,12 +5,20 @@ import com.google.common.collect.Lists;
 import com.jmod.jrender.JRender;
 import com.jmod.jrender.client.render.SodiumWorldRenderer;
 import com.jmod.jrender.client.render.chunk.ChunkRenderBackend;
+import com.jmod.jrender.common.ICustomDebug;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOverlayDebug;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.property.IExtendedBlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -47,6 +55,24 @@ public abstract class MixinDebugHud {
         }
 
         return strings;
+    }
+
+    @Inject(method = "getDebugInfoRight", at = @At(value = "RETURN"))
+    private void addRExtendedBlockInfoToDebugMenu(CallbackInfoReturnable<List<String>> cir){
+        if (Minecraft.getMinecraft().objectMouseOver != null &&
+                Minecraft.getMinecraft().objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK &&
+                Minecraft.getMinecraft().objectMouseOver.getBlockPos() != null) {
+
+            BlockPos blockpos = Minecraft.getMinecraft().objectMouseOver.getBlockPos();
+            IBlockState iblockstate = Minecraft.getMinecraft().world.getBlockState(blockpos);
+
+            if (iblockstate.getBlock() instanceof ICustomDebug customDebug && iblockstate instanceof IExtendedBlockState){
+                customDebug.addToDebug(cir.getReturnValue(), (IExtendedBlockState)
+                        iblockstate.getBlock().getExtendedState(iblockstate,
+                                Minecraft.getMinecraft().world,
+                                blockpos));
+            }
+        }
     }
 
     private static String getFormattedVersionText() {
