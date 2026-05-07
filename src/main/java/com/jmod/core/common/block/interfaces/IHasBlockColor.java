@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 
-public interface IHasColor {
+public interface IHasBlockColor {
     int getColorBlock(IBlockState state, IBlockAccess world, BlockPos pos, int tintIndex);
     int getColorItem(ItemStack stack, int tintIndex);
 }

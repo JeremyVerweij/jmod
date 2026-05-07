@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.property.IExtendedBlockState;
 
-public interface IMaterialColor extends IHasColor{
+public interface IMaterialBlockColor extends IHasBlockColor {
     default int getColorBlock(IBlockState state, IBlockAccess world, BlockPos pos, int tintIndex){
         IExtendedBlockState extendedState = (IExtendedBlockState) state;
 

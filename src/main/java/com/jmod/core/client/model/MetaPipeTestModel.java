@@ -1,7 +1,7 @@
 package com.jmod.core.client.model;
 
 import com.jmod.core.client.utils.ModelUtils;
-import com.jmod.core.common.block.PipeTestBlock;
+import com.jmod.core.common.block.material.PipeTestBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;

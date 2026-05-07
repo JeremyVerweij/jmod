@@ -3,6 +3,10 @@ package com.jmod.core.common.item;
 import com.jmod.JMod;
 import com.jmod.core.common.block.interfaces.IWrenchable;
 import com.jmod.jmod.Reference;
+import com.jmod.core.common.item.material.MetaMaterialItem;
+import com.jmod.core.common.item.material.MetaMaterialToolItem;
+import com.jmod.core.common.material.Material;
+import com.jmod.core.common.material.MaterialProperties;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -18,10 +22,9 @@ import javax.annotation.Nonnull;
 
 import static com.jmod.core.common.utils.random.RotationUtils.*;
 
-public class WrenchItem extends Item {
+public class WrenchItem extends MetaMaterialToolItem {
     public WrenchItem() {
-        this.setRegistryName(Reference.MOD_ID, "wrench");
-        this.setTranslationKey(Reference.MOD_ID + ".wrench");
+        super(Reference.MODID, "wrench", ToolType.PICKAXE);
     }
 
     @Override
@@ -31,6 +34,10 @@ public class WrenchItem extends Item {
 
         if (block instanceof IWrenchable){
             Vec2f UV = getUV(facing, hitX, hitY, hitZ);
+
+            if (!worldIn.isRemote){
+                player.getHeldItem(hand).damageItem(1, player);
+            }
 
             if (isInBoundingBox2D(UV, 0.2, 0.2, 0.8, 0.8)){
                 return ((IWrenchable) block).onWrenchUse(state, worldIn, player, hand, pos, facing);
@@ -48,5 +55,10 @@ public class WrenchItem extends Item {
         }
 
         return EnumActionResult.FAIL;
+    }
+
+    @Override
+    protected boolean isEnabled(Material material) {
+        return material.getProperty(MaterialProperties.HAS_TOOLS);
     }
 }
