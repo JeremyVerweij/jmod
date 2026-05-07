@@ -178,6 +178,15 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable, IRe
         return super.getColorBlockFallback(state, world, pos, tintIndex);
     }
 
+    @Override
+    public int getColorItemFallback(ItemStack stack, int tintIndex) {
+        if (tintIndex < EnumFacing.VALUES.length){
+            return 0;
+        }
+
+        return super.getColorItemFallback(stack, tintIndex);
+    }
+
     private int getRestrictionsFromState(@Nonnull IExtendedBlockState state) {
         Byte id = state.getValue(PipeTestBlock.RESTRICTIONS);
 

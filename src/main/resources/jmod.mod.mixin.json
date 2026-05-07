@@ -7,6 +7,6 @@
   "setSourceFile": true,
   "minVersion": "0.8.7",
   "client": [
-
+    "jrender.custom.item.MixinRenderItem"
   ]
 }

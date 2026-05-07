@@ -22,7 +22,7 @@ public interface IMaterialBlockColor extends IHasBlockColor {
     default int getColorItem(ItemStack stack, int tintIndex){
         if (tintIndex == 10)
             return getColor(stack.getMetadata());
-        else return 0xFFFFFFFF;
+        else return getColorItemFallback(stack, tintIndex);
     }
 
     default int getColor(int id){
@@ -33,5 +33,9 @@ public interface IMaterialBlockColor extends IHasBlockColor {
 
     default int getColorBlockFallback(IExtendedBlockState state, IBlockAccess world, BlockPos pos, int tintIndex){
         return 0xFFFFFF;
+    }
+
+    default int getColorItemFallback(ItemStack stack, int tintIndex){
+        return 0xFFFFFFFF;
     }
 }
