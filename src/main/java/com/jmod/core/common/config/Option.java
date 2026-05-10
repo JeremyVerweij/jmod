@@ -1,4 +1,4 @@
-package com.jmod.jrender.common.config;
+package com.jmod.core.common.config;
 
 import java.util.Collection;
 import java.util.Collections;

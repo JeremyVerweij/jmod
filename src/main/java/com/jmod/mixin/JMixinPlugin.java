@@ -1,8 +1,8 @@
-package com.jmod.mixin.jrender;
+package com.jmod.mixin;
 
 import com.jmod.jrender.JRender;
-import com.jmod.jrender.common.config.Option;
-import com.jmod.jrender.common.config.SodiumConfig;
+import com.jmod.core.common.config.Option;
+import com.jmod.core.common.config.MixinConfig;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,16 +14,16 @@ import java.io.File;
 import java.util.List;
 import java.util.Set;
 
-public class JRenderMixinPlugin implements IMixinConfigPlugin {
-    private static final String MIXIN_PACKAGE_ROOT = "com.jmod.mixin.jrender.";
+public class JMixinPlugin implements IMixinConfigPlugin {
+    private static final String MIXIN_PACKAGE_ROOT = "com.jmod.mixin.";
 
     private final Logger logger = LogManager.getLogger(JRender.NAME);
-    private SodiumConfig config;
+    private MixinConfig config;
 
     @Override
     public void onLoad(String mixinPackage) {
         try {
-            this.config = SodiumConfig.load(new File(".").toPath().resolve("config").resolve(JRender.MODID + "-mixins.properties").toFile());
+            this.config = MixinConfig.load(new File(".").toPath().resolve("config").resolve(JRender.MODID + "-mixins.properties").toFile());
         } catch (Exception e) {
             throw new RuntimeException("Could not load configuration file for " + JRender.NAME, e);
         }

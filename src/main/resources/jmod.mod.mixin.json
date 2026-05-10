@@ -3,10 +3,56 @@
   "package": "com.jmod.mixin",
   "compatibilityLevel": "JAVA_8",
   "target": "@env(DEFAULT)",
-  "mixins": [],
+  "plugin": "com.jmod.mixin.JMixinPlugin",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "conformVisibility": true
+  },
   "setSourceFile": true,
   "minVersion": "0.8.7",
+  "mixins": [
+    "jrender.core.MixinBlockLiquid"
+  ],
   "client": [
-    "jrender.custom.item.MixinRenderItem"
+    "jui.MixinItemColors",
+    "jui.MixinRenderItem",
+    "jrender.core.MixinCrashReportSection",
+    "jrender.core.MixinDirection",
+    "jrender.core.frustum.MixinFrustum",
+    "jrender.core.model.MixinBlockColors",
+    "jrender.core.pipeline.MixinBakedQuad",
+    "jrender.core.pipeline.MixinBufferBuilder",
+    "jrender.core.pipeline.MixinVertexFormat",
+    "jrender.core.pipeline.MixinUnpackedBakedQuad",
+    "jrender.features.block.MixinWorldRenderer",
+    "jrender.features.buffer_builder.fast_advance.MixinVertexFormat",
+    "jrender.features.buffer_builder.fast_sort.MixinBufferBuilder",
+    "jrender.features.chunk_rendering.AccessorActiveRenderInfo",
+    "jrender.features.chunk_rendering.AccessorBlockFluidRenderer",
+    "jrender.features.chunk_rendering.AccessorBlockRenderDispatcher",
+    "jrender.features.chunk_rendering.MixinBiomeColorHelper",
+    "jrender.features.chunk_rendering.MixinChunkBuilder",
+    "jrender.features.chunk_rendering.MixinClientChunkManager",
+    "jrender.features.chunk_rendering.MixinClientWorld",
+    "jrender.features.chunk_rendering.MixinRenderGlobal",
+    "jrender.features.chunk_rendering.MixinWorldRenderer",
+    "jrender.features.debug.MixinDebugHud",
+    "jrender.features.fast_biome_colors.MixinBlock",
+    "jrender.features.gui.MixinDebugHud",
+    "jrender.features.entity.smooth_lighting.MixinEntityRenderer",
+    "jrender.features.entity.smooth_lighting.MixinPaintingEntityRenderer",
+    "jrender.features.model.MixinMultipartBakedModel",
+    "jrender.features.model.MixinWeightedBakedModel",
+    "jrender.features.options.MixinGameOptions",
+    "jrender.features.options.MixinInGameHud",
+    "jrender.features.options.MixinOptionsScreen",
+    "jrender.features.options.MixinWorldRenderer",
+    "jrender.features.particle.cull.MixinParticleManager",
+    "jrender.features.render_layer.leaves.MixinLeavesBlock",
+    "jrender.features.sky.MixinWorldRenderer",
+    "jrender.features.world_ticking.MixinClientWorld",
+    "jrender.features.block.MixinBlockModelRenderer"
   ]
 }

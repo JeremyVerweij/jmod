@@ -6,24 +6,35 @@
 		"mcversion": "1.12.2",
 		"description": "{{ mod_description }}",
 		"authorList": ["{{ mod_authors }}"],
-		"credits": "{{ mod_credits }}",
+		"credits": "https://github.com/TheMade4/Relictium/",
 		"url": "{{ mod_url }}",
 		"updateJSON": "{{ mod_update_json }}",
 		"logoFile": "{{ mod_logo_path }}",
-		"requiredMods": [],
+		"requiredMods": [
+			"cleanroom", "mixinbooter", "configanytime",
+			"kirino_engine", "kirino_ecs", "kirino_gl",
+			"mcp", "FML", "forge"
+		],
 		"useDependencyInformation": true
 	},
 	{
 		"modid": "jfarming",
 		"name": "JFarming",
-		"version": "{{ mod_version }}",
 		"mcversion": "1.12.2",
-		"description": "{{ mod_description }}",
 		"authorList": ["{{ mod_authors }}"],
-		"credits": "{{ mod_credits }}",
-		"url": "{{ mod_url }}",
-		"updateJSON": "{{ mod_update_json }}",
-		"logoFile": "{{ mod_logo_path }}",
+		"parent": "{{ mod_id }}"
+	},
+	{
+		"modid": "jrender",
+		"name": "J's Render Engine",
+		"mcversion": "1.12.2",
+		"parent": "{{ mod_id }}"
+	},
+	{
+		"modid": "jui",
+		"name": "J's UI Library",
+		"mcversion": "1.12.2",
+		"authorList": ["{{ mod_authors }}"],
 		"parent": "{{ mod_id }}"
 	}
 ]

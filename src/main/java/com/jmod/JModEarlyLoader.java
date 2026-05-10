@@ -14,7 +14,7 @@ public class JModEarlyLoader implements IFMLLoadingPlugin, IEarlyMixinLoader {
     @Override
     public List<String> getMixinConfigs() {
         // This MUST match the name of your json file in resources
-        return Collections.singletonList("jmod.default.mixin.json");
+        return Collections.singletonList("jmod.mod.mixin.json");
     }
 
     // Boilerplate for IFMLLoadingPlugin

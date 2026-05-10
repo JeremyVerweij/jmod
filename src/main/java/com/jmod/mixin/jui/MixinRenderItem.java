@@ -1,4 +1,4 @@
-package com.jmod.mixin.jrender.custom.item;
+package com.jmod.mixin.jui;
 
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.EntityRenderer;

@@ -1,2 +1,1 @@
 Sodium-like render engine: https://github.com/TheMade4/Relictium/
-Lighting engine: https://github.com/kappa-maintainer/Hesperus

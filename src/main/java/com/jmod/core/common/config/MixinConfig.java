@@ -1,4 +1,4 @@
-package com.jmod.jrender.common.config;
+package com.jmod.core.common.config;
 
 import com.jmod.jrender.JRender;
 import org.apache.logging.log4j.LogManager;
@@ -15,52 +15,53 @@ import java.util.stream.Stream;
 /**
  * Documentation of these options: https://github.com/jellysquid3/sodium-fabric/wiki/Configuration-File
  */
-public class SodiumConfig {
+public class MixinConfig {
     private static final Logger LOGGER = LogManager.getLogger(JRender.NAME + "Config");
 
     private static final String JSON_KEY_SODIUM_OPTIONS = "relictium:options";
 
     private static final Set<String> SYSTEM_OPTIONS = Stream.of(
-            "core",
-            "features.chunk_rendering"
-    ).map(SodiumConfig::getMixinRuleName).collect(Collectors.toSet());
+            "jrender.core",
+            "jrender.features.chunk_rendering"
+    ).map(MixinConfig::getMixinRuleName).collect(Collectors.toSet());
 
     private final Map<String, Option> options = new HashMap<>();
 
-    private SodiumConfig() {
+    private MixinConfig() {
         // Defines the default rules which can be configured by the user or other mods.
         // You must manually add a rule for any new mixins not covered by an existing package rule.
-        this.addMixinRule("core", true); // TODO: Don't actually allow the user to disable this
+        this.addMixinRule("jrender.core", true); // TODO: Don't actually allow the user to disable this
+        this.addMixinRule("jui", true);
 
-        this.addMixinRule("features.block", true);
-        this.addMixinRule("features.buffer_builder", true);
-        this.addMixinRule("features.buffer_builder.fast_advance", true);
-        this.addMixinRule("features.buffer_builder.fast_sort", true);
-        this.addMixinRule("features.buffer_builder.intrinsics", true);
-        this.addMixinRule("features.chunk_rendering", true);
-        this.addMixinRule("features.debug", true);
-        this.addMixinRule("features.entity", true);
-        this.addMixinRule("features.entity.fast_render", true);
-        this.addMixinRule("features.entity.smooth_lighting", true);
-        this.addMixinRule("features.gui", true);
-        this.addMixinRule("features.gui.fast_loading_screen", true);
-        this.addMixinRule("features.gui.fast_status_bars", true);
-        this.addMixinRule("features.gui.fast_fps_pie", true);
-        this.addMixinRule("features.gui.font", true);
-        this.addMixinRule("features.item", true);
-        this.addMixinRule("features.matrix_stack", true);
-        this.addMixinRule("features.model", true);
-        this.addMixinRule("features.optimized_bamboo", true);
-        this.addMixinRule("features.options", true);
-        this.addMixinRule("features.particle", true);
-        this.addMixinRule("features.particle.cull", true);
-        this.addMixinRule("features.particle.fast_render", true);
-        this.addMixinRule("features.render_layer", true);
-        this.addMixinRule("features.render_layer.leaves", true);
-        this.addMixinRule("features.sky", true);
-        this.addMixinRule("features.texture_tracking", true);
-        this.addMixinRule("features.world_ticking", true);
-        this.addMixinRule("features.fast_biome_colors", true);
+        this.addMixinRule("jrender.features.block", true);
+        this.addMixinRule("jrender.features.buffer_builder", true);
+        this.addMixinRule("jrender.features.buffer_builder.fast_advance", true);
+        this.addMixinRule("jrender.features.buffer_builder.fast_sort", true);
+        this.addMixinRule("jrender.features.buffer_builder.intrinsics", true);
+        this.addMixinRule("jrender.features.chunk_rendering", true);
+        this.addMixinRule("jrender.features.debug", true);
+        this.addMixinRule("jrender.features.entity", true);
+        this.addMixinRule("jrender.features.entity.fast_render", true);
+        this.addMixinRule("jrender.features.entity.smooth_lighting", true);
+        this.addMixinRule("jrender.features.gui", true);
+        this.addMixinRule("jrender.features.gui.fast_loading_screen", true);
+        this.addMixinRule("jrender.features.gui.fast_status_bars", true);
+        this.addMixinRule("jrender.features.gui.fast_fps_pie", true);
+        this.addMixinRule("jrender.features.gui.font", true);
+        this.addMixinRule("jrender.features.item", true);
+        this.addMixinRule("jrender.features.matrix_stack", true);
+        this.addMixinRule("jrender.features.model", true);
+        this.addMixinRule("jrender.features.optimized_bamboo", true);
+        this.addMixinRule("jrender.features.options", true);
+        this.addMixinRule("jrender.features.particle", true);
+        this.addMixinRule("jrender.features.particle.cull", true);
+        this.addMixinRule("jrender.features.particle.fast_render", true);
+        this.addMixinRule("jrender.features.render_layer", true);
+        this.addMixinRule("jrender.features.render_layer.leaves", true);
+        this.addMixinRule("jrender.features.sky", true);
+        this.addMixinRule("jrender.features.texture_tracking", true);
+        this.addMixinRule("jrender.features.world_ticking", true);
+        this.addMixinRule("jrender.features.fast_biome_colors", true);
     }
 
     /**
@@ -146,7 +147,7 @@ public class SodiumConfig {
      * Loads the configuration file from the specified location. If it does not exist, a new configuration file will be
      * created. The file on disk will then be updated to include any new options.
      */
-    public static SodiumConfig load(File file) {
+    public static MixinConfig load(File file) {
         if (!file.exists()) {
             try {
                 writeDefaultConfig(file);
@@ -154,7 +155,7 @@ public class SodiumConfig {
                 LOGGER.warn("Could not write default configuration file", e);
             }
 
-            return new SodiumConfig();
+            return new MixinConfig();
         }
 
         Properties props = new Properties();
@@ -165,7 +166,7 @@ public class SodiumConfig {
             throw new RuntimeException("Could not load config file", e);
         }
 
-        SodiumConfig config = new SodiumConfig();
+        MixinConfig config = new MixinConfig();
         config.readProperties(props);
 
         return config;
