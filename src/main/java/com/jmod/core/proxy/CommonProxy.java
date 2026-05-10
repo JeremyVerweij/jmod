@@ -2,7 +2,7 @@ package com.jmod.core.proxy;
 
 import com.jmod.core.client.ClientMetaIdHolder;
 import com.jmod.core.common.block.MetaBlock;
-import com.jmod.core.common.block.material.PipeTestBlock;
+import com.jmod.core.common.block.material.MaterialFluidPipeBlock;
 import com.jmod.core.common.event.MetaBlockRegisterEvent;
 import com.jmod.core.common.event.MetaItemRegisterEvent;
 import com.jmod.core.common.event.material.MaterialRegistryEvent;
@@ -87,11 +87,11 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onMetaBlockRegister(MetaBlockRegisterEvent event){
-        event.register(new PipeTestBlock(4));
-        event.register(new PipeTestBlock(6));
-        event.register(new PipeTestBlock(8));
-        event.register(new PipeTestBlock(10));
-        event.register(new PipeTestBlock(12));
+        event.register(new MaterialFluidPipeBlock(4));
+        event.register(new MaterialFluidPipeBlock(6));
+        event.register(new MaterialFluidPipeBlock(8));
+        event.register(new MaterialFluidPipeBlock(10));
+        event.register(new MaterialFluidPipeBlock(12));
     }
 
     @SubscribeEvent

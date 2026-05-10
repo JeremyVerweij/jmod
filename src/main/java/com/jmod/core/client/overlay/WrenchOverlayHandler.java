@@ -1,7 +1,6 @@
 package com.jmod.core.client.overlay;
 
-import com.jmod.core.common.block.interfaces.IWrenchable;
-import com.jmod.core.common.item.WrenchItem;
+import com.jmod.core.common.item.interfaces.IHasSpecialOverlay;
 import com.jmod.core.common.utils.random.RotationUtils;
 import com.jmod.jmod.Reference;
 import net.minecraft.block.state.IBlockState;
@@ -34,7 +33,7 @@ public class WrenchOverlayHandler {
         EntityPlayer player = event.getPlayer();
         ItemStack heldItem = player.getHeldItemMainhand();
 
-        if (heldItem.getItem() instanceof WrenchItem) {
+        if (heldItem.getItem() instanceof IHasSpecialOverlay specialOverlay && specialOverlay.hasOverlay(player, heldItem)) {
             RayTraceResult target = event.getTarget();
 
             if (target != null && target.typeOfHit == RayTraceResult.Type.BLOCK) {
@@ -42,20 +41,25 @@ public class WrenchOverlayHandler {
                 World world = player.world;
                 IBlockState state = world.getBlockState(pos);
 
-                if (state.getBlock() instanceof IWrenchable) {
-                    drawOverlay(world, state, player, pos, event.getPartialTicks(), target.sideHit);
+                if (state.getBlock() instanceof IHasSpecialOverlay.IBlockHasConnectionOverlay &&
+                        specialOverlay.getOverlayType(player, heldItem) == IHasSpecialOverlay.OverlayType.CONNECTIONS) {
+                    drawConnectionOverlay(world, state, player, pos, event.getPartialTicks(), target.sideHit);
                 }
             }
         }
     }
 
-    private static void drawOverlay(World world, IBlockState state, EntityPlayer player, BlockPos pos, float partialTicks, EnumFacing side) {
+    private static float calcWidth(EntityPlayer player, BlockPos pos){
+        return (float) Math.clamp(5f - Math.sqrt(Math.abs(player.getDistanceSqToCenter(pos))), 1, 5);
+    }
+
+    private static void drawConnectionOverlay(World world, IBlockState state, EntityPlayer player, BlockPos pos, float partialTicks, EnumFacing side) {
         // Prepare OpenGL state
         GlStateManager.enableBlend();
         GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         GlStateManager.disableTexture2D();
         GlStateManager.depthMask(true);
-        GlStateManager.glLineWidth(5);
+        GlStateManager.glLineWidth(calcWidth(player, pos));
 
         //Get Tessellator
         Tessellator tessellator = Tessellator.getInstance();
@@ -80,7 +84,7 @@ public class WrenchOverlayHandler {
         drawLineOnSide(side, 0, 0.2, 1, 0.2, box, buffer, r, g, b, a);
         drawLineOnSide(side, 0, 0.8, 1, 0.8, box, buffer, r, g, b, a);
 
-        byte connected = ((IWrenchable) state.getBlock()).getSidesConnectForOverlay(world, pos);
+        byte connected = ((IHasSpecialOverlay.IBlockHasConnectionOverlay) state.getBlock()).getSidesConnectedForOverlay(world, pos);
 
         if (((1 << side.getIndex()) & connected) > 0){
             drawXOnSide(side, 0.2, 0.2, 0.8, 0.8, box, buffer, r, g, b, a);

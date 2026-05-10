@@ -3,8 +3,8 @@ package com.jmod.core.common.block.material;
 import com.jmod.JMod;
 import com.jmod.core.client.model.MetaPipeTestModel;
 import com.jmod.core.common.block.interfaces.IRequireTool;
-import com.jmod.core.common.block.interfaces.IWrenchable;
 import com.jmod.core.common.item.ToolType;
+import com.jmod.core.common.item.interfaces.IHasSpecialOverlay;
 import com.jmod.core.common.material.MaterialProperties;
 import com.jmod.core.common.utils.MiningTier;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyByte;
@@ -17,6 +17,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -29,25 +30,57 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.property.ExtendedBlockState;
 import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
+import org.joml.Vector3f;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable, IRequireTool {
+public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpecialOverlay.IBlockHasConnectionOverlay, IRequireTool {
     public static final IUnlistedProperty<Byte> CONNECTIONS = new UnlistedPropertyByte("connections", (byte) 0, Byte.MAX_VALUE);
     public static final IUnlistedProperty<Byte> RESTRICTIONS = new UnlistedPropertyByte("restrictions", (byte) 0, Byte.MAX_VALUE);
-    private final static AxisAlignedBB PIPE_BOX = new AxisAlignedBB(4/16D, 4/16D, 4/16D, 12/16D, 12/16D, 12/16D);
+
+    private static AxisAlignedBB createBoundingBox(Vector3f from, Vector3f to){
+        return new AxisAlignedBB(from.x / 16D, from.y / 16D, from.z / 16D,
+                to.x / 16D, to.y / 16D, to.z / 16D);
+    }
 
     private final int size;
+    private final AxisAlignedBB centerBoundingBox;
+    private final AxisAlignedBB[] connectionBoundingBoxes;
 
-    public PipeTestBlock(int size) {
+    public MaterialFluidPipeBlock(int size) {
         super(Reference.MOD_ID, "pipe_" + size, Material.ROCK, CreativeTabs.BUILDING_BLOCKS);
 
         setHardness(5.0f);
 
         this.size = size;
+
+        int offset = 8 - (size / 2);
+
+        this.centerBoundingBox = createBoundingBox(new Vector3f(offset, offset, offset),
+                new Vector3f(16 - offset, 16 - offset, 16 - offset));
+
+        this.connectionBoundingBoxes = new AxisAlignedBB[EnumFacing.VALUES.length];
+
+        this.connectionBoundingBoxes[EnumFacing.UP.getIndex()] = createBoundingBox(new Vector3f(offset, offset, offset),
+                new Vector3f(16 - offset, 16, 16 - offset));
+
+        this.connectionBoundingBoxes[EnumFacing.SOUTH.getIndex()] = createBoundingBox(new Vector3f(offset, offset, offset),
+                new Vector3f(16 - offset, 16 - offset, 16));
+
+        this.connectionBoundingBoxes[EnumFacing.EAST.getIndex()] = createBoundingBox(new Vector3f(offset, offset, offset),
+                new Vector3f(16, 16 - offset, 16 - offset));
+
+        this.connectionBoundingBoxes[EnumFacing.DOWN.getIndex()] = createBoundingBox(new Vector3f(offset, 0, offset),
+                new Vector3f(16 - offset, 16 - offset, 16 - offset));
+
+        this.connectionBoundingBoxes[EnumFacing.NORTH.getIndex()] = createBoundingBox(new Vector3f(offset, offset, 0),
+                new Vector3f(16 - offset, 16 - offset, 16 - offset));
+
+        this.connectionBoundingBoxes[EnumFacing.WEST.getIndex()] = createBoundingBox(new Vector3f(0, offset, offset),
+                new Vector3f(16 - offset, 16 - offset, 16 - offset));
     }
 
     @Override
@@ -95,7 +128,7 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable, IRe
     }
 
     @Override
-    public EnumActionResult onWrenchUse(IBlockState state, World world, EntityPlayer player, EnumHand hand, BlockPos pos, EnumFacing side) {
+    public void onOverlayClicked(IBlockState state, World world, EntityPlayer player, EnumHand hand, BlockPos pos, EnumFacing side) {
         if (!world.isRemote){
             int meta = this.getServerMetaData(pos, world.provider.getDimension());
 
@@ -109,7 +142,7 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable, IRe
 
             BlockPos neighbourPos = pos.offset(side);
             IBlockState neighbour = world.getBlockState(neighbourPos);
-            if (neighbour.getBlock() instanceof PipeTestBlock && (meta & (1 << (side.getIndex() + 16))) > 0){
+            if (neighbour.getBlock() instanceof MaterialFluidPipeBlock && (meta & (1 << (side.getIndex() + 16))) > 0){
                 int neighbourMeta = this.getServerMetaData(neighbourPos, world.provider.getDimension());
                 neighbourMeta |= (1 << (side.getOpposite().getIndex() + 16));
                 this.setServerMetaData(neighbourPos, world.provider.getDimension(), neighbourMeta);
@@ -117,12 +150,10 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable, IRe
 
             this.setServerMetaData(pos, world.provider.getDimension(), meta);
         }
-
-        return EnumActionResult.SUCCESS;
     }
 
     @Override
-    public byte getSidesConnectForOverlay(World world, BlockPos pos) {
+    public byte getSidesConnectedForOverlay(World world, BlockPos pos) {
         int id = (((ClientProxy) JMod.proxy).clientMetaIdHolder.getId(pos, world.provider.getDimension()) >> 16) & 0b111111;
 
         byte valid = 0;
@@ -145,7 +176,7 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable, IRe
         for (int i = 0; i < 6; i++) {
             BlockPos neighbourPos = pos.offset(EnumFacing.byIndex(i));
             IBlockState neighbour = world.getBlockState(neighbourPos);
-            if (neighbour.getBlock() instanceof PipeTestBlock){
+            if (neighbour.getBlock() instanceof MaterialFluidPipeBlock){
                 int neighbourMeta = getServerMetaData(neighbourPos, world.provider.getDimension());
                 setServerMetaData(neighbourPos, world.provider.getDimension(),
                         neighbourMeta | (1 << (EnumFacing.byIndex(i).getOpposite().getIndex() + 16)));
@@ -161,10 +192,25 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable, IRe
         return FULL_BLOCK_AABB;
     }
 
-    @Nullable
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(@Nonnull IBlockState blockState, @Nonnull IBlockAccess worldIn, @Nonnull BlockPos pos) {
-        return PIPE_BOX;
+    public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState) {
+        int id;
+
+        if (worldIn.isRemote){
+            id = ((ClientProxy) JMod.proxy).clientMetaIdHolder.getId(pos, worldIn.provider.getDimension());
+        }else{
+            id = JMod.proxy.getServerMetaIdHolder().getId(pos.getX(), pos.getY(), pos.getZ(), worldIn.provider.getDimension());
+        }
+
+        byte connections = (byte) ((id >> 16) & 0b111111);
+
+        for (EnumFacing side : EnumFacing.values()) {
+            if (((1 << side.getIndex()) & connections) > 0){
+                addCollisionBoxToList(pos, entityBox, collidingBoxes, this.connectionBoundingBoxes[side.getIndex()]);
+            }
+        }
+
+        addCollisionBoxToList(pos, entityBox, collidingBoxes, this.centerBoundingBox);
     }
 
     @Override
@@ -188,10 +234,10 @@ public class PipeTestBlock extends MetaMaterialBlock implements IWrenchable, IRe
     }
 
     private int getRestrictionsFromState(@Nonnull IExtendedBlockState state) {
-        Byte id = state.getValue(PipeTestBlock.RESTRICTIONS);
+        Byte id = state.getValue(MaterialFluidPipeBlock.RESTRICTIONS);
 
         if (id != null)
-            return id &0b111111;
+            return id & 0b111111;
 
         return 0;
     }

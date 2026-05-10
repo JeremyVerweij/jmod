@@ -1,7 +1,7 @@
 package com.jmod.core.client.model;
 
 import com.jmod.core.client.utils.ModelUtils;
-import com.jmod.core.common.block.material.PipeTestBlock;
+import com.jmod.core.common.block.material.MaterialFluidPipeBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.IBakedModel;
@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.client.model.pipeline.UnpackedBakedQuad;
 import net.minecraftforge.common.property.IExtendedBlockState;
-import org.jspecify.annotations.NonNull;
 import org.lwjgl.util.vector.Vector3f;
 
 import javax.annotation.Nonnull;
@@ -131,7 +130,7 @@ public class MetaPipeTestModel extends MetaBlockModel{
 
     @Override
     public int getVariantFromState(@Nonnull IExtendedBlockState state) {
-        Byte id = state.getValue(PipeTestBlock.CONNECTIONS);
+        Byte id = state.getValue(MaterialFluidPipeBlock.CONNECTIONS);
 
         if (id != null)
             return id &0b111111;
