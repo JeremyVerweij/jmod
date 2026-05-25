@@ -18,8 +18,6 @@ import java.util.stream.Stream;
 public class MixinConfig {
     private static final Logger LOGGER = LogManager.getLogger(JRender.NAME + "Config");
 
-    private static final String JSON_KEY_SODIUM_OPTIONS = "relictium:options";
-
     private static final Set<String> SYSTEM_OPTIONS = Stream.of(
             "jrender.core",
             "jrender.features.chunk_rendering"
@@ -31,37 +29,7 @@ public class MixinConfig {
         // Defines the default rules which can be configured by the user or other mods.
         // You must manually add a rule for any new mixins not covered by an existing package rule.
         this.addMixinRule("jrender.core", true); // TODO: Don't actually allow the user to disable this
-        this.addMixinRule("jui", true);
-
-        this.addMixinRule("jrender.features.block", true);
-        this.addMixinRule("jrender.features.buffer_builder", true);
-        this.addMixinRule("jrender.features.buffer_builder.fast_advance", true);
-        this.addMixinRule("jrender.features.buffer_builder.fast_sort", true);
-        this.addMixinRule("jrender.features.buffer_builder.intrinsics", true);
-        this.addMixinRule("jrender.features.chunk_rendering", true);
-        this.addMixinRule("jrender.features.debug", true);
-        this.addMixinRule("jrender.features.entity", true);
-        this.addMixinRule("jrender.features.entity.fast_render", true);
-        this.addMixinRule("jrender.features.entity.smooth_lighting", true);
-        this.addMixinRule("jrender.features.gui", true);
-        this.addMixinRule("jrender.features.gui.fast_loading_screen", true);
-        this.addMixinRule("jrender.features.gui.fast_status_bars", true);
-        this.addMixinRule("jrender.features.gui.fast_fps_pie", true);
-        this.addMixinRule("jrender.features.gui.font", true);
-        this.addMixinRule("jrender.features.item", true);
-        this.addMixinRule("jrender.features.matrix_stack", true);
-        this.addMixinRule("jrender.features.model", true);
-        this.addMixinRule("jrender.features.optimized_bamboo", true);
-        this.addMixinRule("jrender.features.options", true);
-        this.addMixinRule("jrender.features.particle", true);
-        this.addMixinRule("jrender.features.particle.cull", true);
-        this.addMixinRule("jrender.features.particle.fast_render", true);
-        this.addMixinRule("jrender.features.render_layer", true);
-        this.addMixinRule("jrender.features.render_layer.leaves", true);
-        this.addMixinRule("jrender.features.sky", true);
-        this.addMixinRule("jrender.features.texture_tracking", true);
-        this.addMixinRule("jrender.features.world_ticking", true);
-        this.addMixinRule("jrender.features.fast_biome_colors", true);
+//        this.addMixinRule("jui", true);
     }
 
     /**

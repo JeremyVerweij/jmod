@@ -242,24 +242,24 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
         return 0;
     }
 
-    @Override
-    public void addToDebug(List<String> lines, IExtendedBlockState extendedState) {
-        super.addToDebug(lines, extendedState);
-
-        Byte connections = extendedState.getValue(CONNECTIONS);
-        Byte restrictions = extendedState.getValue(RESTRICTIONS);
-
-        if (connections != null && restrictions != null){
-            for (int i = 0; i < EnumFacing.values().length; i++) {
-                boolean isConnected = (connections & (1 << i)) > 0;
-                boolean isRestricted = (restrictions & (1 << i)) > 0;
-
-                lines.add(TextFormatting.RESET + EnumFacing.byIndex(i).toString() + ": {con: " +
-                        (isConnected ? TextFormatting.GREEN + " " : TextFormatting.RED) + isConnected + TextFormatting.RESET +
-                        ", res: " + (isRestricted ? TextFormatting.GREEN + " " : TextFormatting.RED) + isRestricted + "}" + TextFormatting.RESET);
-            }
-        }
-    }
+//    @Override
+//    public void addToDebug(List<String> lines, IExtendedBlockState extendedState) {
+//        super.addToDebug(lines, extendedState);
+//
+//        Byte connections = extendedState.getValue(CONNECTIONS);
+//        Byte restrictions = extendedState.getValue(RESTRICTIONS);
+//
+//        if (connections != null && restrictions != null){
+//            for (int i = 0; i < EnumFacing.values().length; i++) {
+//                boolean isConnected = (connections & (1 << i)) > 0;
+//                boolean isRestricted = (restrictions & (1 << i)) > 0;
+//
+//                lines.add(TextFormatting.RESET + EnumFacing.byIndex(i).toString() + ": {con: " +
+//                        (isConnected ? TextFormatting.GREEN + " " : TextFormatting.RED) + isConnected + TextFormatting.RESET +
+//                        ", res: " + (isRestricted ? TextFormatting.GREEN + " " : TextFormatting.RED) + isRestricted + "}" + TextFormatting.RESET);
+//            }
+//        }
+//    }
 
     @Override
     public MiningTier toolLevel() {
