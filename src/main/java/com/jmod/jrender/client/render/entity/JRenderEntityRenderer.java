@@ -1,4 +1,4 @@
-package com.jmod.jrender;
+package com.jmod.jrender.client.render.entity;
 
 import com.cleanroommc.kirino.KirinoClientCore;
 import com.cleanroommc.kirino.KirinoCommonCore;
@@ -270,7 +270,7 @@ public class JRenderEntityRenderer extends EntityRenderer {
         this.mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
         RenderHelper.disableStandardItemLighting();
         this.mc.profiler.endStartSection("terrain_setup");
-        renderglobal.setupTerrain(entity, (double)partialTicks, icamera, this.frameCount++, this.mc.player.isSpectator());
+        renderglobal.setupTerrain(entity, partialTicks, icamera, this.frameCount++, this.mc.player.isSpectator());
         if (pass == 0 || pass == 2) {
             this.mc.profiler.endStartSection("updatechunks");
             this.mc.renderGlobal.updateChunks(finishTimeNano);

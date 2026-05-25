@@ -1,4 +1,4 @@
-package com.jmod.jrender.overlay;
+package com.jmod.jrender.client.overlay;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOverlayDebug;
