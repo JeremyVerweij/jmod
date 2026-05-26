@@ -22,4 +22,13 @@ public class ColorARGB {
     public static int unpackBlue(int packed){
         return ((packed >> BLUE_SHIFT) & BIT_MASK);
     }
+
+    public static int invertBytes(int color){
+        return ColorARGB.unpackBlue(color) << 24 | ColorARGB.unpackGreen(color) << 16 |
+                ColorARGB.unpackRed(color) << 8 | ColorARGB.unpackAlpha(color);
+    }
+
+    public static int toColorRGBA(int color){
+        return ColorARGB.unpackRed(color) << 24 | ColorARGB.unpackGreen(color) << 16 | ColorARGB.unpackBlue(color) << 8 | ColorARGB.unpackAlpha(color);
+    }
 }

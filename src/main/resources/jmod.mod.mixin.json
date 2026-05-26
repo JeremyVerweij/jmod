@@ -15,6 +15,7 @@
   "mixins": [
   ],
   "client": [
+    "jrender.core.BlockColorsMixin",
     "jrender.core.MinecraftMixin",
     "jui.MixinItemColors",
     "jui.MixinRenderItem"
