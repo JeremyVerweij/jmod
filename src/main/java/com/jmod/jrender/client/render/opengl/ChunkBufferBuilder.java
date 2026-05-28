@@ -1,6 +1,5 @@
 package com.jmod.jrender.client.render.opengl;
 
-import com.jmod.jrender.client.util.ColorARGB;
 import org.lwjglx.BufferUtils;
 
 import java.nio.*;
@@ -13,7 +12,7 @@ public class ChunkBufferBuilder {
     private int vertices = 0;
 
     public ChunkBufferBuilder(){
-        this.buffer = BufferUtils.createByteBuffer(2_097_152);
+        this.buffer = BufferUtils.createByteBuffer(32_768);
     }
 
     private void ensureCapacity(int additionalBytes) {
@@ -78,6 +77,11 @@ public class ChunkBufferBuilder {
 
     public void flip(){
         this.buffer.flip();
+    }
+
+    public void reset(){
+        this.buffer.rewind();
+        this.vertices = 0;
     }
 
     public ByteBuffer getBuffer(){

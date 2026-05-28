@@ -1,10 +1,9 @@
 package com.jmod.jrender.client.render.world;
 
-import com.jmod.jrender.client.render.opengl.ChunkBufferBuilder;
 import com.jmod.jrender.client.render.opengl.shader.ShaderLoader;
 import com.jmod.jrender.client.render.opengl.shader.ShaderProgram;
 import com.jmod.jrender.client.render.opengl.vao.*;
-import com.jmod.jrender.client.render.world.chunk.CompiledRenderChunk;
+import com.jmod.jrender.client.render.world.chunk.ChunkRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -23,9 +22,8 @@ import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.FloatBuffer;
-import java.util.HashSet;
-import java.util.Set;
 
+import static com.jmod.jrender.client.debug.ExtendedDebug.CHUNK_WIRE_FRAME_MODE;
 import static org.lwjglx.opengl.GL11.*;
 import static org.lwjglx.opengl.GL13.GL_TEXTURE0;
 
@@ -40,8 +38,7 @@ public class JRenderGlobal extends RenderGlobal {
     protected final Matrix4f modelViewMatrix;
 
     private ShaderProgram shaderProgram;
-    private final Set<CompiledRenderChunk> chunksToBuild;
-    private final CompiledRenderChunk chunk;
+    private final ChunkRenderer chunkRenderer;
 
     private boolean reloadTextureSizes = true;
     private float atlasWidth, atlasHeight;
@@ -58,23 +55,14 @@ public class JRenderGlobal extends RenderGlobal {
 
         VertexArrayObject.loadMinecraftDefaults();
 
+        this.chunkRenderer = new ChunkRenderer(this);
+
         this.projectionBuffer = GLAllocation.createDirectFloatBuffer(16);
         this.modelViewBuffer = GLAllocation.createDirectFloatBuffer(16);
         this.projectionMatrix = new Matrix4f();
         this.modelViewMatrix = new Matrix4f();
 
         this.loadShader();
-
-        this.chunksToBuild = new HashSet<>();
-
-        this.chunk = new CompiledRenderChunk(this, new AttributePointersBuilder()
-                .addAttribute(VertexType.FLOAT, 3, false)
-                .addAttribute(VertexType.UNSIGNED_BYTE, 4, true)
-                .addAttribute(VertexType.SHORT, 2, false));
-        this.chunk.setPos(0, 0);
-
-        this.chunksToBuild.add(this.chunk);
-
     }
 
     protected void loadShader(){
@@ -137,7 +125,9 @@ public class JRenderGlobal extends RenderGlobal {
         if (blockLayerIn == BlockRenderLayer.CUTOUT){
             GlStateManager.enableAlpha();
             GlStateManager.enableBlend();
-            glPolygonMode(GL_FRONT, GL_LINE);
+
+            if (CHUNK_WIRE_FRAME_MODE.isEnabled())
+                glPolygonMode(GL_FRONT, GL_LINE);
 
             GlStateManager.setActiveTexture(GL_TEXTURE0);
             GlStateManager.bindTexture(getAtlasTextureId(TextureMap.LOCATION_BLOCKS_TEXTURE));
@@ -151,11 +141,24 @@ public class JRenderGlobal extends RenderGlobal {
             this.shaderProgram.uploadUniform("textureAtlas", 0);
             this.shaderProgram.uploadUniform("atlasSize", this.atlasWidth, this.atlasHeight);
 
-            this.chunk.draw();
+            this.chunkRenderer.draw();
             this.shaderProgram.unbind();
 
             glPolygonMode(GL_FRONT, GL_FILL);
         }
+    }
+
+    @Override
+    public void setupTerrain(Entity viewEntity, double partialTicks, ICamera camera, int frameCount, boolean playerSpectator) {
+        if (this.mc.gameSettings.renderDistanceChunks != this.renderDistanceChunks) {
+            this.loadRenderers();
+        }
+
+        if (this.reloadTextureSizes){
+            this.reloadTextureSizes();
+        }
+
+        this.chunkRenderer.setupTerrain(viewEntity);
     }
 
     @Override
@@ -228,25 +231,6 @@ public class JRenderGlobal extends RenderGlobal {
     @Override
     protected int getRenderedChunks() {
         return 0;
-    }
-
-    @Override
-    public void setupTerrain(Entity viewEntity, double partialTicks, ICamera camera, int frameCount, boolean playerSpectator) {
-        if (this.mc.gameSettings.renderDistanceChunks != this.renderDistanceChunks) {
-            this.loadRenderers();
-        }
-
-        if (this.reloadTextureSizes){
-            this.reloadTextureSizes();
-        }
-
-        for (CompiledRenderChunk compiledRenderChunk : this.chunksToBuild) {
-            if (this.getWorld().getChunk(compiledRenderChunk.getPosition()).isPopulated()){
-                compiledRenderChunk.loadData();
-                compiledRenderChunk.build(new ChunkBufferBuilder());
-                this.chunksToBuild.remove(compiledRenderChunk);
-            }
-        }
     }
 
     @Override
