@@ -21,8 +21,8 @@ public class JMod {
 	public static JMod instance;
 
 	@SidedProxy(
-			clientSide = "com.jmod.core.proxy.ClientProxy"
-	)
+            clientSide = "com.jmod.core.proxy.ClientProxy"
+    )
 	public static CommonProxy proxy;
 	
 	@Mod.EventHandler

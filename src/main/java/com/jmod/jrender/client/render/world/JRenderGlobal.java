@@ -23,6 +23,8 @@ import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.FloatBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.lwjglx.opengl.GL11.*;
 import static org.lwjglx.opengl.GL13.GL_TEXTURE0;
@@ -37,8 +39,9 @@ public class JRenderGlobal extends RenderGlobal {
     protected final Matrix4f projectionMatrix;
     protected final Matrix4f modelViewMatrix;
 
-    private final VertexArrayObject vao;
     private ShaderProgram shaderProgram;
+    private final Set<CompiledRenderChunk> chunksToBuild;
+    private final CompiledRenderChunk chunk;
 
     private boolean reloadTextureSizes = true;
     private float atlasWidth, atlasHeight;
@@ -62,41 +65,16 @@ public class JRenderGlobal extends RenderGlobal {
 
         this.loadShader();
 
-        this.vao = new VertexArrayObject(new AttributePointersBuilder()
+        this.chunksToBuild = new HashSet<>();
+
+        this.chunk = new CompiledRenderChunk(this, new AttributePointersBuilder()
                 .addAttribute(VertexType.FLOAT, 3, false)
                 .addAttribute(VertexType.UNSIGNED_BYTE, 4, true)
-                .addAttribute(VertexType.SHORT, 2, false)
-                .build());
+                .addAttribute(VertexType.SHORT, 2, false));
+        this.chunk.setPos(0, 0);
 
-        TextureAtlasSprite sprite = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite("minecraft:blocks/dirt");
-        int u1 = sprite.getOriginX();
-        int v1 = sprite.getOriginY();
-        int u2 = u1 + sprite.getIconWidth();
-        int v2 = v1 + sprite.getIconHeight();
+        this.chunksToBuild.add(this.chunk);
 
-        ChunkBufferBuilder builder = new ChunkBufferBuilder();
-        builder.putPos(-5, 10, 5).putColor(0xFFFFFFFF).putUV(u1, v2).endVertex()//tl
-                .putPos(5, 10, 5).putColor(0xFFFFFFFF).putUV(u2, v2).endVertex()//tr
-                .putPos(5, 10, -5).putColor(0xFFFFFFFF).putUV(u2, v1).endVertex()//br
-                .putPos(-5, 10, -5).putColor(0xFFFFFFFF).putUV(u1, v1).endVertex()//bl
-                .putPos(-5, 0, 5).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
-                .putPos(5, 0, 5).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
-                .putPos(5, 10, 5).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
-                .putPos(-5, 10, 5).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
-                .putPos(-5, 10, -5).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
-                .putPos(5, 10, -5).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
-                .putPos(5, 0, -5).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
-                .putPos(-5, 0, -5).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
-                .putPos(-5, 0, -5).putColor(0xFF0000FF).putUV(0, 0).endVertex()
-                .putPos(-5, 0, 5).putColor(0xFF0000FF).putUV(0, 0).endVertex()
-                .putPos(-5, 10, 5).putColor(0xFF0000FF).putUV(0, 0).endVertex()
-                .putPos(-5, 10, -5).putColor(0xFF0000FF).putUV(0, 0).endVertex()
-                .putPos(5, 10, -5).putColor(0xFF00FF00).putUV(0, 0).endVertex()
-                .putPos(5, 10, 5).putColor(0xFF00FF00).putUV(0, 0).endVertex()
-                .putPos(5, 0, 5).putColor(0xFF00FF00).putUV(0, 0).endVertex()
-                .putPos(5, 0, -5).putColor(0xFF00FF00).putUV(0, 0).endVertex();
-
-        this.vao.upload(builder);
     }
 
     protected void loadShader(){
@@ -159,6 +137,7 @@ public class JRenderGlobal extends RenderGlobal {
         if (blockLayerIn == BlockRenderLayer.CUTOUT){
             GlStateManager.enableAlpha();
             GlStateManager.enableBlend();
+            glPolygonMode(GL_FRONT, GL_LINE);
 
             GlStateManager.setActiveTexture(GL_TEXTURE0);
             GlStateManager.bindTexture(getAtlasTextureId(TextureMap.LOCATION_BLOCKS_TEXTURE));
@@ -172,8 +151,10 @@ public class JRenderGlobal extends RenderGlobal {
             this.shaderProgram.uploadUniform("textureAtlas", 0);
             this.shaderProgram.uploadUniform("atlasSize", this.atlasWidth, this.atlasHeight);
 
-            this.vao.draw(GL_QUADS);
+            this.chunk.draw();
             this.shaderProgram.unbind();
+
+            glPolygonMode(GL_FRONT, GL_FILL);
         }
     }
 
@@ -258,6 +239,13 @@ public class JRenderGlobal extends RenderGlobal {
         if (this.reloadTextureSizes){
             this.reloadTextureSizes();
         }
+
+        for (CompiledRenderChunk compiledRenderChunk : this.chunksToBuild) {
+            if (this.getWorld().getChunk(compiledRenderChunk.getPosition()).isPopulated()){
+                compiledRenderChunk.build(new ChunkBufferBuilder());
+                this.chunksToBuild.remove(compiledRenderChunk);
+            }
+        }
     }
 
     @Override
@@ -293,5 +281,9 @@ public class JRenderGlobal extends RenderGlobal {
     @Override
     public boolean hasNoChunkUpdates() {
         return true;
+    }
+
+    public WorldClient getWorld() {
+        return this.world;
     }
 }

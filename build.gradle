@@ -2,9 +2,9 @@ plugins {
     id 'java'
     id 'java-library'
     id 'maven-publish'
-    id 'com.gradleup.shadow' version '9.4.0'
+    id 'com.gradleup.shadow' version '9.4.1'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.4.1'
-    id 'xyz.wagyourtail.unimined' version '1.4.16-kappa'
+    id 'xyz.wagyourtail.unimined' version '1.4.18-kappa'
     id 'net.kyori.blossom' version '2.2.0'
 }
 
@@ -69,10 +69,10 @@ unimined.minecraft {
         if (propertyBool('use_access_transformer')) {
             accessTransformer "${rootProject.projectDir}/src/main/resources/${propertyString('access_transformer_locations')}"
         }
-        loader "0.5.6-alpha"
-        runs.auth.username = minecraft_username
+        loader "0.5.12-alpha"
         runs.all {
             systemProperty("crl.dev.mixin", "${mod_id}.mod.mixin.json")
+            args += ['--username', minecraft_username]
             def extraArgs = propertyString('extra_jvm_args')
             if (extraArgs != null && !extraArgs.trim().isEmpty()) {
                 jvmArgs += extraArgs.split { "\\s+" }.toList()
@@ -89,9 +89,9 @@ unimined.minecraft {
     }
 
     defaultRemapJar = false
-    
+
     String jarTaskName = propertyBool('enable_shadow') ? "shadowJar" : "jar"
-    
+
     remap(tasks.named(jarTaskName).get()) {
         mixinRemap {
             enableBaseMixin()
@@ -156,10 +156,10 @@ idea {
                     taskNames = ["build"]
                 }
                 '2. Run Client'(Gradle) {
-                    taskNames = [":runClient"]
+                    taskNames = ["runClient"]
                 }
                 '3. Run Server'(Gradle) {
-                    taskNames = [":runServer"]
+                    taskNames = ["runServer"]
                 }
             }
             compiler.javac {
