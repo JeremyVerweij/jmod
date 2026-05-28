@@ -4,6 +4,7 @@ import com.jmod.jrender.client.render.opengl.ChunkBufferBuilder;
 import com.jmod.jrender.client.render.opengl.shader.ShaderLoader;
 import com.jmod.jrender.client.render.opengl.shader.ShaderProgram;
 import com.jmod.jrender.client.render.opengl.vao.*;
+import com.jmod.jrender.client.render.world.chunk.CompiledRenderChunk;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -11,7 +12,6 @@ import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.texture.ITextureObject;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.entity.Entity;
@@ -242,6 +242,7 @@ public class JRenderGlobal extends RenderGlobal {
 
         for (CompiledRenderChunk compiledRenderChunk : this.chunksToBuild) {
             if (this.getWorld().getChunk(compiledRenderChunk.getPosition()).isPopulated()){
+                compiledRenderChunk.loadData();
                 compiledRenderChunk.build(new ChunkBufferBuilder());
                 this.chunksToBuild.remove(compiledRenderChunk);
             }
