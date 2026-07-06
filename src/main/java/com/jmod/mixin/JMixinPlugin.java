@@ -22,6 +22,8 @@ public class JMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void onLoad(String mixinPackage) {
+        this.logger.info("Loading JMOD mixins.");
+
         try {
             this.config = MixinConfig.load(new File(".").toPath().resolve("config").resolve(JRender.MODID + "-mixins.properties").toFile());
         } catch (Exception e) {

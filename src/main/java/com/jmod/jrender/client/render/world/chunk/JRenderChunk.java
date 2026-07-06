@@ -13,14 +13,13 @@ import net.minecraft.util.math.Vec3i;
 
 import static org.lwjglx.opengl.GL11.GL_QUADS;
 
-public class JRenderChunk implements Runnable{
+public class JRenderChunk{
     private final JRenderGlobal renderGlobal;
     private final VertexArrayObject vao;
     private final BlockPos.MutableBlockPos position;
     private final RawChunkRenderData chunkData;
     private final ChunkBufferBuilder builder;
-    private boolean isBuilt = false;
-    private boolean stopped = false;
+    public JChunkRenderBuildTask task;
 
     public JRenderChunk(JRenderGlobal renderGlobal, AttributePointersBuilder builder) {
         this.renderGlobal = renderGlobal;
@@ -30,10 +29,9 @@ public class JRenderChunk implements Runnable{
         this.builder = new ChunkBufferBuilder();
     }
 
-    @Override
-    public void run() {
+    public void reset(){
+        this.chunkData.reset();
         this.builder.reset();
-        this.build(this.builder);
     }
 
     public void setPos(int x, int z){
@@ -56,94 +54,76 @@ public class JRenderChunk implements Runnable{
         this.vao.upload(this.builder);
     }
 
-    public void stop(){
-        this.stopped = true;
-    }
-
     public BlockPos.MutableBlockPos getPosition() {
         return this.position;
     }
 
-    public boolean isBuilt() {
-        return this.isBuilt;
-    }
-
-    public void build(ChunkBufferBuilder builder){
-        this.isBuilt = false;
-        this.stopped = false;
-
+    public void build(int index){
         float xStart, yStart, zStart;
         float xEnd, yEnd, zEnd;
         int x, y, z;
 
         IBlockState[] data = this.chunkData.getData();
+        IBlockState state = data[index];
 
-        for (int index = 0; index < data.length; index++) {
-            if (this.stopped) return;
+        //skip if no block
+        if (state == null) return;
+        if (state.getBlock() == Blocks.AIR) return;
 
-            IBlockState state = data[index];
+        //get position from index
+        x = this.chunkData.getX(index);
+        y = this.chunkData.getY(index);
+        z = this.chunkData.getZ(index);
 
-            //skip if no block
-            if (state == null) continue;
-            if (state.getBlock() == Blocks.AIR) continue;
+        //check if surrounded by solid blocks
+        if (this.isInvisibleByNeighbours(x, y, z)) return;
 
-            //get position from index
-            x = this.chunkData.getX(index);
-            y = this.chunkData.getY(index);
-            z = this.chunkData.getZ(index);
+        //get world position
+        xStart = x + (this.position.getX() << 4);
+        yStart = y;
+        zStart = z + (this.position.getZ() << 4);
+        xEnd = xStart + 1;
+        yEnd = yStart + 1;
+        zEnd = zStart + 1;
 
-            //check if surrounded by solid blocks
-            if (this.isInvisibleByNeighbours(x, y, z)) continue;
+        byte shownFaces = getShownFaces(x, y, z);
 
-            //get world position
-            xStart = x + (this.position.getX() << 4);
-            yStart = y;
-            zStart = z + (this.position.getZ() << 4);
-            xEnd = xStart + 1;
-            yEnd = yStart + 1;
-            zEnd = zStart + 1;
+        //place quads
+        if (checkShowFaces(shownFaces, EnumFacing.UP))
+            builder .putPos(xStart, yEnd,   zEnd    ).putColor(0xFFFFFFFF).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yEnd,   zEnd    ).putColor(0xFFFFFFFF).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yEnd,   zStart  ).putColor(0xFFFFFFFF).putUV(0, 0).endVertex()
+                    .putPos(xStart, yEnd,   zStart  ).putColor(0xFFFFFFFF).putUV(0, 0).endVertex();
 
-            byte shownFaces = getShownFaces(x, y, z);
+        if (checkShowFaces(shownFaces, EnumFacing.DOWN))
+            builder .putPos(xStart, yStart, zStart  ).putColor(0xFFFF0000).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yStart, zStart  ).putColor(0xFFFF0000).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yStart, zEnd    ).putColor(0xFFFF0000).putUV(0, 0).endVertex()
+                    .putPos(xStart, yStart, zEnd    ).putColor(0xFFFF0000).putUV(0, 0).endVertex();
 
-            //place quads
-            if (checkShowFaces(shownFaces, EnumFacing.UP))
-                builder .putPos(xStart, yEnd,   zEnd    ).putColor(0xFFFFFFFF).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yEnd,   zEnd    ).putColor(0xFFFFFFFF).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yEnd,   zStart  ).putColor(0xFFFFFFFF).putUV(0, 0).endVertex()
-                        .putPos(xStart, yEnd,   zStart  ).putColor(0xFFFFFFFF).putUV(0, 0).endVertex();
+        if (checkShowFaces(shownFaces, EnumFacing.SOUTH))
+            builder .putPos(xStart, yStart, zEnd    ).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yStart, zEnd    ).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yEnd,   zEnd    ).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
+                    .putPos(xStart, yEnd,   zEnd    ).putColor(0xFFFF00FF).putUV(0, 0).endVertex();
 
-            if (checkShowFaces(shownFaces, EnumFacing.DOWN))
-                builder .putPos(xStart, yStart, zStart  ).putColor(0xFFFF0000).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yStart, zStart  ).putColor(0xFFFF0000).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yStart, zEnd    ).putColor(0xFFFF0000).putUV(0, 0).endVertex()
-                        .putPos(xStart, yStart, zEnd    ).putColor(0xFFFF0000).putUV(0, 0).endVertex();
+        if (checkShowFaces(shownFaces, EnumFacing.NORTH))
+            builder .putPos(xStart, yEnd,   zStart  ).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yEnd,   zStart  ).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yStart, zStart  ).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
+                    .putPos(xStart, yStart, zStart  ).putColor(0xFFFFFF00).putUV(0, 0).endVertex();
 
-            if (checkShowFaces(shownFaces, EnumFacing.SOUTH))
-                builder .putPos(xStart, yStart, zEnd    ).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yStart, zEnd    ).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yEnd,   zEnd    ).putColor(0xFFFF00FF).putUV(0, 0).endVertex()
-                        .putPos(xStart, yEnd,   zEnd    ).putColor(0xFFFF00FF).putUV(0, 0).endVertex();
+        if (checkShowFaces(shownFaces, EnumFacing.EAST))
+            builder .putPos(xEnd,   yEnd,   zStart  ).putColor(0xFF00FF00).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yEnd,   zEnd    ).putColor(0xFF00FF00).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yStart, zEnd    ).putColor(0xFF00FF00).putUV(0, 0).endVertex()
+                    .putPos(xEnd,   yStart, zStart  ).putColor(0xFF00FF00).putUV(0, 0).endVertex();
 
-            if (checkShowFaces(shownFaces, EnumFacing.NORTH))
-                builder .putPos(xStart, yEnd,   zStart  ).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yEnd,   zStart  ).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yStart, zStart  ).putColor(0xFFFFFF00).putUV(0, 0).endVertex()
-                        .putPos(xStart, yStart, zStart  ).putColor(0xFFFFFF00).putUV(0, 0).endVertex();
-
-            if (checkShowFaces(shownFaces, EnumFacing.EAST))
-                builder .putPos(xEnd,   yEnd,   zStart  ).putColor(0xFF00FF00).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yEnd,   zEnd    ).putColor(0xFF00FF00).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yStart, zEnd    ).putColor(0xFF00FF00).putUV(0, 0).endVertex()
-                        .putPos(xEnd,   yStart, zStart  ).putColor(0xFF00FF00).putUV(0, 0).endVertex();
-
-            if (checkShowFaces(shownFaces, EnumFacing.WEST))
-                builder .putPos(xStart, yStart, zStart  ).putColor(0xFF0000FF).putUV(0, 0).endVertex()
-                        .putPos(xStart, yStart, zEnd    ).putColor(0xFF0000FF).putUV(0, 0).endVertex()
-                        .putPos(xStart, yEnd,   zEnd    ).putColor(0xFF0000FF).putUV(0, 0).endVertex()
-                        .putPos(xStart, yEnd,   zStart  ).putColor(0xFF0000FF).putUV(0, 0).endVertex();
-        }
-
-        this.isBuilt = true;
+        if (checkShowFaces(shownFaces, EnumFacing.WEST))
+            builder .putPos(xStart, yStart, zStart  ).putColor(0xFF0000FF).putUV(0, 0).endVertex()
+                    .putPos(xStart, yStart, zEnd    ).putColor(0xFF0000FF).putUV(0, 0).endVertex()
+                    .putPos(xStart, yEnd,   zEnd    ).putColor(0xFF0000FF).putUV(0, 0).endVertex()
+                    .putPos(xStart, yEnd,   zStart  ).putColor(0xFF0000FF).putUV(0, 0).endVertex();
     }
 
     private boolean checkShowFaces(byte shownFaces, EnumFacing side){
@@ -177,5 +157,46 @@ public class JRenderChunk implements Runnable{
             }
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "(" + this.position.getX() + "," + this.position.getZ() + ")";
+    }
+
+    public static class JChunkRenderBuildTask implements Runnable{
+        private boolean stopped = false;
+        private boolean isBuilt = false;
+        public final JRenderChunk renderChunk;
+
+        public JChunkRenderBuildTask(JRenderChunk renderChunk) {
+            this.renderChunk = renderChunk;
+        }
+
+        public void stop(){
+            this.stopped = true;
+            this.isBuilt = false;
+        }
+
+        public boolean isBuilt() {
+            return this.isBuilt;
+        }
+
+        public boolean isStopped() {
+            return stopped;
+        }
+
+        @Override
+        public void run() {
+            this.isBuilt = false;
+            this.stopped = false;
+
+            for (int i = 0; i < this.renderChunk.chunkData.getData().length; i++) {
+                if (this.stopped) return;
+                this.renderChunk.build(i);
+            }
+
+            this.isBuilt = true;
+        }
     }
 }

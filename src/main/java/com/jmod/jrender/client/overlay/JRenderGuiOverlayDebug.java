@@ -1,10 +1,12 @@
 package com.jmod.jrender.client.overlay;
 
+import com.jmod.jrender.client.render.world.chunk.ChunkRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOverlayDebug;
 import net.minecraft.client.gui.ScaledResolution;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class JRenderGuiOverlayDebug extends GuiOverlayDebug {

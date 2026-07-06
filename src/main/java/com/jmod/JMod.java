@@ -3,9 +3,10 @@ package com.jmod;
 import com.jmod.core.proxy.CommonProxy;
 import com.jmod.jmod.Reference;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
+import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,13 +21,24 @@ public class JMod {
 	@Mod.Instance("jmod")
 	public static JMod instance;
 
-	@SidedProxy(
-            clientSide = "com.jmod.core.proxy.ClientProxy"
-    )
 	public static CommonProxy proxy;
-	
+
+	public JMod(){
+		System.out.println("JMOD CONSTRUCTOR");
+	}
+
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent preInit) {
+		System.out.println("JMOD PREINIT");
+
+		Side side = FMLCommonHandler.instance().getSide();
+
+		if (side == Side.CLIENT) {
+			proxy = new com.jmod.core.proxy.ClientProxy();
+		} else {
+			proxy = new com.jmod.core.proxy.CommonProxy();
+		}
+
 		MinecraftForge.EVENT_BUS.register(proxy);
 		proxy.preInit(preInit);
 	}

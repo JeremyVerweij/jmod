@@ -1,10 +1,10 @@
 package com.jmod.jrender.client.render.world.chunk;
 
-import com.jmod.jrender.client.render.opengl.vao.AttributePointersBuilder;
-import com.jmod.jrender.client.render.opengl.vao.VertexType;
+import com.jmod.jrender.client.render.world.ChunkViewFrustum;
 import com.jmod.jrender.client.render.world.JRenderGlobal;
-import com.jmod.jrender.client.render.world.LoadedAreaCalculator;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -15,24 +15,16 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class ChunkRenderer {
     private final ThreadPoolExecutor threadPool;
     private final JRenderGlobal renderGlobal;
-    private final Set<JRenderChunk> chunksToBuild;
-    private final Set<JRenderChunk> chunksBuilding;
-    private final LoadedAreaCalculator loadedAreaCalculator;
+    private final Set<JRenderChunk.JChunkRenderBuildTask> chunksBuilding;
+    private final ChunkViewFrustum chunkViewFrustum;
 
     public ChunkRenderer(JRenderGlobal renderGlobal){
         this.renderGlobal = renderGlobal;
+        this.chunkViewFrustum = new ChunkViewFrustum(Minecraft.getMinecraft().gameSettings.renderDistanceChunks, this.renderGlobal);
 
         this.threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(8);
 
-        this.chunksToBuild = new HashSet<>();
         this.chunksBuilding = new HashSet<>();
-
-        this.loadedAreaCalculator = new LoadedAreaCalculator(this.renderGlobal, this.chunksToBuild, new AttributePointersBuilder()
-                .addAttribute(VertexType.FLOAT, 3, false)
-                .addAttribute(VertexType.UNSIGNED_BYTE, 4, true)
-                .addAttribute(VertexType.SHORT, 2, false));
-
-        this.loadedAreaCalculator.setRenderDistance(4, false);
     }
 
     public void setUseThreads(int amount){
@@ -41,35 +33,62 @@ public class ChunkRenderer {
     }
 
     public void draw(){
-        for (JRenderChunk renderChunk : this.loadedAreaCalculator.getRenderChunks()) {
+        for (JRenderChunk renderChunk : this.chunkViewFrustum.getRenderChunks()) {
             renderChunk.draw();
         }
     }
 
     public void setupTerrain(Entity viewEntity){
-        this.loadedAreaCalculator.updatePosition(viewEntity.chunkCoordX, viewEntity.chunkCoordZ);
+        chunkViewFrustum.updatePos(viewEntity.chunkCoordX, viewEntity.chunkCoordZ);
+    }
 
-        for (Iterator<JRenderChunk> chunkIterator = this.chunksToBuild.iterator(); chunkIterator.hasNext();){
-            JRenderChunk renderChunk = chunkIterator.next();
+    public void updateChunk(int minX, int minZ, int maxX, int maxZ){
+        int chunkMinX = MathHelper.intFloorDiv(minX, 16);
+        int chunkMinZ = MathHelper.intFloorDiv(minZ, 16);
+        int chunkMaxX = MathHelper.intFloorDiv(maxX, 16);
+        int chunkMaxZ = MathHelper.intFloorDiv(maxZ, 16);
 
-            if (this.renderGlobal.getWorld().getChunk(renderChunk.getPosition()).isPopulated()){
-                this.chunksBuilding.remove(renderChunk);
-                renderChunk.stop();
+        for (int x = chunkMinX; x < chunkMaxX; x++) {
+            for (int z = chunkMinZ; z < chunkMaxZ; z++) {
+                JRenderChunk renderChunk = this.chunkViewFrustum.getChunk(x, z);
+                if (renderChunk == null) continue;
+
+                if (renderChunk.task != null){
+                    this.chunksBuilding.remove(renderChunk.task);
+                    renderChunk.task.stop();
+                }
+
+                JRenderChunk.JChunkRenderBuildTask task = new JRenderChunk.JChunkRenderBuildTask(renderChunk);
                 renderChunk.loadData();
-                this.chunksBuilding.add(renderChunk);
+                this.chunksBuilding.add(task);
+                renderChunk.task = task;
 
-                this.threadPool.submit(renderChunk);
+                this.threadPool.submit(task);
+            }
+        }
+    }
 
+    public void updateChunks(){
+        for (Iterator<JRenderChunk.JChunkRenderBuildTask> chunkIterator = this.chunksBuilding.iterator(); chunkIterator.hasNext();){
+            JRenderChunk.JChunkRenderBuildTask renderBuildTask = chunkIterator.next();
+
+            if (renderBuildTask.isStopped()){
                 chunkIterator.remove();
+                renderBuildTask.renderChunk.task = null;
             }
         }
 
-        for (Iterator<JRenderChunk> chunkIterator = this.chunksBuilding.iterator(); chunkIterator.hasNext();){
-            JRenderChunk renderChunk = chunkIterator.next();
-            if (renderChunk.isBuilt()){
-                renderChunk.upload();
+        for (Iterator<JRenderChunk.JChunkRenderBuildTask> chunkIterator = this.chunksBuilding.iterator(); chunkIterator.hasNext();){
+            JRenderChunk.JChunkRenderBuildTask renderBuildTask = chunkIterator.next();
+            if (renderBuildTask.isBuilt()){
+                renderBuildTask.renderChunk.upload();
                 chunkIterator.remove();
+                renderBuildTask.renderChunk.task = null;
             }
         }
+    }
+
+    public void setRenderDistance(int renderDistanceChunks) {
+        this.chunkViewFrustum.setRenderDistance(renderDistanceChunks);
     }
 }

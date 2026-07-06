@@ -80,7 +80,7 @@ public class ChunkBufferBuilder {
     }
 
     public void reset(){
-        this.buffer.rewind();
+        this.buffer.clear();
         this.vertices = 0;
     }
 

@@ -7,12 +7,14 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 
 public class RawChunkRenderData {
     private final IBlockState[] data;
 
     public RawChunkRenderData(){
         this.data = new IBlockState[16 * 256 * 16];
+        this.reset();
     }
 
     public void loadData(Chunk chunk){
@@ -60,6 +62,10 @@ public class RawChunkRenderData {
         if (index < 0) return null;
 
         return this.data[index];
+    }
+
+    public void reset(){
+        Arrays.fill(this.data, null);
     }
 
     public IBlockState[] getData() {

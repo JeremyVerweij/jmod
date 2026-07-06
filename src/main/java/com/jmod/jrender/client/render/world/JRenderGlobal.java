@@ -244,14 +244,20 @@ public class JRenderGlobal extends RenderGlobal {
 
     @Override
     public void updateChunks(long finishTimeNano) {
+        this.chunkRenderer.updateChunks();
     }
 
     @Override
     protected void markBlocksForUpdate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, boolean updateImmediately) {
+        this.chunkRenderer.updateChunk(minX, minZ, maxX, maxZ);
     }
 
     @Override
     public void notifyBlockUpdate(World worldIn, BlockPos pos, IBlockState oldState, IBlockState newState, int flags) {
+        int i = pos.getX();
+        int j = pos.getY();
+        int k = pos.getZ();
+        this.markBlocksForUpdate(i - 1, j - 1, k - 1, i + 1, j + 1, k + 1, (flags & 8) != 0);
     }
 
     @Override
@@ -260,8 +266,8 @@ public class JRenderGlobal extends RenderGlobal {
 
     @Override
     public void markBlockRangeForRenderUpdate(int x1, int y1, int z1, int x2, int y2, int z2) {
+        this.markBlocksForUpdate(x1 - 1, y1 - 1, z1 - 1, x2 + 1, y2 + 1, z2 + 1, false);
     }
-
 
     @Override
     public boolean hasNoChunkUpdates() {
