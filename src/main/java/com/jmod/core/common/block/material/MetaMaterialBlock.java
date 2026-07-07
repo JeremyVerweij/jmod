@@ -4,8 +4,11 @@ import com.jmod.JMod;
 import com.jmod.core.common.block.MetaBlock;
 import com.jmod.core.common.block.interfaces.IMaterialBlockColor;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 public abstract class MetaMaterialBlock extends MetaBlock implements IMaterialBlockColor {
     public MetaMaterialBlock(String modId, String registryName, Material blockMaterialIn) {
@@ -34,6 +37,24 @@ public abstract class MetaMaterialBlock extends MetaBlock implements IMaterialBl
                 return false;
 
             return super.isItemInCreativeTab(subId, tab);
+        }
+
+        @Override
+        public @NonNull String getTranslationKey(@NonNull ItemStack stack) {
+            return super.getTranslationKeyWithoutMeta(stack);
+        }
+
+        @Override
+        public @NonNull String getItemStackDisplayName(@NonNull ItemStack stack) {
+            return I18n.format(this.getTranslationKey(stack), I18n.format(this.getMaterialTranslationKey(stack)));
+        }
+
+        protected String getMaterialTranslationKey(@NonNull ItemStack stack){
+            if (stack.getMetadata() < JMod.proxy.getMaterialRegistry().size()){
+                return JMod.proxy.getMaterialRegistry().toList().get(stack.getMetadata()).getMaterialTranslationKey();
+            }
+
+            return "jmod.materials.unknow";
         }
     }
 }

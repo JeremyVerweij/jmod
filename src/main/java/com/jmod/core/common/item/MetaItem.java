@@ -7,6 +7,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.client.model.ModelLoader;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class MetaItem extends Item {
     private final short maxId;
@@ -15,18 +16,17 @@ public class MetaItem extends Item {
     public MetaItem(String modId, String registryName, short maxId) {
         this.setHasSubtypes(true);
         this.setRegistryName(modId, registryName);
-        this.setTranslationKey(modId + "." + registryName);
+        this.setTranslationKey(modId + "." + registryName + ".name");
         this.maxId = maxId;
     }
 
     @Override
-    public int getMetadata(ItemStack stack) {
-        return stack.itemDamage;
+    public @NonNull String getTranslationKey(@NonNull ItemStack stack) {
+        return super.getTranslationKey(stack) + "." + stack.getMetadata();
     }
 
-    @Override
-    public String getTranslationKey(ItemStack stack) {
-        return super.getTranslationKey(stack) + "." + stack.getMetadata();
+    protected @NonNull String getTranslationKeyWithoutMeta(@NonNull ItemStack stack){
+        return super.getTranslationKey(stack);
     }
 
     @Override

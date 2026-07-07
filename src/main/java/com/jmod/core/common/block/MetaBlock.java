@@ -32,6 +32,7 @@ import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.common.property.IUnlistedProperty;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Random;
 
@@ -46,7 +47,7 @@ public abstract class MetaBlock extends SplitSideBlock  {
     public MetaBlock(String modId, String registryName, Material blockMaterialIn, short maxId) {
         super(blockMaterialIn);
         this.setRegistryName(modId, registryName);
-        this.setTranslationKey(modId + "." + registryName);
+        this.setTranslationKey(modId + "." + registryName + ".name");
         this.maxId = maxId;
 
         this.itemBlock = this.createItemBlock();
@@ -221,8 +222,12 @@ public abstract class MetaBlock extends SplitSideBlock  {
         }
 
         @Override
-        public String getTranslationKey(@NotNull ItemStack stack) {
+        public @NonNull String getTranslationKey(@NotNull ItemStack stack) {
             return super.getTranslationKey(stack) + "." + stack.getMetadata();
+        }
+
+        protected @NonNull String getTranslationKeyWithoutMeta(@NonNull ItemStack stack){
+            return super.getTranslationKey(stack);
         }
 
         @Override

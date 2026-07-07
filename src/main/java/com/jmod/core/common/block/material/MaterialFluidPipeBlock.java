@@ -3,6 +3,7 @@ package com.jmod.core.common.block.material;
 import com.jmod.JMod;
 import com.jmod.Tags;
 import com.jmod.core.client.model.MetaPipeTestModel;
+import com.jmod.core.common.block.MetaBlock;
 import com.jmod.core.common.block.interfaces.IRequireTool;
 import com.jmod.core.common.item.ToolType;
 import com.jmod.core.common.item.interfaces.IHasSpecialOverlay;
@@ -16,10 +17,12 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -81,6 +84,8 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
 
         this.connectionBoundingBoxes[EnumFacing.WEST.getIndex()] = createBoundingBox(new Vector3f(0, offset, offset),
                 new Vector3f(16 - offset, 16 - offset, 16 - offset));
+
+        this.setTranslationKey(Tags.MOD_ID + ".pipe.name");
     }
 
     @Override
@@ -274,5 +279,22 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
     @Override
     public ToolType toolType() {
         return ToolType.PICKAXE;
+    }
+
+    protected Item createItemBlock(){
+        return new ItemPipeBlock(this).setRegistryName(this.getRegistryName());
+    }
+
+    protected static class ItemPipeBlock extends ItemMetaMaterialBlock {
+        public ItemPipeBlock(MetaBlock block) {
+            super(block);
+        }
+
+        @Override
+        public @NonNull String getItemStackDisplayName(@NonNull ItemStack stack) {
+            return I18n.format(this.getTranslationKey(stack),
+                    I18n.format("jcore.tile.pipe.size." + ((MaterialFluidPipeBlock) this.block).size),
+                    I18n.format(this.getMaterialTranslationKey(stack)));
+        }
     }
 }

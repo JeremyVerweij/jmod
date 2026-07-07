@@ -69,7 +69,7 @@ public class CommonProxy {
 
     @SubscribeEvent
     public void onMaterialRegister(MaterialRegistryEvent event){
-        event.REGISTRY.register(0, new MaterialBuilder(0xFFFF00FF, "")
+        event.REGISTRY.register(0, new MaterialBuilder(0xFFFF00FF, "material.test")
                 .enableFluidPipe(1)
                 .enableTools(true, true, true, 5f, 100, MiningTier.STEEL)
                 .build());

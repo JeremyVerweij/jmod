@@ -1,3 +1,13 @@
-jcore.item.mode.single=single mode
-jcore.item.mode.mutli=multi mode
-jcore.item.wrench.modeSwitch=Wrench now set to %s
+jcore.item.mode.single=Single Mode
+jcore.item.mode.mutli=Multi Mode
+jcore.item.wrench.modeSwitch=Wrench Now Set To %s
+jcore.tile.pipe.size.4=Tiny
+jcore.tile.pipe.size.6=Small
+jcore.tile.pipe.size.8=
+jcore.tile.pipe.size.10=Large
+jcore.tile.pipe.size.12=Enormous
+
+item.jmod.wrench.name=%s Wrench
+tile.jmod.pipe.name=%s %s Pipe
+
+material.test=Test

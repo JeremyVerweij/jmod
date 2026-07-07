@@ -7,7 +7,6 @@ import com.jmod.core.common.material.Material;
 import com.jmod.core.common.material.MaterialProperties;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -67,7 +66,7 @@ public class WrenchItem extends MetaMaterialToolItem implements IHasSpecialOverl
 
         boolean mode = stack.getTagCompound().getBoolean(MODE_NBT_TAG);
 
-        return mode ? 5 : 1;
+        return mode ? 8 : 1;
     }
 
     @Override
