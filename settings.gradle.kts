@@ -1,4 +1,4 @@
-rootProject.name = "MyMod"
+rootProject.name = "JMod"
 
 dependencyResolutionManagement {
     versionCatalogs {

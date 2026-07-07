@@ -1,0 +1,17 @@
+{
+  "package": "com.jmod.mixin",
+  "required": true,
+  "refmap": "@mixin_refmap@",
+  "target": "@env(DEFAULT)",
+  "minVersion": "@mixin_min_version@",
+  "compatibilityLevel": "JAVA_8",
+  "plugin": "com.jmod.mixin.JMixinPlugin",
+  "mixins": [],
+  "server": [],
+  "client": [
+    "jrender.core.BlockColorsMixin",
+    "jrender.core.MinecraftMixin",
+    "jui.MixinItemColors",
+    "jui.MixinRenderItem"
+  ]
+}

@@ -14,11 +14,10 @@ dependencies {
     compileOnlyApi(deps.annotations)
     testImplementation(deps.assertj.core)
 
-    runtimeOnly(deps.hei)
-    runtimeOnly(deps.theOneProbe)
-
     shadowDowngrade(deps.guava)
     shadowDowngrade(deps.pcollections)
+
+    compileOnly("org.jetbrains:annotations:26.0.2")
 }
 
 configurations {

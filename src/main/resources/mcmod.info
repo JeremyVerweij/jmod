@@ -10,5 +10,23 @@
     "url": "",
     "dependencies": [],
     "logoFile": ""
+  },
+  {
+    "modid": "jfarming",
+    "name": "JFarming",
+    "mcversion": "1.12.2",
+    "parent": "jmod"
+  },
+  {
+    "modid": "jrender",
+    "name": "J's Render Engine",
+    "mcversion": "1.12.2",
+    "parent": "jmod"
+  },
+  {
+    "modid": "jui",
+    "name": "J's UI Library",
+    "mcversion": "1.12.2",
+    "parent": "jmod"
   }
 ]
