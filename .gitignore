@@ -1,27 +1,69 @@
-.gradle
-**/build/
-!src/**/build/
+### Misc ###
+.kotlin/
+.nopublish/
+.externalToolBuilders/
+hs_err_pid*
+libs/
 run/
+logs/
+
+### Gradle ###
+.gradle/
+.gradle-user-home/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### IntelliJ IDEA ###
+.idea/
+.idea_modules/
+classes/
 out/
+build/
+!.idea/icon.png
+*.iws
+*.iml
+*.ipr
 
-# Ignore Gradle GUI config
-gradle-app.setting
+### Spotless ###
+spotless/
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
+### Java ###
+*.class
 
-# Avoid ignore Gradle wrappper properties
-!gradle-wrapper.properties
-
-# Cache of project
-.gradletasknamecache
-
-# Eclipse Gradle plugin generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
+### Eclipse ###
+.apt_generated
 .classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+*.launch
 
-# IDEA config
-.idea
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
 
+### VS Code ###
+.vscode/
+
+### Windows ###
+thumbs.db
+*.db
+
+### Mac OS ###
+.DS_Store
+
+### Agents ###
+.agents/
+.claude/
+.codex/

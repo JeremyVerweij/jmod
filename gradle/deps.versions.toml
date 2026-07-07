@@ -1,0 +1,21 @@
+[versions]
+annotations = "26.1.0"
+jspecify = "1.0.0"
+assertj = "3.27.7"
+
+hei = "4.31.2"
+theOneProbe = "1.12-1.4.28"
+
+guava = "33.6.0-jre"
+pcollections = "5.0.0"
+
+[libraries]
+annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+jspecify = { module = "org.jspecify:jspecify", version.ref = "jspecify" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+
+hei = { module = "mezz:jei", version.ref = "hei" }
+theOneProbe = { module = "maven.modrinth:the-one-probe", version.ref = "theOneProbe" }
+
+guava = { module = "com.google.guava:guava", version.ref = "guava" }
+pcollections = { module = "org.pcollections:pcollections", version.ref = "pcollections" }
