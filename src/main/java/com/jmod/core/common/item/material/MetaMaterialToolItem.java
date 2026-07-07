@@ -82,7 +82,7 @@ public abstract class MetaMaterialToolItem extends MetaMaterialItem{
         return true;
     }
 
-    private void createTag(ItemStack stack){
+    protected void createTag(ItemStack stack){
         stack.setTagCompound(new NBTTagCompound());
         stack.getTagCompound().setInteger(DAMAGE_NBT_TAG, 0);
     }

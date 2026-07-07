@@ -94,14 +94,13 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
+    protected @NonNull BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this, new IProperty[] {}, new IUnlistedProperty[] { ID, CONNECTIONS, RESTRICTIONS });
     }
 
     @Override
-    public IBlockState getExtendedState(@NotNull IBlockState state, @NotNull IBlockAccess world, @NotNull BlockPos pos) {
-        if (state instanceof IExtendedBlockState) {
-            IExtendedBlockState extendedState = (IExtendedBlockState) state;
+    public @NonNull IBlockState getExtendedState(@NotNull IBlockState state, @NotNull IBlockAccess world, @NotNull BlockPos pos) {
+        if (state instanceof IExtendedBlockState extendedState) {
             return extendedState.withProperty(ID, (short) (((ClientProxy) JMod.proxy).clientMetaIdHolder
                     .getId(pos.getX(), pos.getY(), pos.getZ(), Minecraft.getMinecraft().world.provider.getDimension()) & 0b111_1111_1111_1111))
                     .withProperty(CONNECTIONS, (byte) ((((ClientProxy) JMod.proxy).clientMetaIdHolder
@@ -128,7 +127,7 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
     }
 
     @Override
-    public void onOverlayClicked(IBlockState state, World world, EntityPlayer player, EnumHand hand, BlockPos pos, EnumFacing side) {
+    public void onOverlayClicked(IBlockState state, World world, EntityPlayer player, EnumHand hand, BlockPos pos, EnumFacing side, int chainsLeft) {
         if (!world.isRemote){
             int meta = this.getServerMetaData(pos, world.provider.getDimension());
 
@@ -149,6 +148,10 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
             }
 
             this.setServerMetaData(pos, world.provider.getDimension(), meta);
+
+            if (chainsLeft > 1 && neighbour.getBlock() instanceof MaterialFluidPipeBlock materialFluidPipeBlock){
+                materialFluidPipeBlock.onOverlayClicked(neighbour, world, player, hand, neighbourPos, side, chainsLeft - 1);
+            }
         }
     }
 
@@ -173,14 +176,16 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
 
         int meta = getServerMetaData(pos, world.provider.getDimension());
 
-        for (int i = 0; i < 6; i++) {
-            BlockPos neighbourPos = pos.offset(EnumFacing.byIndex(i));
-            IBlockState neighbour = world.getBlockState(neighbourPos);
-            if (neighbour.getBlock() instanceof MaterialFluidPipeBlock){
-                int neighbourMeta = getServerMetaData(neighbourPos, world.provider.getDimension());
-                setServerMetaData(neighbourPos, world.provider.getDimension(),
-                        neighbourMeta | (1 << (EnumFacing.byIndex(i).getOpposite().getIndex() + 16)));
-                meta |= 1 << (i + 16);
+        if (placer.isSneaking()){
+            for (int i = 0; i < 6; i++) {
+                BlockPos neighbourPos = pos.offset(EnumFacing.byIndex(i));
+                IBlockState neighbour = world.getBlockState(neighbourPos);
+                if (neighbour.getBlock() instanceof MaterialFluidPipeBlock){
+                    int neighbourMeta = getServerMetaData(neighbourPos, world.provider.getDimension());
+                    setServerMetaData(neighbourPos, world.provider.getDimension(),
+                            neighbourMeta | (1 << (EnumFacing.byIndex(i).getOpposite().getIndex() + 16)));
+                    meta |= 1 << (i + 16);
+                }
             }
         }
 
@@ -188,7 +193,7 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox(@NotNull IBlockState state, @NotNull IBlockAccess source, @NotNull BlockPos pos) {
+    public @NonNull AxisAlignedBB getBoundingBox(@NotNull IBlockState state, @NotNull IBlockAccess source, @NotNull BlockPos pos) {
         return FULL_BLOCK_AABB;
     }
 

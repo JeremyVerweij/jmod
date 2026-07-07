@@ -19,7 +19,7 @@ public interface IHasSpecialOverlay {
     boolean hasOverlay(EntityPlayer player, ItemStack heldItem);
     OverlayType getOverlayType(EntityPlayer player, ItemStack heldItem);
 
-    static boolean overlayItemRightClick(@NotNull EntityPlayer player, @NotNull World worldIn, @NotNull BlockPos pos, @NotNull EnumHand hand, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ){
+    default boolean overlayItemRightClick(@NotNull EntityPlayer player, @NotNull World worldIn, @NotNull BlockPos pos, @NotNull EnumHand hand, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ){
         if (player.getHeldItem(hand).getItem() instanceof IHasSpecialOverlay specialOverlay){
             return switch (specialOverlay.getOverlayType(player, player.getHeldItem(hand))){
                 case CONNECTIONS -> overlayItemRightClickConnectionType(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
@@ -29,30 +29,40 @@ public interface IHasSpecialOverlay {
         return false;
     }
 
-    static boolean overlayItemRightClickConnectionType(@NotNull EntityPlayer player, @NotNull World worldIn, @NotNull BlockPos pos, @NotNull EnumHand hand, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ){
+    default boolean overlayItemRightClickConnectionType(@NotNull EntityPlayer player, @NotNull World worldIn, @NotNull BlockPos pos, @NotNull EnumHand hand, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ){
         IBlockState state = worldIn.getBlockState(pos);
         Block block = state.getBlock();
-        if (block instanceof IBlockHasConnectionOverlay){
+        if (block instanceof IBlockHasConnectionOverlay connectionOverlayBlock){
             Vec2f UV = getUV(facing, hitX, hitY, hitZ);
 
             if (isInBoundingBox2D(UV, 0.2, 0.2, 0.8, 0.8)){
-                ((IBlockHasConnectionOverlay) block).onOverlayClicked(state, worldIn, player, hand, pos, facing);
+                connectionOverlayBlock.onOverlayClicked(state, worldIn, player, hand, pos, facing, 
+                    getChainAmount(player, worldIn, pos, hand, facing, hitX, hitY, hitZ));
             } else if (isInBoundingBox2D(UV, 0.2, 0.8, 0.8, 1.0)){
-                ((IBlockHasConnectionOverlay) block).onOverlayClicked(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.UP));
+                connectionOverlayBlock.onOverlayClicked(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.UP), 
+                        getChainAmount(player, worldIn, pos, hand, facing, hitX, hitY, hitZ));
             } else if (isInBoundingBox2D(UV, 0.2, 0.0, 0.8, 0.2)){
-                ((IBlockHasConnectionOverlay) block).onOverlayClicked(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.BOTTOM));
+                connectionOverlayBlock.onOverlayClicked(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.BOTTOM), 
+                    getChainAmount(player, worldIn, pos, hand, facing, hitX, hitY, hitZ));
             } else if (isInBoundingBox2D(UV, 0.0, 0.2, 0.2, 0.8)){
-                ((IBlockHasConnectionOverlay) block).onOverlayClicked(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.LEFT));
+                connectionOverlayBlock.onOverlayClicked(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.LEFT), 
+                    getChainAmount(player, worldIn, pos, hand, facing, hitX, hitY, hitZ));
             } else if (isInBoundingBox2D(UV, 0.8, 0.2, 1.0, 0.8)){
-                ((IBlockHasConnectionOverlay) block).onOverlayClicked(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.RIGHT));
+                connectionOverlayBlock.onOverlayClicked(state, worldIn, player, hand, pos, rotateSideNoCorrection(facing, EnumSide2D.RIGHT), 
+                    getChainAmount(player, worldIn, pos, hand, facing, hitX, hitY, hitZ));
             } else{
-                ((IBlockHasConnectionOverlay) block).onOverlayClicked(state, worldIn, player, hand, pos, facing.getOpposite());
+                connectionOverlayBlock.onOverlayClicked(state, worldIn, player, hand, pos, facing.getOpposite(),
+                        getChainAmount(player, worldIn, pos, hand, facing, hitX, hitY, hitZ));
             }
 
             return true;
         }
 
         return false;
+    }
+    
+    default int getChainAmount(@NotNull EntityPlayer player, @NotNull World worldIn, @NotNull BlockPos pos, @NotNull EnumHand hand, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ){
+        return 1;
     }
 
     enum OverlayType{
@@ -64,7 +74,7 @@ public interface IHasSpecialOverlay {
     }
 
     interface IBlockHasConnectionOverlay extends IBlockHasOverlay{
-        void onOverlayClicked(IBlockState state, World world, EntityPlayer player, EnumHand hand, BlockPos pos, EnumFacing side);
+        void onOverlayClicked(IBlockState state, World world, EntityPlayer player, EnumHand hand, BlockPos pos, EnumFacing side, int chainsLeft);
 
         byte getSidesConnectedForOverlay(World world, BlockPos pos);
 
