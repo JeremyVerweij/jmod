@@ -1,13 +1,17 @@
-jcore.item.mode.single=Single Mode
-jcore.item.mode.mutli=Multi Mode
-jcore.item.wrench.modeSwitch=Wrench Now Set To %s
-jcore.tile.pipe.size.4=Tiny
-jcore.tile.pipe.size.6=Small
-jcore.tile.pipe.size.8=
-jcore.tile.pipe.size.10=Large
-jcore.tile.pipe.size.12=Enormous
+jmod.mode.single=Single Mode
+jmod.mode.mutli=Multi Mode
+jmod.tools.durability=Durability: %d/%d
 
 item.jmod.wrench.name=%s Wrench
+item.jmod.wrench.modeSwitch=Wrench Now Set To %s
+item.jmod.wrench.modeTooltip=Currently using %s
+
 tile.jmod.pipe.name=%s %s Pipe
+tile.jmod.pipe.size.4=Tiny
+tile.jmod.tile.pipe.size.6=Small
+tile.jmod.tile.pipe.size.8=Normal
+tile.jmod.tile.pipe.size.10=Large
+tile.jmod.tile.pipe.size.12=Enormous
+
 
 material.test=Test

@@ -8,8 +8,8 @@ import org.lwjgl.input.Keyboard;
 
 public class ExtendedDebug {
     //A B D F G H N P Q T I C
-    public static final F3Debugger CHUNK_WIRE_FRAME_MODE = new F3Debugger(Keyboard.KEY_I, "debug.chunk_wireframe");
-    public static final F3Debugger DISABLE_CHUNK_FRUSTUM_CAMERA_MODE = new F3Debugger(Keyboard.KEY_C, "debug.disable_chunk_frustum_camere");
+//    public static final F3Debugger CHUNK_WIRE_FRAME_MODE = new F3Debugger(Keyboard.KEY_I, "debug.chunk_wireframe");
+//    public static final F3Debugger DISABLE_CHUNK_FRUSTUM_CAMERA_MODE = new F3Debugger(Keyboard.KEY_C, "debug.disable_chunk_frustum_camere");
 
     private static final ExtendedDebug instance = new ExtendedDebug();
     public static ExtendedDebug getInstance() {
@@ -21,8 +21,8 @@ public class ExtendedDebug {
     private ExtendedDebug(){
         this.debuggers = new Int2ObjectOpenHashMap<>();
 
-        addDebugger(CHUNK_WIRE_FRAME_MODE);
-        addDebugger(DISABLE_CHUNK_FRUSTUM_CAMERA_MODE);
+//        addDebugger(CHUNK_WIRE_FRAME_MODE);
+//        addDebugger(DISABLE_CHUNK_FRUSTUM_CAMERA_MODE);
     }
 
     public void addDebugger(F3Debugger debugger){

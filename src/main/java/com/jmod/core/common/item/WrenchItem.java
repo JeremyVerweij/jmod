@@ -2,12 +2,15 @@ package com.jmod.core.common.item;
 
 import com.jmod.Tags;
 import com.jmod.core.common.item.interfaces.IHasSpecialOverlay;
+import com.jmod.core.common.item.interfaces.nbt.IModeSwitcher;
 import com.jmod.core.common.item.material.MetaMaterialToolItem;
 import com.jmod.core.common.material.Material;
 import com.jmod.core.common.material.MaterialProperties;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
@@ -18,12 +21,20 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
-public class WrenchItem extends MetaMaterialToolItem implements IHasSpecialOverlay {
-    private static final String MODE_NBT_TAG = "mode";
+import java.util.List;
 
+public class WrenchItem extends MetaMaterialToolItem implements IHasSpecialOverlay, IModeSwitcher<WrenchItem.WrenchMode> {
     public WrenchItem() {
         super(Tags.MOD_ID, "wrench", ToolType.PICKAXE);
+    }
+
+    @Override
+    public void addInformation(@NonNull ItemStack stack, @Nullable World worldIn, List<String> tooltip, @NonNull ITooltipFlag flagIn) {
+        tooltip.add(I18n.format("item.jmod.wrench.modeTooltip", I18n.format(getMode(stack).getTranslationKey())));
+
+        super.addInformation(stack, worldIn, tooltip, flagIn);
     }
 
     @Override
@@ -44,13 +55,8 @@ public class WrenchItem extends MetaMaterialToolItem implements IHasSpecialOverl
             RayTraceResult raytrace = this.rayTrace(world, player, true);
 
             if (raytrace == null || raytrace.typeOfHit == RayTraceResult.Type.MISS) {
-                if (!stack.hasTagCompound())
-                    createTag(stack);
-
-                boolean mode = stack.getTagCompound().getBoolean(MODE_NBT_TAG);
-                stack.getTagCompound().setBoolean(MODE_NBT_TAG, !mode);
-
-                player.sendMessage(new TextComponentTranslation("jcore.item.wrench.modeSwitch", I18n.format(mode ? "jcore.item.mode.single" : "jcore.item.mode.mutli")));
+                WrenchMode mode = this.toggleModes(stack);
+                player.sendMessage(new TextComponentTranslation("item.jmod.wrench.modeSwitch", I18n.format(mode.getTranslationKey())));
 
             }
         }
@@ -61,12 +67,9 @@ public class WrenchItem extends MetaMaterialToolItem implements IHasSpecialOverl
     @Override
     public int getChainAmount(@NotNull EntityPlayer player, @NotNull World worldIn, @NotNull BlockPos pos, @NotNull EnumHand hand, @NotNull EnumFacing facing, float hitX, float hitY, float hitZ){
         ItemStack stack = player.getHeldItem(hand);
-        if (!stack.hasTagCompound())
-            createTag(stack);
+        WrenchMode mode = this.getMode(stack);
 
-        boolean mode = stack.getTagCompound().getBoolean(MODE_NBT_TAG);
-
-        return mode ? 8 : 1;
+        return mode == WrenchMode.MULTI ? 8 : 1;
     }
 
     @Override
@@ -82,5 +85,32 @@ public class WrenchItem extends MetaMaterialToolItem implements IHasSpecialOverl
     @Override
     public OverlayType getOverlayType(EntityPlayer player, ItemStack heldItem) {
         return OverlayType.CONNECTIONS;
+    }
+
+    @Override
+    public void addDefaultTags(NBTTagCompound tag) {
+        IModeSwitcher.super.addDefaultTags(tag);
+        super.addDefaultTags(tag);
+    }
+
+    @Override
+    public WrenchMode[] getModes() {
+        return WrenchMode.values();
+    }
+
+    public enum WrenchMode implements ModeEnum{
+        SINGLE("jmod.mode.single"),
+        MULTI("jmod.mode.mutli");
+
+        private final String translationKey;
+
+        WrenchMode(String translationKey) {
+            this.translationKey = translationKey;
+        }
+
+        @Override
+        public String getTranslationKey() {
+            return translationKey;
+        }
     }
 }

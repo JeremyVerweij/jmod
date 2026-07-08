@@ -23,7 +23,6 @@ import org.lwjgl.util.vector.Vector3f;
 
 import java.nio.FloatBuffer;
 
-import static com.jmod.jrender.client.debug.ExtendedDebug.CHUNK_WIRE_FRAME_MODE;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 
@@ -127,8 +126,8 @@ public class JRenderGlobal extends RenderGlobal {
             GlStateManager.enableAlpha();
             GlStateManager.enableBlend();
 
-            if (CHUNK_WIRE_FRAME_MODE.isEnabled())
-                glPolygonMode(GL_FRONT, GL_LINE);
+//            if (CHUNK_WIRE_FRAME_MODE.isEnabled())
+//                glPolygonMode(GL_FRONT, GL_LINE);
 
             GlStateManager.setActiveTexture(GL_TEXTURE0);
             GlStateManager.bindTexture(getAtlasTextureId(TextureMap.LOCATION_BLOCKS_TEXTURE));

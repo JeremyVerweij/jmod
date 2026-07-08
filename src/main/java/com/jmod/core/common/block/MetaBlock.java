@@ -1,12 +1,13 @@
 package com.jmod.core.common.block;
 
 import com.jmod.JMod;
+import com.jmod.core.common.block.interfaces.IRequireTool;
+import com.jmod.core.common.item.ToolType;
 import com.jmod.core.common.net.MetaIdsDeltaAddPacket;
 import com.jmod.core.common.net.MetaIdsDeltaDeletePacket;
 import com.jmod.core.common.net.NetworkHandler;
 import com.jmod.core.proxy.ClientProxy;
 import com.jmod.core.common.utils.unlisterProperty.UnlistedPropertyShort;
-//import com.jmod.jrender.common.ICustomDebug;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -35,26 +36,29 @@ import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 
 import java.util.Random;
+import java.util.Set;
 
-public abstract class MetaBlock extends SplitSideBlock  {
+public abstract class MetaBlock extends SplitSideBlock implements IRequireTool {
     public final static byte BLOCK_SIZE = 16;
     public final static byte BLOCK_CENTER = BLOCK_SIZE / 2;
     public static final IUnlistedProperty<Short> ID = new UnlistedPropertyShort("id", (short) 0, Short.MAX_VALUE);
     private final short maxId;
     private final Item itemBlock;
     private CreativeTabs metaBasedCreativeTab = null;
+    private final Set<ToolType> toolTypes;
 
-    public MetaBlock(String modId, String registryName, Material blockMaterialIn, short maxId) {
+    public MetaBlock(String modId, String registryName, Material blockMaterialIn, short maxId, Set<ToolType> toolTypes) {
         super(blockMaterialIn);
         this.setRegistryName(modId, registryName);
         this.setTranslationKey(modId + "." + registryName + ".name");
         this.maxId = maxId;
+        this.toolTypes = toolTypes;
 
         this.itemBlock = this.createItemBlock();
     }
 
-    public MetaBlock(String modId, String registryName, Material blockMaterialIn, CreativeTabs creativeTab, short maxId){
-        this(modId, registryName, blockMaterialIn, maxId);
+    public MetaBlock(String modId, String registryName, Material blockMaterialIn, CreativeTabs creativeTab, short maxId, Set<ToolType> toolTypes){
+        this(modId, registryName, blockMaterialIn, maxId, toolTypes);
         this.setCreativeTab(creativeTab);
     }
 
@@ -88,25 +92,24 @@ public abstract class MetaBlock extends SplitSideBlock  {
     }
 
     @Override
-    public Block setCreativeTab(CreativeTabs tab) {
+    public @NonNull Block setCreativeTab(@NonNull CreativeTabs tab) {
         this.metaBasedCreativeTab = tab;
         return this;
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
+    protected @NonNull BlockStateContainer createBlockState() {
         return new ExtendedBlockState(this, new IProperty[] {}, new IUnlistedProperty[] { ID });
     }
 
     @Override
-    public BlockRenderLayer getRenderLayer() {
+    public @NonNull BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
     @Override
-    public IBlockState getExtendedState(@NotNull IBlockState state, @NotNull IBlockAccess world, @NotNull BlockPos pos) {
-        if (state instanceof IExtendedBlockState) {
-            IExtendedBlockState extendedState = (IExtendedBlockState) state;
+    public @NonNull IBlockState getExtendedState(@NotNull IBlockState state, @NotNull IBlockAccess world, @NotNull BlockPos pos) {
+        if (state instanceof IExtendedBlockState extendedState) {
             return extendedState.withProperty(ID, (short) (((ClientProxy) JMod.proxy).clientMetaIdHolder
                     .getId(pos.getX(), pos.getY(), pos.getZ(), Minecraft.getMinecraft().world.provider.getDimension()) & 0b111_1111_1111_1111));
         }
@@ -165,18 +168,23 @@ public abstract class MetaBlock extends SplitSideBlock  {
     }
 
     @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public void getDrops(@NonNull NonNullList<ItemStack> drops, @NonNull IBlockAccess world, @NonNull BlockPos pos, @NonNull IBlockState state, int fortune) {
 
     }
 
     @Override
-    public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return null;
+    public @NonNull Item getItemDropped(@NonNull IBlockState state, @NonNull Random rand, int fortune) {
+        return ItemStack.EMPTY.getItem();
     }
 
     @Override
-    protected ItemStack getSilkTouchDrop(IBlockState state) {
-        return null;
+    protected @NonNull ItemStack getSilkTouchDrop(@NonNull IBlockState state) {
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public Set<ToolType> toolType() {
+        return this.toolTypes;
     }
 
     public void registerItemModels(){
@@ -188,18 +196,6 @@ public abstract class MetaBlock extends SplitSideBlock  {
     protected void registerItemModel(int id){
         ModelLoader.setCustomModelResourceLocation(this.itemBlock, id, new ModelResourceLocation(this.itemBlock.getRegistryName(), "inventory"));
     }
-
-//    @Override
-//    public void addToDebug(List<String> lines, IExtendedBlockState extendedState) {
-//        Short id = extendedState.getValue(ID);
-//
-//        if (id != null){
-//            lines.add("id: " + id);
-//        }else{
-//            lines.add(TextFormatting.RED + "META IS NULL" + TextFormatting.RESET);
-//        }
-//
-//    }
 
     protected Item createItemBlock(){
         return new ItemMetaBlock(this).setRegistryName(this.getRegistryName());

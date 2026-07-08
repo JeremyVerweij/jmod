@@ -38,6 +38,7 @@ import org.jspecify.annotations.NonNull;
 import org.lwjgl.util.vector.Vector3f;
 
 import java.util.List;
+import java.util.Set;
 
 @SuppressWarnings("deprecation")
 public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpecialOverlay.IBlockHasConnectionOverlay, IRequireTool {
@@ -54,7 +55,7 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
     private final AxisAlignedBB[] connectionBoundingBoxes;
 
     public MaterialFluidPipeBlock(int size) {
-        super(Tags.MOD_ID, "pipe_" + size, Material.ROCK, CreativeTabs.BUILDING_BLOCKS);
+        super(Tags.MOD_ID, "pipe_" + size, Material.ROCK, CreativeTabs.BUILDING_BLOCKS, Set.of(ToolType.PICKAXE));
 
         setHardness(5.0f);
 
@@ -252,33 +253,9 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
         return 0;
     }
 
-//    @Override
-//    public void addToDebug(List<String> lines, IExtendedBlockState extendedState) {
-//        super.addToDebug(lines, extendedState);
-//
-//        Byte connections = extendedState.getValue(CONNECTIONS);
-//        Byte restrictions = extendedState.getValue(RESTRICTIONS);
-//
-//        if (connections != null && restrictions != null){
-//            for (int i = 0; i < EnumFacing.values().length; i++) {
-//                boolean isConnected = (connections & (1 << i)) > 0;
-//                boolean isRestricted = (restrictions & (1 << i)) > 0;
-//
-//                lines.add(TextFormatting.RESET + EnumFacing.byIndex(i).toString() + ": {con: " +
-//                        (isConnected ? TextFormatting.GREEN + " " : TextFormatting.RED) + isConnected + TextFormatting.RESET +
-//                        ", res: " + (isRestricted ? TextFormatting.GREEN + " " : TextFormatting.RED) + isRestricted + "}" + TextFormatting.RESET);
-//            }
-//        }
-//    }
-
     @Override
     public MiningTier toolLevel() {
         return MiningTier.IRON;
-    }
-
-    @Override
-    public ToolType toolType() {
-        return ToolType.PICKAXE;
     }
 
     protected Item createItemBlock(){
@@ -293,7 +270,7 @@ public class MaterialFluidPipeBlock extends MetaMaterialBlock implements IHasSpe
         @Override
         public @NonNull String getItemStackDisplayName(@NonNull ItemStack stack) {
             return I18n.format(this.getTranslationKey(stack),
-                    I18n.format("jcore.tile.pipe.size." + ((MaterialFluidPipeBlock) this.block).size),
+                    I18n.format("tile.jmod.pipe.size." + ((MaterialFluidPipeBlock) this.block).size),
                     I18n.format(this.getMaterialTranslationKey(stack)));
         }
     }
