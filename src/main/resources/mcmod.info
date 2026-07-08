@@ -13,7 +13,13 @@
   },
   {
     "modid": "jfarming",
-    "name": "JFarming",
+    "name": "J's Farming",
+    "mcversion": "1.12.2",
+    "parent": "jmod"
+  },
+  {
+    "modid": "jqol",
+    "name": "J's Quality Of Life",
     "mcversion": "1.12.2",
     "parent": "jmod"
   },

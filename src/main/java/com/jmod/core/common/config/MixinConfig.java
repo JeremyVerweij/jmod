@@ -20,7 +20,7 @@ public class MixinConfig {
 
     private static final Set<String> SYSTEM_OPTIONS = Stream.of(
             "jrender.core",
-            "jrender.features.chunk_rendering"
+            "jqol"
     ).map(MixinConfig::getMixinRuleName).collect(Collectors.toSet());
 
     private final Map<String, Option> options = new HashMap<>();
@@ -29,7 +29,7 @@ public class MixinConfig {
         // Defines the default rules which can be configured by the user or other mods.
         // You must manually add a rule for any new mixins not covered by an existing package rule.
         this.addMixinRule("jrender.core", true); // TODO: Don't actually allow the user to disable this
-//        this.addMixinRule("jui", true);
+        this.addMixinRule("jqol", true);
     }
 
     /**

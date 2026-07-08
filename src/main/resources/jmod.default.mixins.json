@@ -9,6 +9,8 @@
   "mixins": [],
   "server": [],
   "client": [
+    "jqol.GuiInGameMenuMixin",
+    "jqol.GuiMainMenuMixin",
     "jrender.core.BlockColorsMixin",
     "jrender.core.MinecraftMixin",
     "jui.MixinItemColors",
