@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ui width="320" height="240">
+    <label x="0" y="0">Test</label>
+    <button id="test" width="50" height="20" y="20" x="20">TEST 2</button>
+    <input width="100" height="20" y="50" x="20"/>
+<!--    <viewportV width="100%" heigh="50%">-->
+<!--        <repeatable id="control" type="list" direction="vertical" increment="20">-->
+<!--            <label>-->
+<!--                <eInput input="control" type="repeatable" id="name"/>-->
+<!--            </label>-->
+<!--            <button/>-->
+<!--        </repeatable>-->
+<!--    </viewportV>-->
+<!--    <container>-->
+<!--        <button/>-->
+<!--        <button/>-->
+<!--    </container>-->
+</ui>

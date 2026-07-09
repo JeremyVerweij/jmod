@@ -13,7 +13,7 @@
     "jqol.GuiMainMenuMixin",
     "jrender.core.BlockColorsMixin",
     "jrender.core.MinecraftMixin",
-    "jui.MixinItemColors",
-    "jui.MixinRenderItem"
+    "jui.MixinGuiScreen",
+    "jui.MixinItemColors"
   ]
 }

@@ -25,21 +25,11 @@ public class JMod {
 	public static CommonProxy proxy;
 
 	public JMod(){
-		System.out.println("JMOD CONSTRUCTOR");
+
 	}
 
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent preInit) {
-		System.out.println("JMOD PREINIT");
-
-		Side side = FMLCommonHandler.instance().getSide();
-
-		if (side == Side.CLIENT) {
-			proxy = new com.jmod.core.proxy.ClientProxy();
-		} else {
-			proxy = new com.jmod.core.proxy.CommonProxy();
-		}
-
 		MinecraftForge.EVENT_BUS.register(proxy);
 		proxy.preInit(preInit);
 	}

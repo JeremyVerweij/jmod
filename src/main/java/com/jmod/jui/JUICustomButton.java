@@ -1,4 +1,4 @@
-package com.jmod.jui.components;
+package com.jmod.jui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

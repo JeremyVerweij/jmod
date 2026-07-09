@@ -20,7 +20,8 @@ public class MixinConfig {
 
     private static final Set<String> SYSTEM_OPTIONS = Stream.of(
             "jrender.core",
-            "jqol"
+            "jqol",
+            "jui"
     ).map(MixinConfig::getMixinRuleName).collect(Collectors.toSet());
 
     private final Map<String, Option> options = new HashMap<>();
@@ -30,6 +31,7 @@ public class MixinConfig {
         // You must manually add a rule for any new mixins not covered by an existing package rule.
         this.addMixinRule("jrender.core", true); // TODO: Don't actually allow the user to disable this
         this.addMixinRule("jqol", true);
+        this.addMixinRule("jui", true);
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.jmod.jqol.settings;
 
-import com.jmod.jui.components.JUICustomButton;
+import com.jmod.jui.JUICustomButton;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
