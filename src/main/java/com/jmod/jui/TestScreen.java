@@ -18,8 +18,8 @@ public class TestScreen extends JUIScreen {
 
     @Override
     protected void initJUI(UIDocument document) {
-        document.<ButtonComponent>getComponent("test").setOnClickEvent((comp, btn) -> {
-            System.out.println("I AM CLICKED");
-        });
+//        document.<ButtonComponent>getComponent("test").setOnClickEvent((comp, btn) -> {
+//            System.out.println("I AM CLICKED");
+//        });
     }
 }

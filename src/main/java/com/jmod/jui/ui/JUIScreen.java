@@ -11,6 +11,8 @@ import java.io.IOException;
 public abstract class JUIScreen extends GuiScreen {
     protected BaseComponent dragging = null;
     protected BaseComponent focussed = null;
+    protected int lastX = 0;
+    protected int lastY = 0;
 
     protected abstract UIDocument getUIDocument();
     protected abstract String getTitleTranslationKey();
@@ -58,6 +60,47 @@ public abstract class JUIScreen extends GuiScreen {
     }
 
     @Override
+    protected void mouseClickMove(int mouseX, int mouseY, int clickedMouseButton, long timeSinceLastClick) {
+        super.mouseClickMove(mouseX, mouseY, clickedMouseButton, timeSinceLastClick);
+
+        if (clickedMouseButton != 0) return;
+
+        int dx = this.lastX - mouseX;
+        int dy = this.lastY - mouseY;
+
+        if (this.dragging != null){
+            this.dragging.onMouseDrag(dx, dy, getLeft(), getTop(), mouseX, mouseY);
+        }else if (this.focussed != null){
+            this.focussed.onMouseDrag(dx, dy, getLeft(), getTop(), mouseX, mouseY);
+        }else if (this.getUIDocument().getRoot().isInBoundingBox(getLeft(), getTop(), mouseX, mouseY)) {
+            this.getUIDocument().getRoot().onMouseDrag(dx, dy, getLeft(), getTop(), mouseX, mouseY);
+        }
+    }
+
+    @Override
+    public void handleMouseInput() throws IOException {
+        super.handleMouseInput();
+
+        int wheel = Mouse.getEventDWheel();
+
+        int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
+        int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+
+        if (wheel != 0){
+            if (this.focussed != null){
+                this.focussed.onMouseScroll(Integer.compare(wheel, 0), getLeft(), getTop(), mouseX, mouseY);
+            }else if (this.getUIDocument().getRoot().isInBoundingBox(getLeft(), getTop(), mouseX, mouseY)){
+                this.getUIDocument().getRoot().onMouseScroll(Integer.compare(wheel, 0), getLeft(), getTop(), mouseX, mouseY);
+            }
+        }
+
+        if(!Mouse.isButtonDown(0)) this.dragging = null;
+
+        this.lastX = mouseX;
+        this.lastY = mouseY;
+    }
+
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
         super.keyTyped(typedChar, keyCode);
 
@@ -86,5 +129,9 @@ public abstract class JUIScreen extends GuiScreen {
 
         this.focussed = focussed;
         if(this.focussed != null) this.focussed.onFocusGained();
+    }
+
+    public void setDragging(BaseComponent component){
+        this.dragging = component;
     }
 }

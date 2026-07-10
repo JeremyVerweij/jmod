@@ -23,6 +23,9 @@ public class LabelComponent extends BaseComponent{
         int x = left + this.getX();
         int y = top + this.getY();
 
+        if (this.height == 0)
+            this.height = this.mc.fontRenderer.FONT_HEIGHT;
+
         if (centerText){
             this.drawCenteredString(this.mc.fontRenderer, this.getTranslatedText(),
                     x + (this.width / 2) + textXOffset(), y + (this.height - this.mc.fontRenderer.FONT_HEIGHT) / 2,
