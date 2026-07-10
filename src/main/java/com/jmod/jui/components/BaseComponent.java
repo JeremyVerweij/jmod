@@ -46,6 +46,10 @@ public abstract class BaseComponent {
     protected abstract void drawBackground(int left, int top, boolean isHover);
     protected abstract void drawForeground(int left, int top, boolean isHover);
 
+    protected boolean isHover(int left, int top, int mouseX, int mouseY){
+        return this.isInBoundingBox(left, top, mouseX, mouseY);
+    }
+
     public void onMouseClick(int button, int offsetX, int offsetY, int mouseX, int mouseY){
         if (this.grabFocus()){
             if (this.owner.getFocussed() == null){
@@ -105,8 +109,8 @@ public abstract class BaseComponent {
     public void addExtraAttribute(String key, String value){}
 
     public void draw(int left, int top, int mouseX, int mouseY){
-        this.drawBackground(left, top, isInBoundingBox(left, top, mouseX, mouseY));
-        this.drawForeground(left, top, isInBoundingBox(left, top, mouseX, mouseY));
+        this.drawBackground(left, top, isHover(left, top, mouseX, mouseY));
+        this.drawForeground(left, top, isHover(left, top, mouseX, mouseY));
 
         for (BaseComponent child : this.children) {
             child.draw(left, top, mouseX, mouseY);

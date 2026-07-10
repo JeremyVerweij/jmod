@@ -6,8 +6,20 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 
 import java.util.Objects;
+import java.util.Set;
 
 public class TextInputComponent extends ButtonComponent{
+    private static final Set<Integer> ALLOW_KEYS = Set.of(
+            Keyboard.KEY_A, Keyboard.KEY_B, Keyboard.KEY_C, Keyboard.KEY_D, Keyboard.KEY_E, Keyboard.KEY_F, Keyboard.KEY_G,
+            Keyboard.KEY_H, Keyboard.KEY_I, Keyboard.KEY_J, Keyboard.KEY_K, Keyboard.KEY_L, Keyboard.KEY_M, Keyboard.KEY_N,
+            Keyboard.KEY_O, Keyboard.KEY_P, Keyboard.KEY_Q, Keyboard.KEY_R, Keyboard.KEY_S, Keyboard.KEY_T, Keyboard.KEY_U,
+            Keyboard.KEY_V, Keyboard.KEY_W, Keyboard.KEY_X, Keyboard.KEY_Y, Keyboard.KEY_Z, Keyboard.KEY_0, Keyboard.KEY_1,
+            Keyboard.KEY_2, Keyboard.KEY_3, Keyboard.KEY_4, Keyboard.KEY_5, Keyboard.KEY_6, Keyboard.KEY_7, Keyboard.KEY_8,
+            Keyboard.KEY_9, Keyboard.KEY_LBRACKET, Keyboard.KEY_RBRACKET, Keyboard.KEY_ADD, Keyboard.KEY_MINUS, Keyboard.KEY_SEMICOLON,
+            Keyboard.KEY_APOSTROPHE, Keyboard.KEY_COMMA, Keyboard.KEY_SLASH, Keyboard.KEY_PERIOD, Keyboard.KEY_SPACE, Keyboard.KEY_UNDERLINE,
+            Keyboard.KEY_EQUALS, Keyboard.KEY_COLON, Keyboard.KEY_BACKSLASH, Keyboard.KEY_AT, Keyboard.KEY_POWER
+    );
+
     protected StringBuilder textField = new StringBuilder();
     protected int insertPosition = 0;
     protected int carrotColor = 0;
@@ -24,13 +36,8 @@ public class TextInputComponent extends ButtonComponent{
     }
 
     @Override
-    public void draw(int left, int top, int mouseX, int mouseY) {
-        this.drawBackground(left, top, isInBoundingBox(left, top, mouseX, mouseY) || this.hasFocus());
-        this.drawForeground(left, top, isInBoundingBox(left, top, mouseX, mouseY) || this.hasFocus());
-
-        for (BaseComponent child : this.children) {
-            child.draw(left, top, mouseX, mouseY);
-        }
+    protected boolean isHover(int left, int top, int mouseX, int mouseY) {
+        return super.isHover(left, top, mouseX, mouseY) || this.hasFocus();
     }
 
     @Override
@@ -38,12 +45,12 @@ public class TextInputComponent extends ButtonComponent{
         int x = left + this.getX();
         int y = top + this.getY();
 
-        //TODO: ADD SCROLLING, PROBABLY HIGHJACK THE ENTIRE STRING DRAWING
-        this.enableScissors(x + textXOffset(), y, this.width - textXOffset() - textXOffset(), this.height);
+        this.enableScissors(x + this.defaultTextPadding(), y,
+                this.width - this.defaultTextPadding() - this.defaultTextPadding(), this.height);
 
         super.drawForeground(left, top, isHover);
 
-        if (this.hasFocus()){
+        if (this.hasFocus() && (((System.currentTimeMillis() >> 9) & 1) == 0)){
             int fontHeight = this.mc.fontRenderer.FONT_HEIGHT;
             x += this.mc.fontRenderer.getStringWidth(this.getTranslatedText().substring(0, this.insertPosition)) + textXOffset();
             y += (this.height - fontHeight) / 2;
@@ -82,7 +89,7 @@ public class TextInputComponent extends ButtonComponent{
                     this.textField.delete(this.insertPosition, this.insertPosition + 1);
                     this.runOnTextChange();
                 }
-            }else{
+            }else if (ALLOW_KEYS.contains(key)){
                 this.textField.insert(this.insertPosition++, character);
                 this.runOnTextChange();
             }
@@ -121,6 +128,13 @@ public class TextInputComponent extends ButtonComponent{
 
     @Override
     protected int textXOffset() {
+        return this.defaultTextPadding() + Math.min(0,
+                (this.width - defaultTextPadding() - defaultTextPadding()) -
+                        (this.mc.fontRenderer.getStringWidth(this.getTranslatedText().substring(0, this.insertPosition)) +
+                                (this.mc.fontRenderer.FONT_HEIGHT / 2)));
+    }
+
+    protected int defaultTextPadding(){
         return 4;
     }
 
