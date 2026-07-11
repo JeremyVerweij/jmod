@@ -14,15 +14,12 @@ public class LabelComponent extends BaseComponent{
     }
 
     @Override
-    protected void drawBackground(int left, int top, boolean isHover) {
+    protected void drawBackground(int x, int y, boolean isHover) {
 
     }
 
     @Override
-    protected void drawForeground(int left, int top, boolean isHover) {
-        int x = left + this.getX();
-        int y = top + this.getY();
-
+    protected void drawForeground(int x, int y, boolean isHover) {
         if (this.height == 0)
             this.height = this.mc.fontRenderer.FONT_HEIGHT;
 

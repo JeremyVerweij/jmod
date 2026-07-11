@@ -23,6 +23,7 @@ public class ClientProxy extends CommonProxy{
         UIComponentCollection.addComponent("input", TextInputComponent::new);
         UIComponentCollection.addComponent("scrollbar", ScrollbarComponent::new);
         UIComponentCollection.addComponent("verticalViewport", VerticalViewportComponent::new);
+        UIComponentCollection.addComponent("verticalList", VerticalListComponent::new);
 
         this.controls = new UIDocument("/ui/controls.xml", Minecraft.getMinecraft());
     }

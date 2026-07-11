@@ -1,8 +1,10 @@
 package com.jmod.jui.ui;
 
 import com.jmod.jui.components.BaseComponent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
+import org.jspecify.annotations.NonNull;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -31,17 +33,22 @@ public abstract class JUIScreen extends GuiScreen {
     }
 
     @Override
-    public void initGui() {
+    public void setWorldAndResolution(@NonNull Minecraft mc, int width, int height) {
         this.getUIDocument().setOwner(this);
 
-        this.initJUI(this.getUIDocument());
+        boolean init = this.mc != mc;
+
+        super.setWorldAndResolution(mc, width, height);
+
+        if(init) this.initJUI(this.getUIDocument());
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
 
-        if (this.getTitleTranslationKey() != null)
+        if (this.getTitleTranslationKey() != null &&
+                this.height > this.getUIDocument().getRoot().getHeight() + 24 + this.fontRenderer.FONT_HEIGHT)
             this.drawCenteredString(this.fontRenderer, I18n.format(this.getTitleTranslationKey()),
                     this.width / 2, 8, this.getTitleColor());
 

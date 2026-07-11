@@ -8,19 +8,16 @@ public class UIComponent extends BaseComponent{
     }
 
     @Override
-    protected void drawBackground(int left, int top, boolean isHover) {
+    protected void drawBackground(int x, int y, boolean isHover) {
 
     }
 
     @Override
-    protected void drawForeground(int left, int top, boolean isHover) {
-        int x = left + this.getX();
-        int y = top + this.getY();
-
-        this.drawVerticalLine(x, y, y + this.height, 0xFFFFFFFF);
-        this.drawVerticalLine(x + this.width, y, y + this.height, 0xFFFFFFFF);
-        this.drawHorizontalLine(x, x + this.width, y, 0xFFFFFFFF);
-        this.drawHorizontalLine(x, x + this.width, y + this.height, 0xFFFFFFFF);
+    protected void drawForeground(int x, int y, boolean isHover) {
+//        this.drawVerticalLine(x, y, y + this.height, 0xFFFFFFFF);
+//        this.drawVerticalLine(x + this.width, y, y + this.height, 0xFFFFFFFF);
+//        this.drawHorizontalLine(x, x + this.width, y, 0xFFFFFFFF);
+//        this.drawHorizontalLine(x, x + this.width, y + this.height, 0xFFFFFFFF);
     }
 
     @Override

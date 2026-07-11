@@ -57,6 +57,10 @@ public class XMLNode {
         return this.attributes.getOrDefault(name, defaultV);
     }
 
+    public boolean hasAttribute(String name){
+        return this.attributes.containsKey(name);
+    }
+
     public String getAttributeOrDefaultFromStyle(String name, String defaultValue, Style style){
         return this.attributes.getOrDefault(name, style.getAttributes().getOrDefault(name, defaultValue));
     }

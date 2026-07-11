@@ -6,7 +6,6 @@ import com.jmod.jui.components.UIComponent;
 import com.jmod.jui.xml.XMLNode;
 import com.jmod.jui.xml.XMLUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 
 import java.util.*;
 
@@ -17,7 +16,7 @@ public class UIDocument {
     public UIDocument(XMLNode root, Minecraft minecraft){
         this.components = new HashMap<>();
 
-        this.addNodeToComponents(root, null, minecraft);
+        this.addNodeToComponents(root, null, minecraft, Style.STYLES.get("Default"));
 
         this.root = getComponentsByType(UIComponent.class).getFirst();
     }
@@ -59,17 +58,17 @@ public class UIDocument {
         this.components.remove(component.getId());
     }
 
-    private void addNodeToComponents(XMLNode node, BaseComponent parent, Minecraft minecraft){
+    private void addNodeToComponents(XMLNode node, BaseComponent parent, Minecraft minecraft, Style style){
         int xO = 0, yO = 0, wO = 0, hO = 0;
 
         if (parent != null){
-            xO = parent.getX();
-            yO = parent.getY();
+            xO = parent.getDummyX();
+            yO = parent.getDummyY();
             wO = parent.getWidth();
             hO = parent.getHeight();
         }
 
-        Style style = Style.STYLES.get(node.getAttributeOrDefault("style", "Default"));
+        style = node.hasAttribute("style") ? Style.STYLES.get(node.getAttribute("style")) : style;
 
         int x = calcWithRelativeInMind(node.getAttributeOrDefault("x", "0"), wO, xO);
         int y = calcWithRelativeInMind(node.getAttributeOrDefault("y", "0"), hO, yO);
@@ -94,8 +93,8 @@ public class UIDocument {
         }
 
         BaseComponent component = UIComponentCollection.createNewComponent(node.type, id, minecraft);
-        component.setX(x);
-        component.setY(y);
+        component.setDummyX(x);
+        component.setDummyY(y);
         component.setWidth(width);
         component.setHeight(height);
         component.setBackgroundColor(backgroundColor);
@@ -103,6 +102,10 @@ public class UIDocument {
         component.setHighlightBackgroundColor(highlightBackgroundColor);
         component.setHighlightForegroundColor(highlightForegroundColor);
         component.setTranslationKey(translationKey);
+
+        this.components.put(id, component);
+
+        if (parent != null) parent.addChild(component);
 
         Map<String, String> attributesCombined = new HashMap<>();
         attributesCombined.putAll(style.getAttributes());
@@ -112,18 +115,15 @@ public class UIDocument {
             component.addExtraAttribute(attribute.getKey(), attribute.getValue());
         }
 
-        this.components.put(id, component);
-
-        if (parent != null) parent.addChild(component);
-
         for (XMLNode child : node.getChildren()) {
-            addNodeToComponents(child, component, minecraft);
+            addNodeToComponents(child, component, minecraft, style);
         }
     }
 
     public static int calcWithRelativeInMind(String value, int parentValue, int parentOffset){
         if (value.endsWith("%")){
-            float r = 100f / Float.parseFloat(value.substring(0, value.length() - 1));
+            float r = Float.parseFloat(value.substring(0, value.length() - 1)) / 100f;
+
             return (int) (r * parentValue) + parentOffset;
         }
 

@@ -8,12 +8,12 @@ public class UndefinedComponent extends BaseComponent{
     }
 
     @Override
-    protected void drawBackground(int left, int top, boolean isHover) {
+    protected void drawBackground(int x, int y, boolean isHover) {
 
     }
 
     @Override
-    protected void drawForeground(int left, int top, boolean isHover) {
+    protected void drawForeground(int x, int y, boolean isHover) {
 
     }
 

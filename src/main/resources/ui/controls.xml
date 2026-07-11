@@ -5,7 +5,11 @@
 <!--    <input width="100" height="20" y="50" x="20"/>-->
 
     <verticalViewport width="100%" height="200">
-        <label x="0" y="300">Test</label>
+        <verticalList id="test" increment="20" width="100%">
+            <label width="20%">Test</label>
+            <label width="30%" x="20%" _useListInput="true"/>
+            <label width="50%" x="50%" _useListInput="true"/>
+        </verticalList>
     </verticalViewport>
 <!--    <viewportV width="100%" heigh="50%">-->
 <!--        <repeatable id="control" type="list" direction="vertical" increment="20">-->

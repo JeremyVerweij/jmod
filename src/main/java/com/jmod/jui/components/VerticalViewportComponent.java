@@ -1,20 +1,21 @@
 package com.jmod.jui.components;
 
 import com.jmod.jui.ui.JUIScreen;
-import com.jmod.jui.ui.interfaces.IOffsetProvider;
 import net.minecraft.client.Minecraft;
 
-public class VerticalViewportComponent extends BaseComponent implements IOffsetProvider {
+public class VerticalViewportComponent extends BaseComponent {
     protected ScrollbarComponent scrollbar;
     protected int yOffset;
+    protected int lowestPoint;
+    protected BaseComponent smallestChild;
 
     public VerticalViewportComponent(String id, Minecraft mc) {
         super(id, mc);
     }
 
     @Override
-    protected void drawBackground(int left, int top, boolean isHover) {
-        int lowest = getLowestPoint();
+    protected void drawBackground(int x, int y, boolean isHover) {
+        int lowest = this.lowestPoint;
         int scbHeight = this.height / Math.max(lowest, 1);
         this.scrollbar.setScrollBarHeight(scbHeight);
 
@@ -27,13 +28,13 @@ public class VerticalViewportComponent extends BaseComponent implements IOffsetP
     }
 
     @Override
-    protected void drawForeground(int left, int top, boolean isHover) {
+    protected void drawForeground(int x, int y, boolean isHover) {
 
     }
 
     @Override
     public void draw(int left, int top, int mouseX, int mouseY) {
-        this.enableScissors(getX() + left, getY() + top, this.width, this.height);
+        this.enableScissors(getDummyX() + left, getDummyY() + top, this.width, this.height);
         super.draw(left, top, mouseX, mouseY);
         this.disableScissors();
     }
@@ -50,8 +51,8 @@ public class VerticalViewportComponent extends BaseComponent implements IOffsetP
         if (this.scrollbar == null){
             this.scrollbar = new ScrollbarComponent(id + "-scrollbar", mc);
             this.scrollbar.setWidth(10);
-            this.scrollbar.setX(this.getX() + this.width - 10);
-            this.scrollbar.setY(this.getY());
+            this.scrollbar.setDummyX(this.getDummyX() + this.width - 10);
+            this.scrollbar.setDummyY(this.getDummyY());
             this.scrollbar.setHeight(height);
             this.scrollbar.setForegroundColor(this.foregroundColor);
             this.scrollbar.setBackgroundColor(this.backgroundColor);
@@ -62,14 +63,20 @@ public class VerticalViewportComponent extends BaseComponent implements IOffsetP
         }
     }
 
-    protected int getLowestPoint(){
-        int lowest = 0;
+    @Override
+    protected void updateChildSize(BaseComponent child) {
+        super.updateChildSize(child);
 
-        for (BaseComponent child : this.children) {
-            if (child.y + child.height > lowest) lowest = child.y + child.height;
+        if (child == this.smallestChild){
+            if (child.dummyY + child.height < this.lowestPoint){
+                //TODO: recalculate completly
+            }
+        } else if (child.dummyY + child.height > this.lowestPoint) {
+            this.lowestPoint = child.dummyY + child.height;
+            this.smallestChild = child;
         }
 
-        return Math.max(0, lowest - this.height);
+        this.lowestPoint = Math.max(0, this.lowestPoint);
     }
 
     @Override
@@ -82,16 +89,12 @@ public class VerticalViewportComponent extends BaseComponent implements IOffsetP
     @Override
     public void addChild(BaseComponent component) {
         super.addChild(component);
-        component.setOffsetProvider(this);
     }
 
     @Override
-    public int getOffsetX(BaseComponent component) {
-        return 0;
-    }
+    public int getChildOffsetY(BaseComponent child) {
+        if (child == this.scrollbar) return super.getChildOffsetY(child);
 
-    @Override
-    public int getOffsetY(BaseComponent component) {
-        return -this.yOffset;
+        return -this.yOffset + super.getChildOffsetY(child);
     }
 }

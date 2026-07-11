@@ -1,7 +1,6 @@
 package com.jmod.jui.components;
 
 import com.jmod.jui.ui.JUIScreen;
-import com.jmod.jui.ui.interfaces.IOffsetProvider;
 import com.jmod.jui.ui.interfaces.ITranslatorProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -17,8 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseComponent {
-    protected int x;
-    protected int y;
+    protected int dummyX;
+    protected int dummyY;
     protected int width;
     protected int height;
     protected int backgroundColor;
@@ -28,7 +27,6 @@ public abstract class BaseComponent {
     protected TextureAtlasSprite backgroundSprite;
     protected ITranslatorProvider translatorProvider;
     protected String translationKey;
-    protected IOffsetProvider offsetProvider = IOffsetProvider.DEFAULT_OFFSET_PROVIDER;
 
     protected BaseComponent parent;
     protected final String id;
@@ -43,8 +41,8 @@ public abstract class BaseComponent {
         this.children = new ArrayList<>();
     }
 
-    protected abstract void drawBackground(int left, int top, boolean isHover);
-    protected abstract void drawForeground(int left, int top, boolean isHover);
+    protected abstract void drawBackground(int x, int y, boolean isHover);
+    protected abstract void drawForeground(int x, int y, boolean isHover);
 
     protected boolean isHover(int left, int top, int mouseX, int mouseY){
         return this.isInBoundingBox(left, top, mouseX, mouseY);
@@ -106,11 +104,20 @@ public abstract class BaseComponent {
     public void onFocusGained(){}
     public void onFocusLost(){}
 
-    public void addExtraAttribute(String key, String value){}
+    public void addChildExtraAttrib(BaseComponent child, String key, String value){}
+
+    public void addExtraAttribute(String key, String value){
+        if (key.startsWith("_") && parent != null){
+            this.parent.addChildExtraAttrib(this, key.substring(1), value);
+        }
+    }
 
     public void draw(int left, int top, int mouseX, int mouseY){
-        this.drawBackground(left, top, isHover(left, top, mouseX, mouseY));
-        this.drawForeground(left, top, isHover(left, top, mouseX, mouseY));
+        int x = this.getX(left);
+        int y = this.getY(top);
+
+        this.drawBackground(x, y, isHover(left, top, mouseX, mouseY));
+        this.drawForeground(x, y, isHover(left, top, mouseX, mouseY));
 
         for (BaseComponent child : this.children) {
             child.draw(left, top, mouseX, mouseY);
@@ -132,12 +139,8 @@ public abstract class BaseComponent {
     }
 
     public boolean isInBoundingBox(int offsetX, int offsetY, int mouseX, int mouseY){
-        return mouseX >= (offsetX + this.getX() - 1) && mouseX < (offsetX + this.getX() + this.getWidth()) &&
-                mouseY > (offsetY + this.getY()) && mouseY < (offsetY + this.getY() + this.getHeight());
-    }
-
-    public void setOffsetProvider(IOffsetProvider offsetProvider) {
-        this.offsetProvider = offsetProvider;
+        return mouseX >= (this.getX(offsetX) - 1) && mouseX < (this.getX(offsetX) + this.getWidth()) &&
+                mouseY > (this.getY(offsetY)) && mouseY < (this.getY(offsetY) + this.getHeight());
     }
 
     public void setTranslationKey(String translationKey) {
@@ -170,30 +173,54 @@ public abstract class BaseComponent {
 
     public void setHeight(int height) {
         this.height = height;
+        if(this.parent != null)
+            this.parent.updateChildSize(this);
     }
 
     public void setWidth(int width) {
         this.width = width;
+        if(this.parent != null)
+            this.parent.updateChildSize(this);
     }
 
     public void setOwner(JUIScreen owner) {
         this.owner = owner;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public void setDummyY(int dummyY) {
+        this.dummyY = dummyY;
+        if(this.parent != null)
+            this.parent.updateChildSize(this);
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setDummyX(int dummyX) {
+        this.dummyX = dummyX;
+        if(this.parent != null)
+            this.parent.updateChildSize(this);
     }
 
-    public int getX() {
-        return x + this.offsetProvider.getOffsetX(this);
+    public int getDummyX() {
+        return dummyX;
     }
 
-    public int getY() {
-        return y + this.offsetProvider.getOffsetY(this);
+    public int getDummyY() {
+        return dummyY;
+    }
+
+    public int getChildOffsetX(BaseComponent child){
+        return (this.parent == null ? 0 : this.parent.getChildOffsetX(this));
+    }
+
+    public int getChildOffsetY(BaseComponent child){
+        return (this.parent == null ? 0 : this.parent.getChildOffsetY(this));
+    }
+
+    public int getX(int left){
+        return this.getDummyX() + (this.parent == null ? 0 : this.parent.getChildOffsetX(this)) + left;
+    }
+
+    public int getY(int top){
+        return this.getDummyY() + (this.parent == null ? 0 : this.parent.getChildOffsetY(this)) + top;
     }
 
     public int getWidth() {
@@ -218,6 +245,10 @@ public abstract class BaseComponent {
 
     public boolean hasFocus(){
         return this.owner.getFocussed() == this;
+    }
+
+    protected void updateChildSize(BaseComponent child){
+
     }
 
     /**

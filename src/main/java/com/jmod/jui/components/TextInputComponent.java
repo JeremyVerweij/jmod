@@ -41,14 +41,11 @@ public class TextInputComponent extends ButtonComponent{
     }
 
     @Override
-    protected void drawForeground(int left, int top, boolean isHover) {
-        int x = left + this.getX();
-        int y = top + this.getY();
-
+    protected void drawForeground(int x, int y, boolean isHover) {
         this.enableScissors(x + this.defaultTextPadding(), y,
                 this.width - this.defaultTextPadding() - this.defaultTextPadding(), this.height);
 
-        super.drawForeground(left, top, isHover);
+        super.drawForeground(x, y, isHover);
 
         if (this.hasFocus() && (((System.currentTimeMillis() >> 9) & 1) == 0)){
             int fontHeight = this.mc.fontRenderer.FONT_HEIGHT;

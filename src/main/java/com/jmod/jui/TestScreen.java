@@ -1,6 +1,8 @@
 package com.jmod.jui;
 
+import com.jmod.jui.components.BaseComponent;
 import com.jmod.jui.components.ButtonComponent;
+import com.jmod.jui.components.VerticalListComponent;
 import com.jmod.jui.proxy.ClientProxy;
 import com.jmod.jui.ui.JUIScreen;
 import com.jmod.jui.ui.UIDocument;
@@ -21,5 +23,9 @@ public class TestScreen extends JUIScreen {
 //        document.<ButtonComponent>getComponent("test").setOnClickEvent((comp, btn) -> {
 //            System.out.println("I AM CLICKED");
 //        });
+
+        VerticalListComponent comp = document.getComponent("test");
+        comp.addEntry(new VerticalListComponent.ListEntry(comp, () -> "1", () -> "2"));
+        comp.addEntry(new VerticalListComponent.ListEntry(comp, () -> "3", () -> "4"));
     }
 }

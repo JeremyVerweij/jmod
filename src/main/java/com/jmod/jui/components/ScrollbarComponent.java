@@ -15,19 +15,12 @@ public class ScrollbarComponent extends BaseComponent{
     }
 
     @Override
-    protected void drawBackground(int left, int top, boolean isHover) {
-        int x = this.getX() + left;
-        int y = this.getY() + top;
-
+    protected void drawBackground(int x, int y, boolean isHover) {
         this.drawRect(x, y, x + this.width, y + this.height, this.backgroundColor);
     }
 
     @Override
-    protected void drawForeground(int left, int top, boolean isHover) {
-        int x = this.getX() + left;
-        int y = this.getY() + top;
-
-
+    protected void drawForeground(int x, int y, boolean isHover) {
         this.drawRect(x, y + this.scrollBarPosition, x + this.width,
                 y + this.scrollBarPosition + this.scrollBarHeight, this.foregroundColor);
     }

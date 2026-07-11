@@ -18,10 +18,7 @@ public class ButtonComponent extends LabelComponent{
     }
 
     @Override
-    protected void drawBackground(int left, int top, boolean isHover) {
-        int x = left + this.getX();
-        int y = top + this.getY();
-
+    protected void drawBackground(int x, int y, boolean isHover) {
         if (this.backgroundSprite != null){
             if (this.useNineSplicedTexture){
                 //TODO: do stuff
