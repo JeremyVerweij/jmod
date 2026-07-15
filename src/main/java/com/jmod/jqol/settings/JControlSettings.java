@@ -1,97 +1,97 @@
 package com.jmod.jqol.settings;
 
-import com.jmod.jui.JUICustomButton;
-import net.minecraft.client.gui.*;
-import net.minecraft.client.resources.I18n;
+import com.jmod.jui.components.VerticalListComponent;
+import com.jmod.jui.proxy.ClientProxy;
+import com.jmod.jui.ui.JUIScreen;
+import com.jmod.jui.ui.UIDocument;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
-import org.jspecify.annotations.NonNull;
 
-public class JControlSettings extends GuiControls {
-    private static final int DONE_BUTTON_ID = 200;
-    private static final int RESET_BUTTON_ID = 201;
+import java.util.*;
 
-    public JControlSettings(GuiScreen screen, GameSettings settings) {
-        super(screen, settings);
+public class JControlSettings extends JUIScreen {
+    private final Map<KeyBinding, Set<KeyBinding>> conflicts;
+    protected final GuiScreen parentScreen;
+    protected final GameSettings options;
+
+    public JControlSettings(GuiScreen screen, GameSettings settings){
+        this.parentScreen = screen;
+        this.options = settings;
+
+        this.conflicts = new HashMap<>();
     }
 
     @Override
-    public void initGui() {
-//        this.keyBindingList = new GuiKeyBindingList(this, this.mc);
-
-        this.buttonList.add(new JUICustomButton(DONE_BUTTON_ID,
-                this.width / 2 - 155 + 160, this.height - 29, 150, 20,
-                I18n.format("gui.done")));
-        this.buttonReset = this.addButton(new JUICustomButton(RESET_BUTTON_ID,
-                this.width / 2 - 155, this.height - 29, 150, 20,
-                I18n.format("controls.resetAll")));
-        this.screenTitle = I18n.format("controls.title");
-//        int i = 0;
-//
-//        for (GameSettings.Options gamesettings$options : OPTIONS_ARR)
-//        {
-//            if (gamesettings$options.isFloat())
-//            {
-//                this.buttonList.add(new GuiOptionSlider(gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options));
-//            }
-//            else
-//            {
-//                this.buttonList.add(new GuiOptionButton(gamesettings$options.getOrdinal(), this.width / 2 - 155 + i % 2 * 160, 18 + 24 * (i >> 1), gamesettings$options, this.options.getKeyBinding(gamesettings$options)));
-//            }
-//
-//            ++i;
-//        }
+    protected UIDocument getUIDocument() {
+        return ClientProxy.getClientProxy().controls;
     }
 
     @Override
-    protected void actionPerformed(@NonNull GuiButton button) {
-        if (button.id == DONE_BUTTON_ID)
-        {
-            this.mc.displayGuiScreen(this.parentScreen);
+    protected String getTitleTranslationKey() {
+        return "controls.title";
+    }
+
+    @Override
+    protected void initJUI(UIDocument document) {
+        this.reloadAllConflicts();
+
+        System.out.println(this.conflicts);
+
+        VerticalListComponent comp = document.getComponent("test");
+
+        for (KeyBinding keyBinding : this.options.keyBindings) {
+            comp.addEntry(keyBinding::getKeyDescription, () -> {
+                if(this.conflicts.getOrDefault(keyBinding, Collections.EMPTY_SET).isEmpty()){
+                    return keyBinding.getDisplayName();
+                }else{
+                    return "[!CONFLICT] " + keyBinding.getDisplayName();
+                }
+            });
         }
-        else if (button.id == RESET_BUTTON_ID)
-        {
-            for (KeyBinding keybinding : this.mc.gameSettings.keyBindings)
-            {
-                keybinding.setToDefault();
+    }
+
+    private void reloadAllConflicts(){
+        this.conflicts.clear();
+
+        for (KeyBinding keyBinding : this.options.keyBindings) {
+            this.conflicts.put(keyBinding, new HashSet<>());
+        }
+
+        for (int i = 0; i < this.options.keyBindings.length; i++) {
+            for (int j = i + 1; j < this.options.keyBindings.length; j++) {
+                KeyBinding a = this.options.keyBindings[i];
+                KeyBinding b = this.options.keyBindings[j];
+
+                Set<KeyBinding> conflictA = this.conflicts.get(a);
+                Set<KeyBinding> conflictB = this.conflicts.get(b);
+
+                if (a.conflicts(b) || b.conflicts(a)){
+                    conflictA.add(b);
+                    conflictB.add(a);
+                }
             }
-
-            KeyBinding.resetKeyBindingArrayAndHash();
         }
     }
 
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    private void reloadConflictsForKeybind(KeyBinding keyBinding){
+        Set<KeyBinding> conflict = this.conflicts.get(keyBinding);
 
-    }
-
-    @Override
-    protected void keyTyped(char typedChar, int keyCode) {
-        if (keyCode == 1)
-        {
-            this.mc.displayGuiScreen(this.parentScreen);
-        }
-    }
-
-    @Override
-    public void handleMouseInput() {
-    }
-
-    @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-    }
-
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        this.drawDefaultBackground();
-        this.drawCenteredString(this.fontRenderer, this.screenTitle, this.width / 2, 8, 16777215);
-
-        for (GuiButton guiButton : this.buttonList) {
-            guiButton.drawButton(this.mc, mouseX, mouseY, partialTicks);
+        for (KeyBinding other : conflict) {
+            this.conflicts.get(other).remove(other);
         }
 
-        for (GuiLabel guiLabel : this.labelList) {
-            guiLabel.drawLabel(this.mc, mouseX, mouseY);
+        conflict.clear();
+
+        for (KeyBinding other : this.options.keyBindings) {
+            if (other == keyBinding) continue;
+
+            Set<KeyBinding> otherConflict = this.conflicts.get(other);
+
+            if (keyBinding.conflicts(other) || other.conflicts(keyBinding)){
+                otherConflict.add(keyBinding);
+                conflict.add(other);
+            }
         }
     }
 }

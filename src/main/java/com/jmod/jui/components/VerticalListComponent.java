@@ -76,6 +76,10 @@ public class VerticalListComponent extends BaseComponent implements IChildModifi
         this.setHeight(this.entries.size() * this.increment);
     }
 
+    public void addEntry(ITranslatorProvider... providers){
+        this.addEntry(new ListEntry(this, providers));
+    }
+
     public void removeEntry(ListEntry entry){
         this.entries.remove(entry);
 

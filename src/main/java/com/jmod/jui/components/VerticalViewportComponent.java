@@ -15,7 +15,7 @@ public class VerticalViewportComponent extends BaseComponent {
 
     @Override
     protected void drawBackground(int x, int y, boolean isHover) {
-        int lowest = this.lowestPoint;
+        int lowest = Math.max(0, this.lowestPoint - this.height);
         int scbHeight = this.height / Math.max(lowest, 1);
         this.scrollbar.setScrollBarHeight(scbHeight);
 
@@ -70,6 +70,8 @@ public class VerticalViewportComponent extends BaseComponent {
         if (child == this.smallestChild){
             if (child.dummyY + child.height < this.lowestPoint){
                 //TODO: recalculate completly
+            }else{
+                this.lowestPoint = child.dummyY + child.height;
             }
         } else if (child.dummyY + child.height > this.lowestPoint) {
             this.lowestPoint = child.dummyY + child.height;

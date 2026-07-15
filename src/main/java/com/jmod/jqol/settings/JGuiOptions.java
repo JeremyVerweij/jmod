@@ -1,7 +1,6 @@
 package com.jmod.jqol.settings;
 
 import com.jmod.jui.JUICustomButton;
-import com.jmod.jui.TestScreen;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.GameSettings;
@@ -135,8 +134,7 @@ public class JGuiOptions extends GuiOptions {
             if (button.id == CONTROLS_BUTTON_ID)
             {
                 this.mc.gameSettings.saveOptions();
-                this.mc.displayGuiScreen(new TestScreen());
-//                this.mc.displayGuiScreen(new JControlSettings(this, this.settings));
+                this.mc.displayGuiScreen(new JControlSettings(this, this.settings));
             }
 
             if (button.id == LANGUAGE_BUTTON_ID)
