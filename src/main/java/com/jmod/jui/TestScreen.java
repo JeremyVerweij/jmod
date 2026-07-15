@@ -1,8 +1,6 @@
 package com.jmod.jui;
 
-import com.jmod.jui.components.BaseComponent;
-import com.jmod.jui.components.ButtonComponent;
-import com.jmod.jui.components.VerticalListComponent;
+import com.jmod.jui.components.list.VerticalListComponent;
 import com.jmod.jui.proxy.ClientProxy;
 import com.jmod.jui.ui.JUIScreen;
 import com.jmod.jui.ui.UIDocument;

@@ -245,6 +245,10 @@ public abstract class BaseComponent {
         return children;
     }
 
+    public String getTranslationKey() {
+        return translationKey;
+    }
+
     public String getId() {
         return id;
     }

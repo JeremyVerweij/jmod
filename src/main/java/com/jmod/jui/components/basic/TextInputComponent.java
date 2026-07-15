@@ -1,4 +1,4 @@
-package com.jmod.jui.components;
+package com.jmod.jui.components.basic;
 
 import com.jmod.jui.ui.UIDocument;
 import com.jmod.jui.ui.interfaces.DoubleInputConsumer;

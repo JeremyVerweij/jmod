@@ -1,10 +1,11 @@
-package com.jmod.jui.components;
+package com.jmod.jui.components.choice;
 
+import com.jmod.jui.components.basic.ButtonComponent;
 import com.jmod.jui.ui.interfaces.DoubleInputConsumer;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 
-public class ChoiceComponent extends ButtonComponent{
+public class ChoiceComponent extends ButtonComponent {
     protected int selectedChildIndex = 0;
     protected DoubleInputConsumer<ChoiceComponent, String> onChoiceChange;
 
@@ -14,7 +15,7 @@ public class ChoiceComponent extends ButtonComponent{
 
     @Override
     protected String getTranslatedText() {
-        return this.children.get(this.selectedChildIndex).translationKey;
+        return this.children.get(this.selectedChildIndex).getTranslationKey();
     }
 
     @Override
