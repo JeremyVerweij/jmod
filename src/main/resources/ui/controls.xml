@@ -11,6 +11,11 @@
             <label width="50%" x="50%" _useListInput="true"/>
         </verticalList>
     </verticalViewport>
+    <choice y="200" width="100" height="40">
+        <option>1</option>
+        <option>2</option>
+        <option>3</option>
+    </choice>
 <!--    <viewportV width="100%" heigh="50%">-->
 <!--        <repeatable id="control" type="list" direction="vertical" increment="20">-->
 <!--            <label>-->

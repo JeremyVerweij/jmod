@@ -1,6 +1,7 @@
 package com.jmod.jui.components;
 
 import com.jmod.jui.ui.JUIScreen;
+import com.jmod.jui.ui.interfaces.IChildModifierAcceptor;
 import com.jmod.jui.ui.interfaces.ITranslatorProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -29,6 +30,7 @@ public abstract class BaseComponent {
     protected String translationKey;
 
     protected BaseComponent parent;
+    protected IChildModifierAcceptor parentMod;
     protected final String id;
     protected final List<BaseComponent> children;
     protected JUIScreen owner;
@@ -104,11 +106,9 @@ public abstract class BaseComponent {
     public void onFocusGained(){}
     public void onFocusLost(){}
 
-    public void addChildExtraAttrib(BaseComponent child, String key, String value){}
-
     public void addExtraAttribute(String key, String value){
-        if (key.startsWith("_") && parent != null){
-            this.parent.addChildExtraAttrib(this, key.substring(1), value);
+        if (key.startsWith("_") && this.parentMod != null){
+            this.parentMod.addChildExtraAttrib(this, key.substring(1), value);
         }
     }
 
@@ -128,6 +128,11 @@ public abstract class BaseComponent {
         if (component.parent == null){
             this.children.add(component);
             component.parent = this;
+            component.parentMod = this.parentMod;
+
+            if (this instanceof IChildModifierAcceptor acceptor){
+                component.parentMod = acceptor;
+            }
         }
     }
 
@@ -135,6 +140,7 @@ public abstract class BaseComponent {
         if (this.children.contains(component)){
             this.children.remove(component);
             component.parent = null;
+            component.parentMod = null;
         }
     }
 

@@ -1,11 +1,12 @@
 package com.jmod.jui.components;
 
+import com.jmod.jui.ui.interfaces.IChildModifierAcceptor;
 import com.jmod.jui.ui.interfaces.ITranslatorProvider;
 import net.minecraft.client.Minecraft;
 
 import java.util.*;
 
-public class VerticalListComponent extends BaseComponent{
+public class VerticalListComponent extends BaseComponent implements IChildModifierAcceptor {
     protected List<ListEntry> entries;
     protected int increment = 1;
     protected Set<BaseComponent> useListInput;
@@ -62,8 +63,6 @@ public class VerticalListComponent extends BaseComponent{
 
     @Override
     public void addChildExtraAttrib(BaseComponent child, String key, String value) {
-        super.addChildExtraAttrib(child, key, value);
-
         if (Objects.equals(key, "useListInput")){
             if (Boolean.parseBoolean(value)){
                 this.useListInput.add(child);

@@ -87,11 +87,6 @@ public class VerticalViewportComponent extends BaseComponent {
     }
 
     @Override
-    public void addChild(BaseComponent component) {
-        super.addChild(component);
-    }
-
-    @Override
     public int getChildOffsetY(BaseComponent child) {
         if (child == this.scrollbar) return super.getChildOffsetY(child);
 
