@@ -2,7 +2,7 @@ package com.jmod.jui.components;
 
 import net.minecraft.client.Minecraft;
 
-public class UIComponent extends BaseComponent{
+public class UIComponent extends BaseComponent {
     public UIComponent(String id, Minecraft mc) {
         super(id, mc);
     }

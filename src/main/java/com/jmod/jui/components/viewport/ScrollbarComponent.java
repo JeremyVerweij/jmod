@@ -1,10 +1,11 @@
-package com.jmod.jui.components;
+package com.jmod.jui.components.viewport;
 
+import com.jmod.jui.components.BaseComponent;
 import net.minecraft.client.Minecraft;
 
 import java.util.Objects;
 
-public class ScrollbarComponent extends BaseComponent{
+public class ScrollbarComponent extends BaseComponent {
     protected boolean horizontal = false;
     protected int scrollBarPosition = 0;
     protected int scrollBarHeight = 0;

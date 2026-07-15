@@ -1,5 +1,6 @@
-package com.jmod.jui.components;
+package com.jmod.jui.components.viewport;
 
+import com.jmod.jui.components.BaseComponent;
 import com.jmod.jui.ui.JUIScreen;
 import net.minecraft.client.Minecraft;
 
@@ -68,13 +69,13 @@ public class VerticalViewportComponent extends BaseComponent {
         super.updateChildSize(child);
 
         if (child == this.smallestChild){
-            if (child.dummyY + child.height < this.lowestPoint){
+            if (child.getDummyY() + child.getHeight() < this.lowestPoint){
                 //TODO: recalculate completly
             }else{
                 this.lowestPoint = child.dummyY + child.height;
             }
-        } else if (child.dummyY + child.height > this.lowestPoint) {
-            this.lowestPoint = child.dummyY + child.height;
+        } else if (child.getDummyY() + child.getHeight() > this.lowestPoint) {
+            this.lowestPoint = child.getDummyY() + child.getHeight();
             this.smallestChild = child;
         }
 

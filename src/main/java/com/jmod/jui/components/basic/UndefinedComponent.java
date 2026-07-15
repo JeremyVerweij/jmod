@@ -1,9 +1,10 @@
-package com.jmod.jui.components;
+package com.jmod.jui.components.basic;
 
+import com.jmod.jui.components.BaseComponent;
 import net.minecraft.client.Minecraft;
 
-public class OptionComponent extends BaseComponent{
-    public OptionComponent(String id, Minecraft mc) {
+public class UndefinedComponent extends BaseComponent {
+    public UndefinedComponent(String id, Minecraft mc) {
         super(id, mc);
     }
 

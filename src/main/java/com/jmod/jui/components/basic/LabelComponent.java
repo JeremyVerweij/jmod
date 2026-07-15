@@ -1,11 +1,12 @@
-package com.jmod.jui.components;
+package com.jmod.jui.components.basic;
 
+import com.jmod.jui.components.BaseComponent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 
 import java.util.Objects;
 
-public class LabelComponent extends BaseComponent{
+public class LabelComponent extends BaseComponent {
     protected boolean centerText = false;
     protected boolean enableHighlight = false;
 
