@@ -22,8 +22,6 @@ public class ClientProxy extends CommonProxy{
         return ((ClientProxy) JUI.proxy);
     }
 
-    public UIDocument controls;
-
     @Override
     public void postInit(FMLPostInitializationEvent event) {
         UIComponentCollection.addComponent("undefined", UndefinedComponent::new);
@@ -37,7 +35,5 @@ public class ClientProxy extends CommonProxy{
         UIComponentCollection.addComponent("verticalListC", VerticalListCategorizedComponent::new);
         UIComponentCollection.addComponent("choice", ChoiceComponent::new);
         UIComponentCollection.addComponent("option", OptionComponent::new);
-
-        this.controls = new UIDocument("/ui/controls.xml", Minecraft.getMinecraft());
     }
 }

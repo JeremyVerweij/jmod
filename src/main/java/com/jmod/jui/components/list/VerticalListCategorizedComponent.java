@@ -5,6 +5,7 @@ import com.jmod.jui.ui.interfaces.ITranslatorProvider;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 
 public class VerticalListCategorizedComponent extends ListComponent {
+    public String lastCategoryInteracted = null;
+
     protected Map<String, List<ListEntry>> categorizedListEntries;
     protected Object2BooleanMap<String> shownCategories;
 
@@ -27,10 +30,15 @@ public class VerticalListCategorizedComponent extends ListComponent {
         int offset = 0;
 
         for (Map.Entry<String, List<ListEntry>> categorizedEntry : this.categorizedListEntries.entrySet()) {
-            String category = categorizedEntry.getKey();
+            String category = I18n.format(categorizedEntry.getKey());
 
-            this.drawCenteredString(this.mc.fontRenderer, category, this.getX(left) + (this.width / 2),
-                    this.getY(top + offset), this.foregroundColor);
+            int x = this.getX(left);
+            int y = this.getY(top + offset);
+
+            this.drawRect(x, y, x + width, y + this.mc.fontRenderer.FONT_HEIGHT + 4, 0x88000000);
+
+            this.drawCenteredString(this.mc.fontRenderer, category, x + (this.width / 2),
+                    y + 2, this.foregroundColor);
 
             offset += this.increment;
 
@@ -43,6 +51,74 @@ public class VerticalListCategorizedComponent extends ListComponent {
                     }
 
                     child.draw(left, top + offset, mouseX, mouseY);
+                }
+
+                offset += this.increment;
+            }
+        }
+    }
+
+    @Override
+    public void onMouseClick(int button, int offsetX, int offsetY, int mouseX, int mouseY) {
+        int offset = 0;
+
+        for (Map.Entry<String, List<ListEntry>> categorizedEntry : this.categorizedListEntries.entrySet()) {
+            offset += this.increment;
+
+            for (int index = 0; index < categorizedEntry.getValue().size(); index++) {
+                for (BaseComponent child : this.children) {
+                    if (child.isInBoundingBox(offsetX, offsetY + offset, mouseX, mouseY)){
+                        this.lastIndexInteract = index;
+                        this.lastCategoryInteracted = categorizedEntry.getKey();
+
+                        child.onMouseClick(button, offsetX, offsetY + offset, mouseX, mouseY);
+                    }
+                }
+
+                offset += this.increment;
+            }
+        }
+    }
+
+    @Override
+    public boolean onKeyType(char character, int key, boolean shift, boolean ctrl, boolean alt, int offsetX, int offsetY, int mouseX, int mouseY) {
+        int offset = 0;
+
+        for (Map.Entry<String, List<ListEntry>> categorizedEntry : this.categorizedListEntries.entrySet()) {
+            offset += this.increment;
+
+            for (int index = 0; index < categorizedEntry.getValue().size(); index++) {
+                for (BaseComponent child : this.children) {
+                    if (child.isInBoundingBox(offsetX, offsetY + offset, mouseX, mouseY)){
+                        this.lastCategoryInteracted = categorizedEntry.getKey();
+                        this.lastIndexInteract = index;
+
+                        if(child.onKeyType(character, key, shift, ctrl, alt, offsetX, offsetY + offset, mouseX, mouseY)) return true;
+                    }
+                }
+
+                offset += this.increment;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onMouseScroll(int amount, int offsetX, int offsetY, int mouseX, int mouseY) {
+        int offset = 0;
+
+        for (Map.Entry<String, List<ListEntry>> categorizedEntry : this.categorizedListEntries.entrySet()) {
+            offset += this.increment;
+
+            for (int index = 0; index < categorizedEntry.getValue().size(); index++) {
+                for (BaseComponent child : this.children) {
+                    if (child.isInBoundingBox(offsetX, offsetY + offset, mouseX, mouseY)){
+                        this.lastCategoryInteracted = categorizedEntry.getKey();
+                        this.lastIndexInteract = index;
+
+                        child.onMouseScroll(amount, offsetX, offsetY + offset, mouseX, mouseY);
+                    }
                 }
 
                 offset += this.increment;

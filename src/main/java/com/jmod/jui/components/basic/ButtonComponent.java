@@ -9,6 +9,9 @@ import java.util.Objects;
 public class ButtonComponent extends LabelComponent{
     protected boolean useNineSplicedTexture = false;
     protected int borderColor = 0;
+    protected int borderColorHover = 0;
+    protected int focusBorderColor = 0;
+    protected int focusBackColor = 0;
     protected DoubleInputConsumer<ButtonComponent, Integer> onClickEvent = null;
 
     public ButtonComponent(String id, Minecraft mc) {
@@ -26,12 +29,21 @@ public class ButtonComponent extends LabelComponent{
                 //TODO: do stuff
             }
         }else{
-            this.drawRect(x, y, x + this.width, y + this.height, isHover ? this.highlightBackgroundColor : this.backgroundColor);
+            int backColor = this.backgroundColor;
+            int borderColor = this.borderColor;
 
-            this.drawHorizontalLine(x, x + this.width, y, this.borderColor);
-            this.drawHorizontalLine(x, x + this.width, y + this.height, this.borderColor);
-            this.drawVerticalLine(x, y, y + this.height, this.borderColor);
-            this.drawVerticalLine(x + this.width, y, y + this.height, this.borderColor);
+            if (isHover && this.enableHighlight) backColor = this.highlightBackgroundColor;
+            if (this.hasFocus() && this.enableFocusColor) backColor = this.focusBackColor;
+
+            if (isHover && this.enableHighlight) borderColor = this.borderColorHover;
+            if (this.hasFocus() && this.enableFocusColor) borderColor = this.focusBorderColor;
+
+            this.drawRect(x, y, x + this.width, y + this.height, backColor);
+
+            this.drawHorizontalLine(x, x + this.width, y, borderColor);
+            this.drawHorizontalLine(x, x + this.width, y + this.height, borderColor);
+            this.drawVerticalLine(x, y, y + this.height, borderColor);
+            this.drawVerticalLine(x + this.width, y, y + this.height, borderColor);
         }
     }
 
@@ -50,6 +62,14 @@ public class ButtonComponent extends LabelComponent{
 
         if (Objects.equals(key, "useNineSplice")){
             this.useNineSplicedTexture = Boolean.parseBoolean(value);
+        } else if (Objects.equals(key, "borderColorHover")) {
+            this.borderColorHover = UIDocument.parseColor(value);
+        } else if (Objects.equals(key, "focusBorderColor")) {
+            this.focusBorderColor = UIDocument.parseColor(value);
+        } else if (Objects.equals(key, "focusFrontColor")) {
+            this.focusFrontColor = UIDocument.parseColor(value);
+        } else if (Objects.equals(key, "focusBackColor")) {
+            this.focusBackColor = UIDocument.parseColor(value);
         } else if (Objects.equals(key, "borderColor")) {
             this.borderColor = UIDocument.parseColor(value);
         }

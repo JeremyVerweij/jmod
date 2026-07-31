@@ -38,6 +38,8 @@ public class VerticalViewportComponent extends BaseComponent {
         this.enableScissors(getDummyX() + left, getDummyY() + top, this.width, this.height);
         super.draw(left, top, mouseX, mouseY);
         this.disableScissors();
+
+        this.scrollbar.draw(left, top, mouseX, mouseY);
     }
 
     @Override
@@ -72,7 +74,7 @@ public class VerticalViewportComponent extends BaseComponent {
             if (child.getDummyY() + child.getHeight() < this.lowestPoint){
                 //TODO: recalculate completly
             }else{
-                this.lowestPoint = child.dummyY + child.height;
+                this.lowestPoint = child.getDummyY() + child.getHeight();
             }
         } else if (child.getDummyY() + child.getHeight() > this.lowestPoint) {
             this.lowestPoint = child.getDummyY() + child.getHeight();

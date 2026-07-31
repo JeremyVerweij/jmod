@@ -51,7 +51,7 @@ public abstract class BaseComponent {
     }
 
     public void onMouseClick(int button, int offsetX, int offsetY, int mouseX, int mouseY){
-        if (this.grabFocus()){
+        if (this.grabFocus() && button == 0){
             if (this.owner.getFocussed() == null){
                 this.owner.setFocussed(this);
                 return;

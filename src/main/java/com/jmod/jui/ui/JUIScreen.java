@@ -19,6 +19,7 @@ public abstract class JUIScreen extends GuiScreen {
     protected abstract UIDocument getUIDocument();
     protected abstract String getTitleTranslationKey();
     protected abstract void initJUI(UIDocument document);
+    protected abstract GuiScreen parentScreen();
 
     protected int getTitleColor(){
         return 16777215;
@@ -109,20 +110,22 @@ public abstract class JUIScreen extends GuiScreen {
 
     @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
-
-        boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT);
-        boolean ctrl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL);
-        boolean alt = Keyboard.isKeyDown(Keyboard.KEY_LMENU);
+        boolean shift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+        boolean ctrl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
+        boolean alt = Keyboard.isKeyDown(Keyboard.KEY_LMENU) || Keyboard.isKeyDown(Keyboard.KEY_RMENU);
 
         int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
         int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
 
+        boolean captured = false;
+
         if (this.getFocussed() != null) {
-            this.getFocussed().onKeyType(typedChar, keyCode, shift, ctrl, alt, getLeft(), getTop(), mouseX, mouseY);
+            captured = this.getFocussed().onKeyType(typedChar, keyCode, shift, ctrl, alt, getLeft(), getTop(), mouseX, mouseY);
         }else if (this.getUIDocument().getRoot().isInBoundingBox(getLeft(), getTop(), mouseX, mouseY)){
-            this.getUIDocument().getRoot().onKeyType(typedChar, keyCode, shift, ctrl, alt, getLeft(), getTop(), mouseX, mouseY);
+            captured = this.getUIDocument().getRoot().onKeyType(typedChar, keyCode, shift, ctrl, alt, getLeft(), getTop(), mouseX, mouseY);
         }
+
+        if (!captured && keyCode == Keyboard.KEY_ESCAPE) this.mc.displayGuiScreen(this.parentScreen());
     }
 
     public BaseComponent getFocussed() {

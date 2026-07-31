@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public abstract class ListComponent extends BaseComponent implements IChildModifierAcceptor {
+    public int lastIndexInteract = -1;
     protected int increment = 1;
     protected Set<BaseComponent> useListInput;
 
@@ -60,6 +61,10 @@ public abstract class ListComponent extends BaseComponent implements IChildModif
                 throw new RuntimeException("Entry does not match size, Expected: " + list.useListInput.size() + " Got: " + providers.length);
 
             this.providers = providers;
+        }
+
+        public ITranslatorProvider[] getProviders() {
+            return providers;
         }
     }
 }
